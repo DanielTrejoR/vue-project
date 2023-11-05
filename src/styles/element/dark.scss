@@ -1,0 +1,29 @@
+// only scss variables
+
+$--colors: (
+  "primary": (
+    "base": #589ef8,
+  ),
+);
+
+@forward "element-plus/theme-chalk/src/dark/var.scss" with (
+  $colors: $--colors
+);
+
+:root {
+  --dark: #1d1d1d;
+  --grey-dark: #414141;
+  --light: #fff;
+  --mid: #ededed;
+  --grey: #989898;
+  --gray: #989898;
+  --green: #28a92b;
+  --green-dark: #4e9815;
+  --green-light: #6fb936;
+  --blue: #2c7ad2;
+  --purple: #8d3dae;
+  --red: #c82736;
+  --orange: #e77614;
+  accent-color: var(--green);
+}
+
