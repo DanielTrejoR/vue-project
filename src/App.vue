@@ -4,11 +4,14 @@
     <div class="flex main-container">
       <BaseSide />
       <el-main>
-          <RouterView :key="$route.path" v-slot="{ Component }" >
-            <transition name="fade-transform" mode="out-in">
-              <component :is="Component" />
-            </transition>
-          </RouterView>
+        <RouterView v-slot="{ Component, route }" >
+          <Transition 
+            enter-active-class="animate__animated animate__fadeInDown"
+            leave-active-class="animate__animated animate__fadeOutDown"
+            >
+              <component :is="Component" :key="route.path"></component>
+            </Transition>
+        </RouterView>
       </el-main>
     </div>
   </el-config-provider>
@@ -22,21 +25,5 @@
 
 .main-container {
   height: calc(100vh - var(--ep-menu-item-height) - 3px);
-}
-
- /* fade-transform */
-.fade-transform-leave-active,
-.fade-transform-enter-active {
-    transition: all .5s;
-  }
-  
-.fade-transform-enter {
-    opacity: 0;
-    transform: translateX(-30px);
-}
-  
-.fade-transform-leave-to {
-    opacity: 0;
-    transform: translateX(30);
 }
 </style>

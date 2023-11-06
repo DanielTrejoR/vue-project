@@ -4,7 +4,7 @@ import { Sunny, Moon } from '@element-plus/icons-vue'
 </script>
 
 <template>
-  <el-menu class="el-menu-demo" mode="horizontal">
+  <el-menu class="" mode="horizontal">
     <el-menu-item index="1">Element Plus</el-menu-item>
     <el-sub-menu index="2">
       <template #title>Workspace</template>
@@ -28,7 +28,12 @@ import { Sunny, Moon } from '@element-plus/icons-vue'
         About
       </RouterLink>  
     </el-menu-item>
-    <el-menu-item index="5" h="full">
+    <el-menu-item index="6">
+      <RouterLink :to="{name: 'testing'}">
+        Test View
+      </RouterLink>  
+    </el-menu-item>
+    <el-menu-item index="7" h="full">
       <el-switch
         class="darker-switch"
         v-model="isDark"
@@ -58,5 +63,9 @@ import { Sunny, Moon } from '@element-plus/icons-vue'
 .darker-switch.ep-switch .ep-switch__core .ep-switch__action {
     
     color: #606266;
+}
+
+.ep-menu--horizontal {
+    height: calc(var(--ep-menu-horizontal-height) - 1px)
 }
 </style>
