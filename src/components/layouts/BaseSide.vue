@@ -36,14 +36,14 @@
       <el-icon><setting /></el-icon>
       <template #title>Navigator Four</template>
     </el-menu-item>
-    <el-menu-item index="5" @click="isCollapse = !isCollapse">
+    <el-menu-item index="5" @click="collapse()">
       <el-icon><expand /></el-icon>
       <template #title>Navigator Four</template>
     </el-menu-item>
   </el-menu>
 </template>
-<script lang="ts" setup>
-import { ref } from "vue";
+<script>
+import store from '~/store';
 import {
   Location,
   Document,
@@ -51,13 +51,34 @@ import {
   Setting,
   Expand,
 } from "@element-plus/icons-vue";
-
-const isCollapse = ref(true);
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
-};
-const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
-};
-
+export default {
+  components: {
+    Location,
+    Document,
+    IconMenu,
+    Setting,
+    Expand
+  },
+  data: () => ({
+    isCollapse: false,
+  }),
+  methods: {
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    handleClose(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    collapse(){
+      store.dispatch('stateSideBar', !this.isCollapse)
+      this.isCollapse = !this.isCollapse
+    }
+  },
+  mounted() {
+    if( !sessionStorage.getItem('isCollapse') ){
+      sessionStorage.setItem('isCollapse', this.isCollapse)
+    }
+    this.isCollapse = store.state.user.config.collapseSideBar
+  }
+}
 </script>

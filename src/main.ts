@@ -31,6 +31,8 @@ import VueApexCharts from "vue3-apexcharts";
 
 import 'animate.css';
 
+import store from './store';
+
 const app = createApp(App);
 app.use(ElementPlus);
 app.use(VueApexCharts);
@@ -38,4 +40,5 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
 app.use(router)
+app.use(store)
 app.mount("#app");

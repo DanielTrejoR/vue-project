@@ -6,8 +6,8 @@
       <el-main>
         <RouterView v-slot="{ Component, route }" >
           <Transition 
-            enter-active-class="animate__animated animate__fadeInDown"
-            leave-active-class="animate__animated animate__fadeOutDown"
+            enter-active-class="animate__animated animate__fadeIn"
+            leave-active-class="animate__animated animate__fadeOut"
             >
               <component :is="Component" :key="route.path"></component>
             </Transition>
