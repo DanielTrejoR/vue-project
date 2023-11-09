@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { toggleDark, isDark } from "~/composables";
+import { isDark } from "~/composables";
 import { Sunny, Moon } from '@element-plus/icons-vue'
 </script>
 
@@ -9,7 +9,7 @@ import { Sunny, Moon } from '@element-plus/icons-vue'
     <el-sub-menu index="2">
       <template #title>Workspace</template>
       <el-menu-item index="2-1">
-        <RouterLink :to="{name: 'home'}">
+        <RouterLink :to="{name: 'Dashboard'}">
           Home
         </RouterLink>
       </el-menu-item>
@@ -26,11 +26,6 @@ import { Sunny, Moon } from '@element-plus/icons-vue'
     <el-menu-item index="4">
       <RouterLink :to="{name: 'about'}">
         About
-      </RouterLink>  
-    </el-menu-item>
-    <el-menu-item index="6">
-      <RouterLink :to="{name: 'testing'}">
-        Test View
       </RouterLink>  
     </el-menu-item>
     <el-menu-item index="7" h="full">

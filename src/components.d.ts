@@ -7,9 +7,11 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AdminLayout: typeof import('./components/AdminLayout.vue')['default']
     BarChart: typeof import('./components/Charts/BarChart.vue')['default']
     BaseHeader: typeof import('./components/layouts/BaseHeader.vue')['default']
     BaseSide: typeof import('./components/layouts/BaseSide.vue')['default']
+    DefaultLayout: typeof import('./components/DefaultLayout.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCarousel: typeof import('element-plus/es')['ElCarousel']
     ElCarouselItem: typeof import('element-plus/es')['ElCarouselItem']
@@ -28,6 +30,7 @@ declare module 'vue' {
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTag: typeof import('element-plus/es')['ElTag']
+    FrontLayout: typeof import('./components/FrontLayout.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     IconCommunity: typeof import('./components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./components/icons/IconDocumentation.vue')['default']
@@ -37,6 +40,8 @@ declare module 'vue' {
     LineChart: typeof import('./components/Charts/LineChart.vue')['default']
     Logos: typeof import('./components/Logos.vue')['default']
     MixChart: typeof import('./components/Charts/MixChart.vue')['default']
+    Nav: typeof import('./components/layouts/front/Nav.vue')['default']
+    NavBar: typeof import('./components/layouts/front/NavBar.vue')['default']
     PieChart: typeof import('./components/Charts/PieChart.vue')['default']
     RadarApexChart: typeof import('./components/Charts/ApexCharts/RadarApexChart.vue')['default']
     RadarChart: typeof import('./components/Charts/RadarChart.vue')['default']

@@ -33,6 +33,31 @@ import 'animate.css';
 
 import store from './store';
 
+// Vuetify
+import '@fortawesome/fontawesome-free/css/all.css'
+import '@mdi/font/css/materialdesignicons.css'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import { aliases, fa } from 'vuetify/iconsets/fa'
+import { mdi } from 'vuetify/iconsets/mdi'
+import { md } from 'vuetify/iconsets/md'
+const vuetify = createVuetify({
+    components,
+    directives,
+    icons: {
+        defaultSet: 'fa',
+        aliases,
+        sets: {
+            fa,
+            mdi,
+            md,
+        },
+    },
+})
+
 const app = createApp(App);
 app.use(ElementPlus);
 app.use(VueApexCharts);
@@ -41,4 +66,5 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 app.use(router)
 app.use(store)
+app.use(vuetify)
 app.mount("#app");
