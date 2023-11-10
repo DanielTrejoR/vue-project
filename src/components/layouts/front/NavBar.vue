@@ -107,15 +107,25 @@
               mdi {{ ($vuetify.theme.global.name === 'dark') ? 'mdi-weather-night' : 'mdi-weather-sunny' }}
               </v-icon>
           </v-btn>
-          <v-btn icon="mdi mdi-cog"></v-btn>
+          <v-btn @click.stop="drawer = !drawer" icon="mdi mdi-cog"></v-btn>
         </template>
     </v-app-bar>
+    <v-navigation-drawer
+        v-model="drawer"
+        temporary
+        location="right"
+      >
+        
+        <ConfigMenu title="Configuracion"></ConfigMenu>
+      </v-navigation-drawer>
 </template>
 <script>
 import store from '~/store'
 
 export default {
     data: () => ({
+      drawer: null,
+      ex11: false
     }),
     methods: {
         toggleTheme() {

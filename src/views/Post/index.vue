@@ -1,7 +1,10 @@
 <template>
 <div>
-    <h2>Listado de post we pero usaremos vuetify, si o q</h2>
-    aqui ira el vutify {{ $vuetify.theme.global.name }}
+    <h1>Data</h1>
     
 </div>
 </template>
+<script>
+export default {
+}
+</script>
