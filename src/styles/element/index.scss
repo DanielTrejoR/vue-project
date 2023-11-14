@@ -1,9 +1,10 @@
 $--colors: (
+  'white': #ffffff,
   "primary": (
     "base": #409EFF,
   ),
   "success": (
-    "base": #21ba45,
+    "base": #67c23a,
   ),
   "warning": (
     "base": #f2711c,
@@ -28,11 +29,8 @@ $--colors: (
 // comment next lines to use default color
 @forward "element-plus/theme-chalk/src/common/var.scss" with (
   // do not use same name, it will override.
-  $colors: $--colors,
-  $button-padding-horizontal: ("default": 50px)
+  $colors: $--colors
 
-  
-  
 );
 
 // if you want to import all

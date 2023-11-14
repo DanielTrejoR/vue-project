@@ -1,11 +1,13 @@
 <template>
     <div>
-        <Component :is="componentName" :items="items"></Component>
-
-        <PaginationLinks :pagination="pagination"></PaginationLinks>
+        <component :is="componentImport" :items="items"></component>
+        <PaginationLinks :pagination="pagination" @change-page="getPost"></PaginationLinks>
     </div>
 </template>
 <script>
+import { defineAsyncComponent } from 'vue'
+import store from '~/store/index.js'
+
 export default {
     props: ['url', 'componentName'],
     data(){
@@ -14,16 +16,31 @@ export default {
             items: []
         }
     },
-    mounted(){
-        axios.get(`${ this.url }?page=${this.$route.query.page || 1}`) //Post controller
-            .then(res => {
+    computed: {
+        componentImport() {
+            let data = this.componentName;
+            return defineAsyncComponent(() =>
+                import( /* @vite-ignore */`./${data}.vue`)
+            )
+        }
+    },
+    methods: {
+        getPost(page = 1) {
+            store.dispatch('getPosts', {
+            url: this.url,
+            page: page
+            })
+            .then((res) => {
                 this.pagination = res.data;
                 this.items = res.data.data;
                 delete this.pagination.data;
-            })
-            .catch(err => {
-                console.log(err);
-            })
-    }
+            }).catch((err) => {
+                
+            });
+        }
+    },
+    mounted() {
+        this.getPost()
+    },
 }
 </script>

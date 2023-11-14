@@ -4,8 +4,7 @@ import router from './router'
 
 import ElementPlus from "element-plus";
 // import all element css, uncommented next line
-import "element-plus/dist/index.css";
-
+// import "element-plus/dist/index.css";
 // or use cdn, uncomment cdn link in `index.html`
 
 import "~/styles/index.scss";
@@ -58,7 +57,14 @@ const vuetify = createVuetify({
     },
 })
 
+//Mitt
+import mitt from 'mitt';
+const emitter = mitt();
+
 const app = createApp(App);
+
+app.config.globalProperties.emitter = emitter;
+
 app.use(ElementPlus);
 app.use(VueApexCharts);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

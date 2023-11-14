@@ -25,7 +25,8 @@ const routes = [
     component: FrontLayout,
     meta: { requiresAuth: false },
     children: [
-      { path: "/", name: "Posts", component: () => import('../views/Post/index.vue')},
+      { path: "/", name: "Index", component: () => import('../views/IndexView.vue')},
+      { path: "/blog", name: "Posts", component: () => import('../views/Post/index.vue')},
       // { path: "/surveys/create", name: "SurveyCreate", component: SurveyView },
       // { path: "/surveys/:id", name: "SurveyView", component: SurveyView },
     ],

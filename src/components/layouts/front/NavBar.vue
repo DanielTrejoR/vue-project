@@ -10,21 +10,17 @@
         size="32"
         variant="flat"
       ></v-avatar>
-
-      <v-btn
-        class="me-2"
-        color="grey"
-        height="40"
-        variant="flat"
-        width="80"
-      >Inicio</v-btn>
-
-      <v-btn
-        class="me-2"
-        color="grey"
-        height="40"
-        variant="flat"
-      >Ultimos Posts</v-btn>
+      <RouterLink :to="{name: 'Index'}">
+        <v-btn
+          class="me-2"
+          color="grey"
+          height="40"
+          variant="flat"
+          width="80"
+        >
+          Inicio 
+        </v-btn>
+      </RouterLink>
 
       <v-btn
         class="me-2"
@@ -32,6 +28,15 @@
         height="40"
         variant="flat"
       >Mis Posts</v-btn>
+      <RouterLink :to="{name: 'Posts'}">
+        <v-btn
+          class="me-2"
+          color="grey"
+          height="40"
+          variant="flat"
+        >Ultimos Posts</v-btn>
+      </RouterLink>
+
 
       <v-spacer></v-spacer>
       <template v-slot:append>
@@ -120,7 +125,7 @@
       </v-navigation-drawer>
 </template>
 <script>
-import store from '~/store'
+import store from '~/store/index.js'
 
 export default {
     data: () => ({

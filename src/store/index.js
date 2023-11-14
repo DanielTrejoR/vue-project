@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import axiosClient from '../axios'
 
 const store = createStore({
   state: {
@@ -15,6 +16,22 @@ const store = createStore({
     },
     toggleDarkMode({commit}, isDark) {
       commit('setDarkMode', isDark)
+    },
+    async getPosts({commit}, data) {
+      return await axiosClient.get(`${data.url}?page=${data.page}`)
+      .then((result) => {
+        return result 
+      }).catch((err) => {
+        return err;
+      });
+    },
+    async createPost({commit}, title){
+      return await axiosClient.post('/admin/posts', title)
+      .then((result) => {
+        return result 
+      }).catch((err) => {
+        return err;
+      });
     }
   },
   mutations: {

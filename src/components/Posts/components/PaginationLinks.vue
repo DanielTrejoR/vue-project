@@ -10,7 +10,7 @@
                         :total-visible="5"
                         @update:model-value="loadData"
                     >
-                </v-pagination>
+                    </v-pagination>
                 </v-container>
             </v-col>
         </v-row>
@@ -30,7 +30,11 @@
                         page: this.page
                     }
                 })
+                this.$emit('change-page', this.page)
             }
-		}
+		},
+        mounted() {
+            this.page = parseInt(this.$route.query.page) || 1
+        }
 	}
 </script>

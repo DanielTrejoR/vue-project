@@ -8,11 +8,11 @@ import { Sunny, Moon } from '@element-plus/icons-vue'
     <el-menu-item index="1">Element Plus</el-menu-item>
     <el-sub-menu index="2">
       <template #title>Workspace</template>
-      <el-menu-item index="2-1">
         <RouterLink :to="{name: 'Dashboard'}">
-          Home
+        <el-menu-item index="2-1">
+            Home
+        </el-menu-item>
         </RouterLink>
-      </el-menu-item>
       <el-menu-item index="2-2">item two</el-menu-item>
       <el-menu-item index="2-3">item three</el-menu-item>
       <el-sub-menu index="2-4">

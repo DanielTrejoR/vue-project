@@ -1,14 +1,13 @@
 <template>
   <el-config-provider namespace="ep">
         <RouterView v-slot="{ Component, route }" >
-          <Transition 
+          <!-- <Transition 
             enter-active-class="animate__animated animate__fadeIn"
             leave-active-class="animate__animated animate__fadeOut"
-            >
+            > -->
               <component :is="Component" :key="route.path"></component>
-            </Transition>
+            <!-- </Transition> -->
         </RouterView>
-      
   </el-config-provider>
 </template>
 

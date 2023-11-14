@@ -1,10 +1,5 @@
 <template>
 <div>
-    <h1>Data</h1>
-    
+    <Paginator url="/posts" component-name="PostList" />
 </div>
 </template>
-<script>
-export default {
-}
-</script>
