@@ -7,10 +7,27 @@ const store = createStore({
       config: {
         collapseSideBar: sessionStorage.getItem('isCollapse') === 'true',
         darkMode: sessionStorage.getItem('dark_theme') === 'dark' ? "dark" : "light"
-      }
+      },
+      data: {},
+      token: sessionStorage.getItem("TOKEN"),
     }
   },
   actions: {
+    login({commit}, user) {
+      return axiosClient.post('/login', user)
+        .then(({data}) => {
+          commit('setUser', data.user);
+          commit('setToken', data.token)
+          return data;
+        })
+    },
+    getUser({commit}) {
+      return axiosClient.get('/user')
+      .then(res => {
+        commit('setUser', res.data)
+      })
+    },
+    //config
     stateSideBar({commit}, collapse) {
       commit('setConfigSideBar', collapse)
     },
@@ -42,8 +59,14 @@ const store = createStore({
     setDarkMode: (state, isDark) => {
       state.user.config.darkMode = isDark
       sessionStorage.setItem('dark_theme', isDark)
-
-    }
+    },
+    setUser: (state, user) => {
+      state.user.data = user;
+    },
+    setToken: (state, token) => {
+      state.user.token = token;
+      sessionStorage.setItem('TOKEN', token);
+    },
   },
   getters: {},
 })

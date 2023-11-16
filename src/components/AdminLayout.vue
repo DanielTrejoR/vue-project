@@ -15,3 +15,16 @@
     </div>
   </div>
 </template>
+<script>
+import { useStore } from "vuex";
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+export default {
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+
+    store.dispatch("getUser");
+  }
+}
+</script>

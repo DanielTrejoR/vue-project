@@ -5,7 +5,7 @@ import router from "./router";
 const axiosClient = axios.create({
     baseURL: `${import.meta.env.VITE_API_BASE_URL}/api`
 })
-
+axiosClient.defaults.withCredentials = true;
 axiosClient.interceptors.request.use(config => {
     config.headers.Authorization = `Bearer ${store.state.user.token}`
     return config;

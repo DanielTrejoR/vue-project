@@ -5,7 +5,8 @@ import FrontLayout from '~/components/FrontLayout.vue';
 // import store from "../store";
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-
+import store from "../store";
+import AuthLayout from '~/components/layouts/AuthLayout.vue';
 const routes = [
   {
     path: '/admin',
@@ -31,6 +32,25 @@ const routes = [
       // { path: "/surveys/:id", name: "SurveyView", component: SurveyView },
     ],
   },
+  {
+    path: "/auth",
+    redirect: "/login",
+    name: "Auth",
+    component: AuthLayout,
+    meta: {isGuest: true},
+    children: [
+      {
+        path: "/login",
+        name: "Login",
+        component: () => import('../views/Auth/AuthView.vue'),
+      },
+      {
+        path: "/register",
+        name: "Register",
+        component: () => import('../views/Auth/AuthView.vue'),
+      },
+    ],
+  },
 
 ];
 
@@ -54,8 +74,18 @@ router.beforeResolve((to, from, next) => {
   next()
 });
 
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth && !store.state.user.token) {
+    next({ name: "Login" });
+  } else if (store.state.user.token && to.meta.isGuest) {
+    next({ name: "Dashboard" });
+  } else {
+    next();
+  }
+});
+
 router.afterEach((to, from) => {
-  // Complete the animation of the route progress bar.
+  
   NProgress.done()
 });
 
