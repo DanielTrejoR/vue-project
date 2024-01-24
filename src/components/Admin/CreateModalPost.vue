@@ -77,9 +77,9 @@ export default {
         }
     },
     mounted() {
-      this.emitter.on("openModal", () => {
-          this.newPost = true
-      })
+        this.emitter.on("openModal", () => {
+            this.newPost = true
+        })
 
     }
 }

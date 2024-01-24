@@ -30,6 +30,7 @@
                                     <el-button @click="resetForm('loginForm')">Reset</el-button>
                                 </el-form-item>
                             </el-form>
+                            {{ errorMessages.value }}
                         </div>
                     </div>
                 </el-card>
@@ -78,7 +79,10 @@ export default {
                     {required: true, message: "Ingresa tu contraseña", trigger: 'blur'},
                     {min: 3, message: "Debe contener minimo 8 caracteres", trigger: 'blur'}
                 ]
-            }
+            },
+            errorMessages: {
+                value: ''
+            },
         }
     },
     methods: {
@@ -95,7 +99,8 @@ export default {
                     })
                     .catch((err) => {
                     // loading.value = false;
-                    // errorMsg.value = err.response.data.error;
+                    // this.errorMsg.value = err.response;
+                    console.log(err.data);
                 });
             } else {
                 console.log('error submit!!');
