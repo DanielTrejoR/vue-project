@@ -54,7 +54,7 @@ export default {
         submitForm(formRef) {
             this.$refs[formRef].validate( (valid) => {
                 if (valid) {
-                    store.dispatch('createPost', this.createPostForm)
+                    store.dispatch('base/createPost', this.createPostForm)
                     .then((result) => {
                         console.log(result.data.url);
                         ElMessage({

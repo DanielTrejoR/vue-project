@@ -135,12 +135,12 @@ export default {
     methods: {
         toggleTheme() {
             const dark = this.$vuetify.theme.global.name = this.$vuetify.theme.global.current.dark ? 'light' : 'dark'
-            store.dispatch('toggleDarkMode', dark)
+            store.dispatch('base/toggleDarkMode', dark)
         }
     },
     mounted() {
-        if(store.state.user.config.darkMode){
-            this.$vuetify.theme.global.name = store.state.user.config.darkMode
+        if(store.state.base.user_admin.config.darkMode){
+            this.$vuetify.theme.global.name = store.state.base.user_admin.config.darkMode
         }
     }
 }

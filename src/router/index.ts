@@ -7,14 +7,18 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import store from "../store";
 import AuthLayout from '~/components/layouts/AuthLayout.vue';
+
+
+
 const routes = [
   {
     path: '/admin',
     redirect: "/admin/dashboard",
     component: AdminLayout,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role: 'admin' },
     children: [
       { path: "dashboard", name: "Dashboard", component: DashboardView },
+      { path: "posts", name: "AdminPosts", component: () => import('../views/Admin/Post/index.vue') },
       { path: "about", name: "about", component: () => import('../views/AboutView.vue') },
       // { path: "/surveys/create", name: "SurveyCreate", component: SurveyView },
       // { path: "/surveys/:id", name: "SurveyView", component: SurveyView },
@@ -75,10 +79,15 @@ router.beforeResolve((to, from, next) => {
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth && !store.state.user.token) {
+  //     store.commit('setAuthenticated', true);
+
+  const userAdmin = store.state.base.user_admin;
+  
+  if (to.meta.requiresAuth && !userAdmin) {
+    store.dispatch('base/logout');
     next({ name: "Login" });
-  } else if (store.state.user.token && to.meta.isGuest) {
-    next({ name: "Dashboard" });
+  }else if (to.meta.role && store.state.base?.role !== to.meta.role) {
+    next('/login'); // Si el usuario no tiene permisos, enviarlo al inicio
   } else {
     next();
   }

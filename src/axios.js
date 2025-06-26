@@ -1,26 +1,38 @@
 import axios from "axios";
-import store from "./store";
 import router from "./router";
+import Cookies from 'js-cookie';
+
+
 
 const axiosClient = axios.create({
-    baseURL: `${import.meta.env.VITE_API_BASE_URL}/api`
-})
-axiosClient.defaults.withCredentials = true;
-axiosClient.interceptors.request.use(config => {
-    config.headers.Authorization = `Bearer ${store.state.user.token}`
-    return config;
+    baseURL: `${import.meta.env.VITE_API_BASE_URL}`,
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Accept': 'application/json',
+    },
 })
 
-axiosClient.interceptors.response.use(response => {
-    return response;
-}, error => {
-    if (error.response.status === 401) {
-        sessionStorage.removeItem('TOKEN')
-        router.push({name: 'Login'})
-    } else if (error.response.status === 404) {
-        router.push({name: 'NotFound'})
+axiosClient.defaults.withCredentials = true;
+axiosClient.defaults.withXSRFToken = true;
+axiosClient.interceptors.request.use(async (config) => {
+    if ((config.method.toString()).toLowerCase() !== 'get') {
+        await axiosClient.get('/csrf-cookie').then()
+
+        config.headers['X-XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN')
     }
-    return error;
+    
+    return config
 })
+
+// axiosClient.interceptors.response.use(response => {
+//     return response;
+// }, error => {
+//     if (error.response.status === 401) {
+//         router.push({name: 'Login'})
+//     } else if (error.response.status === 404) {
+//         router.push({name: 'NotFound'})
+//     }
+//     return error;
+// })
 
 export default axiosClient;

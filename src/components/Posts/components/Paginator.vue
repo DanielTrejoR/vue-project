@@ -26,7 +26,7 @@ export default {
     },
     methods: {
         getPost(page = 1) {
-            store.dispatch('getPosts', {
+            store.dispatch('base/getPosts', {
             url: this.url,
             page: page
             })

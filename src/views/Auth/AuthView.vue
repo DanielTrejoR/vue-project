@@ -86,21 +86,22 @@ export default {
         }
     },
     methods: {
-        submitForm(formName) {
+        async submitForm(formName) {
             this.$refs[formName].validate((valid) => {
             if (valid) {
-                store
-                .dispatch("login", this.loginForm)
-                    .then(() => {
-                    // loading.value = false;
-                    this.$router.push({
-                        name: "Dashboard",
-                    });
+                store.dispatch('base/login', this.loginForm)
+                    .then((res) => {
+                        // loading.value = false;
+                        console.log(res, 'olgin response');
+                    
+                        this.$router.push({
+                            name: "Dashboard",
+                        });
                     })
                     .catch((err) => {
                     // loading.value = false;
                     // this.errorMsg.value = err.response;
-                    console.log(err.data);
+                    console.log(err);
                 });
             } else {
                 console.log('error submit!!');
@@ -110,6 +111,9 @@ export default {
         },
         resetForm(formName) {
             this.$refs[formName].resetFields();
+        },
+        mounted() {
+                
         }
     }
 }

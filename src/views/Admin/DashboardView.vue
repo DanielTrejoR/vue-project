@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { ElMessage } from "element-plus";
+import axiosClient from "~/axios.js";
 
 const count = ref(0);
 const input = ref("element-plus");
@@ -17,6 +18,17 @@ const images = [
   "https://images4.alphacoders.com/206/206454.png",
   "https://images2.alphacoders.com/737/737550.jpg"
   ]
+
+const checkSession = () => {
+  axiosClient.get("/user")
+    .then((res) => {
+      console.log(res.data);
+      
+    })
+    .catch(error => {
+      console.error("Error fetching CSRF cookie:", error);
+    });
+}
 </script>
 
 <template>
@@ -74,6 +86,9 @@ const images = [
       <el-tag type="warning" class="m-1">Tag 1</el-tag>
       <el-tag type="danger" class="m-1">Tag 1</el-tag>
       <el-tag type="info" class="m-1">Tag 1</el-tag>
+    </div>
+    <div>
+      <el-button class="ep-button" type="primary" @click="checkSession()">Check Session</el-button>
     </div>
 
     <div>

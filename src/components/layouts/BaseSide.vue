@@ -13,7 +13,9 @@
       </template>
       <el-menu-item-group>
         <template #title><span>Gestionar publicaciones</span></template>
-        <el-menu-item index="1-1">Listado de Publicaciones</el-menu-item>
+        <RouterLink :to="{ name: 'AdminPosts' }">
+          <el-menu-item index="1-1">Listado de Publicaciones</el-menu-item>
+        </RouterLink>
         <el-menu-item index="1-2" @click="emitOpenModal()">Crear un Post</el-menu-item>
       </el-menu-item-group>
       <el-menu-item-group title="Group Two">
@@ -73,7 +75,7 @@ export default {
       console.log(key, keyPath);
     },
     collapse(){
-      store.dispatch('stateSideBar', !this.isCollapse)
+      store.dispatch('base/stateSideBar', !this.isCollapse)
       this.isCollapse = !this.isCollapse
     },
     emitOpenModal() {
@@ -85,7 +87,7 @@ export default {
     if( !sessionStorage.getItem('isCollapse') ){
       sessionStorage.setItem('isCollapse', this.isCollapse)
     }
-    this.isCollapse = store.state.user.config.collapseSideBar
+    this.isCollapse = store.state.base.user_admin.config.collapseSideBar
 
      this.emitter.on("closeModal", () => {
       this.openCreatePost = false
