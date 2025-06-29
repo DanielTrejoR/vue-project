@@ -1,29 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DashboardView from '../views/Admin/DashboardView.vue'
-import AdminLayout from '~/components/AdminLayout.vue';
-import FrontLayout from '~/components/FrontLayout.vue';
-// import store from "../store";
-import NProgress from 'nprogress' // progress bar
-import 'nprogress/nprogress.css' // progress bar style
-import store from "../store";
-import AuthLayout from '~/components/layouts/AuthLayout.vue';
+import DashboardView from '@/views/Admin/DashboardView.vue'
+import AdminLayout from '@/layouts/Admin/Index.vue';
+import FrontLayout from '@/components/FrontLayout.vue';
+import AuthLayout from '@/layouts/AuthLayout.vue';
 
-
-
-const routes = [
-  {
-    path: '/admin',
-    redirect: "/admin/dashboard",
-    component: AdminLayout,
-    meta: { requiresAuth: true, role: 'admin' },
-    children: [
-      { path: "dashboard", name: "Dashboard", component: DashboardView },
-      { path: "posts", name: "AdminPosts", component: () => import('../views/Admin/Post/index.vue') },
-      { path: "about", name: "about", component: () => import('../views/AboutView.vue') },
-      // { path: "/surveys/create", name: "SurveyCreate", component: SurveyView },
-      // { path: "/surveys/:id", name: "SurveyView", component: SurveyView },
-    ],
-  },
+export const constantRoutes = [
+  // {
+  //   path: '/redirect',
+  //   component: Layout,
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: '/redirect/:path(.*)',
+  //       component: () => import('../views/redirect/index.vue')
+  //     }
+  //   ]
+  // },
   {
     path: '/',
     redirect: "/",
@@ -32,6 +24,43 @@ const routes = [
     children: [
       { path: "/", name: "Index", component: () => import('../views/IndexView.vue')},
       { path: "/blog", name: "Posts", component: () => import('../views/Post/index.vue')},
+      // { path: "/surveys/create", name: "SurveyCreate", component: SurveyView },
+      // { path: "/surveys/:id", name: "SurveyView", component: SurveyView },
+    ],
+  },
+  {
+    path: '/admin',
+    hidden: true,
+    component: AdminLayout,
+    redirect: "/admin/dashboard",
+    meta: { 
+      requiresAuth: true, 
+      icon: 'ep-icon-user',
+      roles: ['admin']
+    },
+    children: [
+      { 
+        path: "dashboard", 
+        name: "Dashboard", 
+        component: DashboardView, 
+        meta: {
+          title: 'Dashboard', 
+          icon: '<el-icon><House /></el-icon>',
+          roles: ['admin']
+          } 
+      },
+      { 
+        path: "posts", 
+        name: "AdminPosts", 
+        component: () => import('../views/Admin/Post/index.vue'), 
+        meta: {title: 'Mis Posts'} 
+      },
+      { 
+        path: "about", 
+        name: "about", 
+        component: () => import('../views/AboutView.vue'), 
+        meta: {title: 'Acerca de nosotros'} 
+      },
       // { path: "/surveys/create", name: "SurveyCreate", component: SurveyView },
       // { path: "/surveys/:id", name: "SurveyView", component: SurveyView },
     ],
@@ -58,6 +87,11 @@ const routes = [
 
 ];
 
+export const asyncRoutes = [
+
+  { path: '*', redirect: '/404', hidden: true }
+];
+
 const router = createRouter({
   history: createWebHistory(),
   scrollBehavior(to, from, savedPosition) {
@@ -66,46 +100,16 @@ const router = createRouter({
     }
     return { left: 0, top: 500 };
   },
-  routes,
+  routes: constantRoutes,
 });
 
-router.beforeResolve((to, from, next) => {
-  // If this isn't an initial page load.
-  if (to.name) {
-      // Start the route progress bar.
-      NProgress.start()
-  }
-  next()
-});
-
-router.beforeEach((to, from, next) => {
-  //     store.commit('setAuthenticated', true);
-
-  const userAdmin = store.state.base.user_admin;
-  
-  if (to.meta.requiresAuth && !userAdmin) {
-    store.dispatch('base/logout');
-    next({ name: "Login" });
-  }else if (to.meta.role && store.state.base?.role !== to.meta.role) {
-    next('/login'); // Si el usuario no tiene permisos, enviarlo al inicio
-  } else {
-    next();
-  }
-});
-
-router.afterEach((to, from) => {
-  
-  NProgress.done()
-});
-
-// router.beforeEach((to, from, next) => {
-//   if (to.meta.requiresAuth && !store.state.user.token) {
-//     next({ name: "Login" });
-//   } else if (store.state.user.token && to.meta.isGuest) {
-//     next({ name: "Dashboard" });
-//   } else {
-//     next();
-//   }
-// });
+export function resetRouter() {
+  const newRouter = createRouter({
+    history: createWebHistory(),
+    routes: constantRoutes,
+    scrollBehavior: () => ({ top: 0 }),
+  });
+  (router as any).matcher = (newRouter as any).matcher;
+}
 
 export default router

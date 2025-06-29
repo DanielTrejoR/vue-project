@@ -57,10 +57,12 @@ const vuetify = createVuetify({
     },
 })
 
+import './permission' // permission control
+
+
 //Mitt
 import mitt from 'mitt';
 const emitter = mitt();
-
 const app = createApp(App);
 
 app.config.globalProperties.emitter = emitter;

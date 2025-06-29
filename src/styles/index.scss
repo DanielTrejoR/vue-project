@@ -13,6 +13,11 @@ body {
   margin: 0;
 }
 
+:root,
+html.dark {
+  transition: all 0.3s ease-in-out;
+}
+
 a {
   color: var(--ep-color-primary);
 }
@@ -25,3 +30,6 @@ code {
 } 
 
 
+.scrollbar-wrapper {
+  overflow-x: hidden !important;
+}

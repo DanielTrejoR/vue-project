@@ -55,7 +55,7 @@ const logout = () => {
       />
     </el-menu-item>
     <el-sub-menu index="8" class="">
-      <template #title>{{ store.state.base.user_admin.data.name }}</template>
+      <template #title>{{ store.getters.user.user.name }}</template>
       <el-menu-item index="8-1" @click="logout()">Cerrar sesion</el-menu-item>
     </el-sub-menu>
   </el-menu>

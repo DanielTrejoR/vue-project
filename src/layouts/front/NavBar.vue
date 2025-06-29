@@ -139,9 +139,9 @@ export default {
         }
     },
     mounted() {
-        if(store.state.base.user_admin.config.darkMode){
-            this.$vuetify.theme.global.name = store.state.base.user_admin.config.darkMode
-        }
+        // if(store.state.base.user_admin.config.darkMode){
+        //     this.$vuetify.theme.global.name = store.state.base.user_admin.config.darkMode
+        // }
     }
 }
 </script>

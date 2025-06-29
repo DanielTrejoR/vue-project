@@ -89,20 +89,18 @@ export default {
         async submitForm(formName) {
             this.$refs[formName].validate((valid) => {
             if (valid) {
-                store.dispatch('base/login', this.loginForm)
-                    .then((res) => {
+                    store.dispatch('admin/login', this.loginForm)
+                        .then(() => {
+                        
+                            this.$router.push({
+                                name: "Dashboard",
+                            });
+                        })
+                        .catch((err) => {
                         // loading.value = false;
-                        console.log(res, 'olgin response');
-                    
-                        this.$router.push({
-                            name: "Dashboard",
-                        });
-                    })
-                    .catch((err) => {
-                    // loading.value = false;
-                    // this.errorMsg.value = err.response;
-                    console.log(err);
-                });
+                        // this.errorMsg.value = err.response;
+                        console.log(err);
+                    });
             } else {
                 console.log('error submit!!');
                 return false;

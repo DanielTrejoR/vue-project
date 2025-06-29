@@ -1,10 +1,11 @@
 <template>
+<div class="table-wrapper">
     <h2>Listado de mis publicaciones</h2>
     <div>
-        <div class="float-right">
-            <el-button type="primary" @click="getOwnerPosts">Recargar publicaciones</el-button>
+        <div class="float-right pb-3">
+            <el-button :loading="loading" type="primary" @click="getOwnerPosts">Recargar publicaciones</el-button>
         </div>
-        <el-table :data="tableData" style="width: 100%">
+        <el-table v-loading="loading" :data="tableData" style="width: 100%">
             <el-table-column fixed prop="id" label="ID" />
             <el-table-column prop="title" label="Titulo" />
             <el-table-column prop="excerpt" label="Extracto" />
@@ -47,6 +48,7 @@
             </div>
         </BaseModal>
     </div>
+</div>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, inject } from 'vue';
@@ -57,24 +59,25 @@ const tableData = ref([]);
 const postInfo = ref(null);
 const showModal = ref(false);
 const emitter = inject('emitter');
-
+const loading = ref(false)
 const handleClick = (postId: any) => {
     postInfo.value = postId;
     showModal.value = true;
     emitter.emit('openBaseModal', postId);
-    console.log('open');
     
 }
 const getOwnerPosts = async () => {
+    loading.value = true;
     try {
         store.dispatch('admin/fetchPosts').then((res) => {
             tableData.value = res.data.data
-            console.log(res.data.data);
             
         }).catch((err) => {
             console.log(err);
             
-        });
+        }).finally( () => {
+            loading.value = false;
+        })
     } catch (error) {
         
     }

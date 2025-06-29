@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { ElMessage } from "element-plus";
-import axiosClient from "~/axios.js";
-
+import { useAxios } from "~/plugins/axios.js";
+const axios = useAxios();
 const count = ref(0);
 const input = ref("element-plus");
 
@@ -20,7 +20,7 @@ const images = [
   ]
 
 const checkSession = () => {
-  axiosClient.get("/user")
+  axios.get("/user")
     .then((res) => {
       console.log(res.data);
       
