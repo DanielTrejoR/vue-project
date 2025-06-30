@@ -54,7 +54,8 @@ useClickOutsideAdvanced(
     '.ep-color-svpanel',
     '.ep-color-predefine',
     '.ep-color-dropdown',
-    '.rightPanel'
+    '.rightPanel',
+    '.darker-switch'
   ],
   show
 );
@@ -159,7 +160,7 @@ onBeforeUnmount(() => {
   pointer-events: auto;
   cursor: pointer;
   color: #fff;
-  line-height: 48px;
+  line-height: 55px;
   i {
     font-size: 24px;
     line-height: 48px;

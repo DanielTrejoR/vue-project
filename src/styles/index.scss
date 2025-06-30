@@ -12,24 +12,3 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
 }
-
-:root,
-html.dark {
-  transition: all 0.3s ease-in-out;
-}
-
-a {
-  color: var(--ep-color-primary);
-}
-
-code {
-  border-radius: 2px;
-  padding: 2px 4px;
-  background-color: var(--ep-color-primary-light-9);
-  color: var(--ep-color-primary);
-} 
-
-
-.scrollbar-wrapper {
-  overflow-x: hidden !important;
-}

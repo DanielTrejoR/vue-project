@@ -36,7 +36,8 @@
 }
 
 svg,
-.el-icon {
+.ep-icon {
   transition: fill 0.4s ease-in-out, color 0.4s ease-in-out;
 }
+
 </style>

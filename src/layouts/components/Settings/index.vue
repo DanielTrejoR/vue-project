@@ -22,6 +22,16 @@
         <span>Sidebar Logo</span>
         <el-switch v-model="sidebarLogo" class="drawer-switch" />
       </div>
+      <div class="drawer-item">
+        <span>Dark mode</span>
+        <el-switch
+            class="darker-switch drawer-switch"
+            v-model="isDark"
+            :active-action-icon="Moon"
+            :inactive-action-icon="Sunny"
+            style="--ep-switch-on-color: #2C2C2C; --ep-switch-off-color: #F2F2F2"
+        />
+      </div>
 
     </div>
   </div>
@@ -30,6 +40,8 @@
 defineOptions({
     name: 'Settings'
 });
+import { isDark } from "~/composables";
+import { Sunny, Moon } from '@element-plus/icons-vue'
 import { ref, computed } from 'vue';
 import { mapState, useStore } from 'vuex'
 const store = useStore();
@@ -88,5 +100,16 @@ function themeChange(val:string) {
   .drawer-switch {
     float: right
   }
+}
+
+:deep(.darker-switch.ep-switch.is-checked .ep-switch__core .ep-switch__action) {
+    left: calc(100% - 17px);
+    border-radius: 50%;
+    color: #cfd3dc !important;
+    background-color: #141414 !important;
+}
+:deep(.darker-switch.ep-switch .ep-switch__core .ep-switch__action) {
+    
+    color: #606266;
 }
 </style>

@@ -11,9 +11,9 @@ export function useClickOutsideAdvanced(
 
     const target = event.target as HTMLElement;
     const el = targetRef.value;
-
+    
     if (!el || el.contains(target)) return;
-
+    
     for (const selector of ignoreSelectors) {
       if (target.closest(selector)) return;
     }

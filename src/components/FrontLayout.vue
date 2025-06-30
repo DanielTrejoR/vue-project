@@ -4,7 +4,6 @@
 
 <template>
     <v-app>
-        <NavBar/>
         <v-main>
             <RouterView v-slot="{ Component, route }" >
                 <Transition 
