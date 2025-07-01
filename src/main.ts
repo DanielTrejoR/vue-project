@@ -12,10 +12,12 @@ import "uno.css";
 
 
 // If you want to use ElMessage, import it.
+import 'element-plus/dist/index.css'
 import "element-plus/theme-chalk/src/message.scss";
 import "element-plus/theme-chalk/src/notification.scss";
 import "element-plus/theme-chalk/src/loading.scss";
 import "element-plus/theme-chalk/src/switch.scss";
+import 'element-plus/theme-chalk/dark/css-vars.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from "./App.vue";
 

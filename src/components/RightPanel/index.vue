@@ -79,15 +79,6 @@ onBeforeUnmount(() => {
 
 </script>
 <style scoped lang="scss">
-.icon-fade-enter-active,
-.icon-fade-leave-active {
-  transition: transform 0.25s ease, opacity 0.25s ease;
-}
-.icon-fade-enter-from,
-.icon-fade-leave-to {
-  opacity: 0;
-  transform: rotate(90deg) scale(0.5);
-}
 
 .showRightPanel {
   overflow: hidden;

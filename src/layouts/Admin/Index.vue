@@ -1,6 +1,18 @@
 <template>
   <div :class="classObj" class="app-wrapper">
-    <div v-if="device==='mobile'&& sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
+    <el-tooltip content="Cambiar de tema" placement="bottom">
+      <el-button 
+        circle 
+        @click="toggleRadialTheme"
+        class="theme-toggle"
+      ><transition name="fade-icon" mode="out-in">
+          <el-icon :key="isDark">
+            <component :is="isDark ? Sunny : Moon" />
+          </el-icon>
+        </transition>
+      </el-button>
+    </el-tooltip>
+    <div v-if="device==='mobile'&& sidebar.opened" class="drawer-bg" @click="handleClickOutside" /> 
     <!-- <sidebar class="sidebar-container" /> -->
     <div :class="{hasTagsView:needTagsView}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
@@ -10,7 +22,7 @@
       <!-- <app-main /> -->
       <RightPanel v-if="showSettings">
         <Settings />
-      </RightPanel>
+      </RightPanel> 
       <!-- <right-panel v-if="showSettings">
         <settings />
       </right-panel> -->
@@ -33,12 +45,15 @@
   </div> -->
 </template>
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { mapState, useStore } from 'vuex'
 import Settings from '../components/Settings/index.vue';
+import { Moon, Sunny} from '@element-plus/icons-vue'
+import { useRadialThemeToggle } from '~/composables/useRadialThemeToggle'
+const { isDark, toggleRadialTheme } = useRadialThemeToggle()
 const store = useStore();
+
 const handleClickOutside = (() => {
-  console.log('clikeo')
   store.dispatch('app/closeSidebar', {withOutAnimation: false})
 })
 
@@ -54,32 +69,19 @@ const classObj = computed(() => ({
   withoutAnimation: sidebar.value.withoutAnimation,
   mobile: device.value === 'mobile'
 }));
-// import { computed, ref, inject, onMounted } from 'vue';
-// import { useRouter } from 'vue-router';
-// import store from '~/store';
-
-// const router = useRouter();
-// const emitter = inject('emitter');
-
-// const isCollapseAside = ref(false);
-
-// const mainStyle = computed(() => ({
-//   marginRight: isCollapseAside.value ? '64px' : '200px',
-//   transition: 'margin-right 0.3s ease'
-// }));
-
-// emitter.on('collapseAside', ({ collapse }) => {
-//   isCollapseAside.value = collapse;
-// })
-
-// onMounted(async () => {
-  
-// });
 </script>
-
 <style lang="scss" scoped>
 @use "@/styles/mixin.scss"  as *;
 @use "@/styles/variables.scss";
+.fade-icon-enter-active,
+.fade-icon-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.fade-icon-enter-from,
+.fade-icon-leave-to {
+  opacity: 0;
+  transform: scale(0.6) rotate(-90deg);
+}
 
 .app-wrapper {
     @include clearfix;
@@ -109,9 +111,9 @@ const classObj = computed(() => ({
   .mobile .fixed-header {
     width: 100%;
   }
-/* .ep-aside,
+.ep-aside,
 .ep-header,
 .ep-main {
   transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out;
-} */
+} 
 </style> 
