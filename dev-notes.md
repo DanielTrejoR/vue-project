@@ -63,4 +63,4 @@ Este documento recoge decisiones de arquitectura, ideas en desarrollo, pendiente
 
 ---
 
-_Última actualización: {{ FECHA }}_
+_Última actualización: 01/07/2025
