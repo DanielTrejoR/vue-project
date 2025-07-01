@@ -50,7 +50,6 @@ export function toggleRadialTheme(event: MouseEvent) {
 export function useRadialThemeToggle() {
   onMounted(() => {
     const savedTheme = localStorage.getItem('theme')
-    console.log(savedTheme)
     isDark.value = savedTheme
       ? savedTheme === 'dark'
       : window.matchMedia('(prefers-color-scheme: dark)').matches
