@@ -1,17 +1,12 @@
 <template>
   <div :class="classObj" class="app-wrapper">
-    <el-tooltip content="Cambiar de tema" placement="bottom">
-      <el-button 
-        circle 
-        @click="toggleRadialTheme"
-        class="theme-toggle"
-      ><transition name="fade-icon" mode="out-in">
-          <el-icon :key="isDark">
-            <component :is="isDark ? Sunny : Moon" />
-          </el-icon>
-        </transition>
-      </el-button>
-    </el-tooltip>
+    <el-switch class="ml-2"
+            :model-value="isDark"
+            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949; "
+            @click="handleSwitchClick"
+            :active-action-icon="IconMoon"
+            :inactive-action-icon="IconSunny"
+            />
     <div v-if="device==='mobile'&& sidebar.opened" class="drawer-bg" @click="handleClickOutside" /> 
     <!-- <sidebar class="sidebar-container" /> -->
     <div :class="{hasTagsView:needTagsView}" class="main-container">
@@ -50,6 +45,8 @@ import { mapState, useStore } from 'vuex'
 import Settings from '../components/Settings/index.vue';
 import { Moon, Sunny} from '@element-plus/icons-vue'
 import { useRadialThemeToggle } from '~/composables/useRadialThemeToggle'
+import IconMoon from '~/components/icons/IconMoon.vue';
+import IconSunny from '~/components/icons/IconSunny.vue';
 const { isDark, toggleRadialTheme } = useRadialThemeToggle()
 const store = useStore();
 
@@ -69,10 +66,42 @@ const classObj = computed(() => ({
   withoutAnimation: sidebar.value.withoutAnimation,
   mobile: device.value === 'mobile'
 }));
+
+function handleSwitchClick(event: MouseEvent) {
+  if (!(event instanceof MouseEvent)) return
+
+  toggleRadialTheme(event)
+}
 </script>
 <style lang="scss" scoped>
 @use "@/styles/mixin.scss"  as *;
 @use "@/styles/variables.scss";
+
+:deep(.ep-switch) {
+    --ep-switch-on-color: var(--ep-color-primary);
+    --ep-switch-off-color: var(--ep-border-color);
+}
+:deep(.dark-icon) {
+    border-radius: 50%;
+    color: #cfd3dc;
+    background-color: #141414;
+}
+
+:deep(.light-icon) {
+    color: #606266;
+}
+
+:deep(.ep-switch__core) {
+    --ep-switch-on-color: var(--bg-color-mute);
+    --ep-switch-off-color: var(--bg-color-mute);
+    --ep-switch-border-color: var(--border-color);
+}
+
+:deep(.ep-switch__core .ep-switch__action) {
+    width: 14px;
+    height: 14px;
+}
+
 .fade-icon-enter-active,
 .fade-icon-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;

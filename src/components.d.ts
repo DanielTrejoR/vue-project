@@ -57,6 +57,8 @@ declare module 'vue' {
     IconCommunity: typeof import('./components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./components/icons/IconDocumentation.vue')['default']
     IconEcosystem: typeof import('./components/icons/IconEcosystem.vue')['default']
+    IconMoon: typeof import('./components/icons/IconMoon.vue')['default']
+    IconSunny: typeof import('./components/icons/IconSunny.vue')['default']
     IconSupport: typeof import('./components/icons/IconSupport.vue')['default']
     IconTooling: typeof import('./components/icons/IconTooling.vue')['default']
     Index: typeof import('./components/layouts/Admin/Index.vue')['default']

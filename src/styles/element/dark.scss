@@ -9,7 +9,7 @@ $--colors: (
 @forward "element-plus/theme-chalk/src/dark/var.scss" with (
   $colors: $--colors
 );
-
+//Light mode colors
 :root {
   --dark: #1d1d1d;
   --grey-dark: #414141;
@@ -24,6 +24,37 @@ $--colors: (
   --purple: #8d3dae;
   --red: #c82736;
   --orange: #e77614;
-  accent-color: var(--green);
+  --accent-color: var(--green);
+  --border-color: var(--ep-border-color);
+  --text-color: var(--el-text-color-primary);
+  --text-color-light: var(--el-text-color-regular);
+  --text-color-lighter: var(--el-text-color-secondary);
+  --brand-color: var(--el-color-primary);
+  --brand-color-light: var(--el-color-primary-light-1);
+  --bg-brand-color: var(--el-color-primary-light-9);
+  --bg-color: var(--el-bg-color);
+  --bg-color-rgb: 255, 255, 255;
+  --bg-color-soft: #fafafa;
+  --bg-color-mute: #f2f2f2;
+  --border-color: var(--el-border-color);
+  --border-color-light: var(--el-border-color-lighter);
+  --font-family: var(--el-font-family);
+}
+//Modo dark mode colors
+.dark {
+  --bg-color-rgb: 0, 0, 0;
+  --bg-color-soft: #242424;
+  --bg-color-mute: #2c2c2c;
+  --code-tooltip-bg-color: rgba(var(--ep-color-primary-rgb), .1);
+  --code-tooltip-color: var(--brand-color);
+  --purple-color: #9065db;
+  --purple-color-light: #6222c2;
+}
+//Modo dark mode colors
+html.dark {
+  --ep-border-color-dark: #58585B;
+  --ep-border-color: #4C4D4F;
+  --ep-border-color-light: #414243;
+  --ep-border-color-lighter: #363637;
 }
 

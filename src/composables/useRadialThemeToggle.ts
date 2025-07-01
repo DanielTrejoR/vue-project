@@ -15,7 +15,6 @@ export function toggleRadialTheme(event: MouseEvent) {
     applyTheme()
     return
   }
-
   const x = event.clientX
   const y = event.clientY
   const r = Math.hypot(
