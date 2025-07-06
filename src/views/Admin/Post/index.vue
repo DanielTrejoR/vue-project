@@ -5,7 +5,7 @@
         <div class="float-right pb-3">
             <el-button :loading="loading" type="primary" @click="getOwnerPosts">Recargar publicaciones</el-button>
         </div>
-        <el-table v-loading="loading" :data="tableData" style="width: 100%">
+        <el-table v-loading="loading" element-loading-text="Cargando..." :style="{ opacity: loading ? 0.7 : 1 }" :data="tableData" style="width: 100%">
             <el-table-column fixed prop="id" label="ID" />
             <el-table-column prop="title" label="Titulo" />
             <el-table-column prop="excerpt" label="Extracto" />
@@ -87,3 +87,9 @@ onMounted(() => {
     getOwnerPosts();
 });
 </script>
+
+<style>
+.el-loading-mask {
+  transition: opacity 0.3s ease-in-out;
+}
+</style>

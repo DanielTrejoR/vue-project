@@ -1,16 +1,13 @@
 import axiosClient from '~/plugins/axios';
+import router, { resetRouter } from '@/router'
 
 const state = () => ({
     user: null,
     roles: [],
     permissions: [],
-    authenticated: false
 });
 
 const mutations = {
-    setAuthenticated(state, value) {
-        state.authenticated = value;
-    },
     setUser(state, user) {
         state.user = user;
     },
@@ -29,22 +26,25 @@ const mutations = {
 };
 
 const actions = {
-    async fetchUser({ commit }) {
-        try {
-        const { data } = await axiosClient.get('/user');
+    fetchUser({ commit, state }) {
+        return new Promise((resolve, reject) => {
+            axiosClient.get('/user').then((res) => {
+                const { data } = res;
+                if(!data){
+                    store.dispatch('admin/logout')
+                    reject('User verification failed');
+                }
+                
+                commit('setUser', data);
 
-        commit('setUser', data);
-        commit('setAuthenticated', true);
-
-        if (data.roles) commit('setRoles', data.roles);
-        if (data.permissions) commit('setPermissions', data.permissions);
-
-        return data;
-        } catch {
-        commit('reset');
-        return null;
-        }
-    },
+                if (data.roles) commit('setRoles', data.roles);
+                if (data.permissions) commit('setPermissions', data.permissions);
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    }
 };
 
 export default {

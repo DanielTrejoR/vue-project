@@ -21,7 +21,7 @@ const state = {
   },
   permissions: [],
   role: sessionStorage.getItem('roleUser') ?? null,
-  authenticated: sessionStorage.getItem('authUser') ?? false,
+  authenticated: sessionStorage.getItem('isAuthenticated') ?? false
 }
 
 const mutations = {
@@ -33,7 +33,7 @@ const mutations = {
         state.user.config.darkMode = isDark
         sessionStorage.setItem('dark_theme', isDark)
     },
-    setUser: (state, user, role) => {
+    setUser: (state, user) => {
         state.admin.data = user;
     },
     SET_NAME(state, user) {
@@ -41,7 +41,10 @@ const mutations = {
     },
     SET_ROLES: (state, roles) => {
         state.roles = roles
-    }
+    },
+    setAuthenticated(state, value) {
+        state.authenticated = value;
+    },
 }
 
 const actions = {
@@ -49,13 +52,14 @@ const actions = {
       return new Promise((resolve, reject) => {
         axiosClient.post('/login', user)
           .then(({data}) => {
+            console.log(data)
             if (data.user) {
-              commit('setUser', data.user, data.role);
+              commit('setUser', data.user);
               commit('SET_NAME', data.user)
-              commit('SET_ROLES', data.role)
-  
+              commit('setAuthenticated', true);
+              sessionStorage.setItem('isAuthenticated', true)
             }
-            resolve()
+            resolve(data)
           }).catch(err => {
             reject(err)
           })
@@ -66,25 +70,14 @@ const actions = {
         .then((response) => {
           commit('setAuthenticated', false);
           commit('setUser', {});
-          sessionStorage.removeItem('authUser');
-          sessionStorage.removeItem('roleUser');
           commit('SET_NAME', '')
           commit('SET_ROLES', [])
           return response.data;
         }).catch((error) => {
-          commit('setAuthenticated', true);
-          return error;
-        });
-    },
-    async fetchUserData({ commit }) {
-        return await axiosClient.get('/user').then((response) => {
-          commit('setUser', response.data.user);
-          commit('setAuthenticated', true);
-          sessionStorage.setItem('authUser', true);
-
-          return response.data;
-        }).catch((error) => {
           commit('setAuthenticated', false);
+          commit('setUser', {});
+          commit('SET_NAME', '')
+          commit('SET_ROLES', [])
           return error;
         });
     },
@@ -112,22 +105,18 @@ const actions = {
       });
     },
     async changeRoles({ commit, dispatch }, role) {
-        const token = role + '-token'
-
-        commit('SET_TOKEN', token)
-        setToken(token)
-
-        const { roles } = await dispatch('getInfo')
-
+        const { roles } = await dispatch('auth/fetchUser')
+        console.log(roles, 'roles de admins canelaso');
         resetRouter()
 
         // generate accessible routes map based on roles
         const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
         // dynamically add accessible routes
+        console.log(accessRoutes, 'rutas q acceder')
         router.addRoutes(accessRoutes)
 
         // reset visited views and cached views
-        dispatch('tagsView/delAllViews', null, { root: true })
+        // dispatch('tagsView/delAllViews', null, { root: true })
     }
 }
 

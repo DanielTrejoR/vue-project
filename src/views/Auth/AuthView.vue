@@ -83,6 +83,8 @@ export default {
             errorMessages: {
                 value: ''
             },
+            redirect: undefined,
+            otherQuery: {}
         }
     },
     methods: {
@@ -91,10 +93,9 @@ export default {
             if (valid) {
                     store.dispatch('admin/login', this.loginForm)
                         .then(() => {
-                        
-                            this.$router.push({
-                                name: "Dashboard",
-                            });
+                            console.log('logeado');
+                            
+                            this.$router.push({ path: this.redirect || '/', query: this.otherQuery ?? '/admin/dashboard' });
                         })
                         .catch((err) => {
                         // loading.value = false;
@@ -112,7 +113,27 @@ export default {
         },
         mounted() {
                 
+        },
+        getOtherQuery(query) {
+            return Object.keys(query).reduce((acc, cur) => {
+                if (cur !== 'redirect') {
+                acc[cur] = query[cur]
+                }
+                return acc
+            }, {})
         }
-    }
+    },
+    watch: {
+        $route: {
+            handler: function(route) {
+                const query = route.query
+                if (query) {
+                this.redirect = query.redirect
+                this.otherQuery = this.getOtherQuery(query)
+                }
+            },
+            immediate: true
+            }
+        },
 }
 </script>

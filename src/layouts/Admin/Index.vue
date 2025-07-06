@@ -1,53 +1,26 @@
 <template>
-  <div :class="classObj" class="app-wrapper">
-    <el-switch class="ml-2"
-            :model-value="isDark"
-            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949; "
-            @click="handleSwitchClick"
-            :active-action-icon="IconMoon"
-            :inactive-action-icon="IconSunny"
-            />
+  <div :class="classObj" class="navbar-root">
+    
     <div v-if="device==='mobile'&& sidebar.opened" class="drawer-bg" @click="handleClickOutside" /> 
-    <!-- <sidebar class="sidebar-container" /> -->
-    <div :class="{hasTagsView:needTagsView}" class="main-container">
-      <div :class="{'fixed-header':fixedHeader}">
-        <!-- <navbar />
-        <tags-view v-if="needTagsView" /> -->
-      </div>
-      <!-- <app-main /> -->
-      <RightPanel v-if="showSettings">
-        <Settings />
-      </RightPanel> 
-      <!-- <right-panel v-if="showSettings">
-        <settings />
-      </right-panel> -->
-    </div>
-  </div>
-  <!-- <div>
-    <el-container class="flex main-container">
-        <BaseSide />
-      <el-container class="">
-        <el-header><BaseHeader /></el-header>
-        <el-main :style="mainStyle">
-          <RouterView v-slot="{ Component, route }" >
-            <KeepAlive>
-                <component :is="Component" :key="route.path"></component>
-            </KeepAlive>
-          </RouterView>
-        </el-main>
+    <!-- <div :class="{hasTagsView:needTagsView}"> -->
+    <el-container>
+      <el-aside width="200px" class="app-wrapper">
+        <Sidebar class="sidebar-container" />
+      </el-aside>
+      <el-container>
+        <el-header class="app-wrapper"><Navbar /></el-header>
+        <el-main><AppMain ></AppMain></el-main>
+        <RightPanel v-if="showSettings">
+          <Settings />
+        </RightPanel> 
       </el-container>
     </el-container>
-  </div> -->
+  </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { mapState, useStore } from 'vuex'
-import Settings from '../components/Settings/index.vue';
-import { Moon, Sunny} from '@element-plus/icons-vue'
-import { useRadialThemeToggle } from '~/composables/useRadialThemeToggle'
-import IconMoon from '~/components/icons/IconMoon.vue';
-import IconSunny from '~/components/icons/IconSunny.vue';
-const { isDark, toggleRadialTheme } = useRadialThemeToggle()
+import {AppMain, Settings, Navbar} from "./components"
 const store = useStore();
 
 const handleClickOutside = (() => {
@@ -67,37 +40,46 @@ const classObj = computed(() => ({
   mobile: device.value === 'mobile'
 }));
 
-function handleSwitchClick(event: MouseEvent) {
-  if (!(event instanceof MouseEvent)) return
+onMounted(() => {
+  console.log('Admin mounted')
+  const el = document.querySelector('#navbar-root')
+  if (el) el.style.border = '2px solid red'
+})
 
-  toggleRadialTheme(event)
-}
+onUnmounted(() => {
+  console.log('Admin unmounted')
+})
 </script>
 <style lang="scss" scoped>
 @use "@/styles/mixin.scss"  as *;
 @use "@/styles/variables.scss";
 
-:deep(.ep-switch) {
+.app-wrapper :deep(.ep-switch) {
     --ep-switch-on-color: var(--ep-color-primary);
     --ep-switch-off-color: var(--ep-border-color);
 }
-:deep(.dark-icon) {
+.app-wrapper :deep(.dark-icon) {
     border-radius: 50%;
     color: #cfd3dc;
     background-color: #141414;
 }
 
-:deep(.light-icon) {
+.app-wrapper :deep(.light-icon) {
     color: #606266;
 }
 
-:deep(.ep-switch__core) {
+.app-wrapper :deep(.ep-switch__core) {
     --ep-switch-on-color: var(--bg-color-mute);
     --ep-switch-off-color: var(--bg-color-mute);
     --ep-switch-border-color: var(--border-color);
 }
 
-:deep(.ep-switch__core .ep-switch__action) {
+.app-wrapper :deep(.ep-header),
+.app-wrapper :deep(.ep-aside) {
+  transition: none !important;
+}
+
+.app-wrapper :deep(.ep-switch__core .ep-switch__action) {
     width: 14px;
     height: 14px;
 }
@@ -112,37 +94,4 @@ function handleSwitchClick(event: MouseEvent) {
   transform: scale(0.6) rotate(-90deg);
 }
 
-.app-wrapper {
-    @include clearfix;
-    position: relative;
-    height: 100%;
-    width: 100%;
-
-    &.mobile.openSidebar {
-      position: fixed;
-      top: 0;
-    }
-  }
-
-  .fixed-header {
-    position: fixed;
-    top: 0;
-    right: 0;
-    z-index: 9;
-    width: calc(100% - #{variables.$sideBarWidth});
-    transition: width 0.28s;
-  }
-
-  .hideSidebar .fixed-header {
-    width: calc(100% - 54px)
-  }
-
-  .mobile .fixed-header {
-    width: 100%;
-  }
-.ep-aside,
-.ep-header,
-.ep-main {
-  transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out;
-} 
 </style> 

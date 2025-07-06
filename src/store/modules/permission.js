@@ -41,6 +41,7 @@ const state = {
 
 const mutations = {
   SET_ROUTES: (state, routes) => {
+    console.log(constantRoutes.concat(routes), 'set')
     state.addRoutes = routes
     state.routes = constantRoutes.concat(routes)
   }
@@ -49,10 +50,11 @@ const mutations = {
 const actions = {
   generateRoutes({ commit }, roles) {
     return new Promise(resolve => {
-      let accessedRoutes
+      let accessedRoutes;
       if (roles.includes('admin')) {
         accessedRoutes = asyncRoutes || []
       } else {
+        console.log('el else de generate routes')
         accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
       }
       commit('SET_ROUTES', accessedRoutes)

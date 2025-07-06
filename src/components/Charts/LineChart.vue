@@ -14,7 +14,7 @@ import {
 import VChart from 'vue-echarts';
 
 import { defineComponent } from 'vue';
-import { isDark } from "~/composables";
+import { isDark } from "~/composables/useRadialThemeToggle";
 use([
   CanvasRenderer,
   LinesChart,

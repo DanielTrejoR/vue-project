@@ -14,21 +14,10 @@ const toast = () => {
 
 const value1 = ref(true);
 const images = [
-  "https://images2.alphacoders.com/111/111290.jpg",
-  "https://images4.alphacoders.com/206/206454.png",
+  "https://images.unsplash.com/photo-1613376023733-0a73315d9b06?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1519638399535-1b036603ac77?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   "https://images2.alphacoders.com/737/737550.jpg"
   ]
-
-const checkSession = () => {
-  axios.get("/user")
-    .then((res) => {
-      console.log(res.data);
-      
-    })
-    .catch(error => {
-      console.error("Error fetching CSRF cookie:", error);
-    });
-}
 </script>
 
 <template>
@@ -37,7 +26,7 @@ const checkSession = () => {
       <el-col :offset="6" :span="12" class="" style="text-align:center">
           <el-carousel :interval="5000" type="card" height="300px">
             <el-carousel-item v-for="item in images" :key="item">
-              <el-image :src="item" fit="cover"/>
+              <el-image :src="item" fit="cover" loading="lazy"/>
             </el-carousel-item>
           </el-carousel>
       </el-col>
@@ -86,9 +75,6 @@ const checkSession = () => {
       <el-tag type="warning" class="m-1">Tag 1</el-tag>
       <el-tag type="danger" class="m-1">Tag 1</el-tag>
       <el-tag type="info" class="m-1">Tag 1</el-tag>
-    </div>
-    <div>
-      <el-button class="ep-button" type="primary" @click="checkSession()">Check Session</el-button>
     </div>
 
     <div>

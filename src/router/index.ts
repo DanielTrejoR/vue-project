@@ -1,51 +1,65 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DashboardView from '@/views/Admin/DashboardView.vue'
 import AdminLayout from '@/layouts/Admin/Index.vue';
 import FrontLayout from '@/components/FrontLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
 export const constantRoutes = [
-  // {
-  //   path: '/redirect',
-  //   component: Layout,
-  //   hidden: true,
-  //   children: [
-  //     {
-  //       path: '/redirect/:path(.*)',
-  //       component: () => import('../views/redirect/index.vue')
-  //     }
-  //   ]
-  // },
+  {
+    path: '/redirect',
+    component: AdminLayout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path(.*)',
+        component: () => import('../views/redirect/index.vue')
+      }
+    ]
+  },
   {
     path: '/',
     redirect: "/",
     component: FrontLayout,
     meta: { requiresAuth: false },
+    hidden: true,
     children: [
-      { path: "/", name: "Index", component: () => import('../views/IndexView.vue')},
-      { path: "/blog", name: "Posts", component: () => import('../views/Post/index.vue')},
+      { 
+        path: "/", 
+        name: "Index", 
+        meta: {
+          title: "Inicio"
+        },
+        component: () => import('../views/IndexView.vue')
+      },
+      { 
+        path: "/blog", 
+        name: "Posts", 
+        meta: {
+          title: "Listado de Posts"
+        },
+        component: () => import('../views/Post/index.vue')
+      },
       // { path: "/surveys/create", name: "SurveyCreate", component: SurveyView },
       // { path: "/surveys/:id", name: "SurveyView", component: SurveyView },
     ],
   },
   {
     path: '/admin',
-    hidden: true,
+    hidden: false,
     component: AdminLayout,
     redirect: "/admin/dashboard",
     meta: { 
       requiresAuth: true, 
-      icon: 'ep-icon-user',
-      roles: ['admin']
+      icon: 'House',
+      roles: ['admin'],
+      title: "Inicio"
     },
     children: [
       { 
         path: "dashboard", 
         name: "Dashboard", 
-        component: DashboardView, 
+        component: () => import('~/views/Admin/DashboardView.vue'), 
         meta: {
-          title: 'Dashboard', 
-          icon: '<el-icon><House /></el-icon>',
+          title: 'Dashboard',
           roles: ['admin']
           } 
       },
@@ -71,6 +85,7 @@ export const constantRoutes = [
     name: "Auth",
     component: AuthLayout,
     meta: {isGuest: true},
+    hidden: true,
     children: [
       {
         path: "/login",
@@ -84,12 +99,20 @@ export const constantRoutes = [
       },
     ],
   },
-
+  {
+    path: '/404',
+    name: 'NotFound',
+    hidden:true,
+    component: () => import('~/views/errors-page/404.vue'),
+    meta: { title: '404', hidden: true }
+  },
 ];
 
 export const asyncRoutes = [
-
-  { path: '*', redirect: '/404', hidden: true }
+  { 
+    path: '/:pathMatch(.*)*',
+    redirect: '/404'
+  }
 ];
 
 const router = createRouter({

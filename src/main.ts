@@ -60,7 +60,7 @@ const vuetify = createVuetify({
 })
 
 import './permission' // permission control
-
+import SvgIcon from '~/components/SvgIcon/index.vue' 
 
 //Mitt
 import mitt from 'mitt';
@@ -78,4 +78,5 @@ app.provide('emitter', emitter);
 app.use(router)
 app.use(store)
 app.use(vuetify)
+app.use(SvgIcon)
 app.mount("#app");

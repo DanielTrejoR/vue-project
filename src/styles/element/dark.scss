@@ -40,8 +40,13 @@ $--colors: (
   --border-color-light: var(--el-border-color-lighter);
   --font-family: var(--el-font-family);
 }
+
 //Modo dark mode colors
-.dark {
+html.dark {
+  --ep-border-color-dark: #58585B;
+  --ep-border-color: #4C4D4F;
+  --ep-border-color-light: #414243;
+  --ep-border-color-lighter: #363637;
   --bg-color-rgb: 0, 0, 0;
   --bg-color-soft: #242424;
   --bg-color-mute: #2c2c2c;
@@ -49,12 +54,5 @@ $--colors: (
   --code-tooltip-color: var(--brand-color);
   --purple-color: #9065db;
   --purple-color-light: #6222c2;
-}
-//Modo dark mode colors
-html.dark {
-  --ep-border-color-dark: #58585B;
-  --ep-border-color: #4C4D4F;
-  --ep-border-color-light: #414243;
-  --ep-border-color-lighter: #363637;
 }
 

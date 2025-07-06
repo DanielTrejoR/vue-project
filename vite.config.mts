@@ -61,6 +61,7 @@ export default ({ mode }) => {
       }),
       Components({
         // allow auto load markdown components under `./src/components/`
+        dirs: ['src/components'],
         extensions: ['vue', 'md'],
         // allow auto import and register components used in markdown
         include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
@@ -69,6 +70,7 @@ export default ({ mode }) => {
             importStyle: 'sass',
           }),
         ],
+        deep: true,
         dts: 'src/components.d.ts',
       }),
 
