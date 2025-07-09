@@ -1,5 +1,5 @@
 <template>
-<div class="table-wrapper">
+<div class="table-wrapper mr-10">
     <h2>Listado de mis publicaciones</h2>
     <div>
         <div class="float-right pb-3">
@@ -22,6 +22,16 @@
             </template>
             </el-table-column>
         </el-table>
+        <div class="d-flex justify-center pt-4 mt-5">
+            <ElPagination 
+                background 
+                layout="prev, pager, next" 
+                :total="Number(paginator.total)"
+                :page-sizes="[10, 20, 30, 50]"
+                :size="size"
+                v-model:current-page="paginator.current_page"
+            />
+        </div>
     </div>
     <div>
         <BaseModal ref="openModal">
@@ -54,12 +64,16 @@
 import { onMounted, ref, inject } from 'vue';
 import store  from '~/store';
 import BaseModal from '~/components/Admin/BaseModal.vue';
-
+import type { ComponentSize } from 'element-plus'
+const size = ref<ComponentSize>('default')
 const tableData = ref([]);
 const postInfo = ref(null);
 const showModal = ref(false);
 const emitter = inject('emitter');
 const loading = ref(false)
+const paginator = ref({
+    data: []
+})
 const handleClick = (postId: any) => {
     postInfo.value = postId;
     showModal.value = true;
@@ -69,17 +83,14 @@ const handleClick = (postId: any) => {
 const getOwnerPosts = async () => {
     loading.value = true;
     try {
-        store.dispatch('admin/fetchPosts').then((res) => {
-            tableData.value = res.data.data
-            
-        }).catch((err) => {
-            console.log(err);
-            
-        }).finally( () => {
-            loading.value = false;
-        })
+        const posts = await store.dispatch('posts/fetchPosts')
+        tableData.value = posts.data
+        paginator.value = posts;
+        paginator.value.data = []
     } catch (error) {
-        
+        console.log(error)
+    }finally {
+        loading.value = false
     }
 }
 

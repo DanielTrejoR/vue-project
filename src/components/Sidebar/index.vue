@@ -11,9 +11,10 @@
                 :collapse-transition="false"
                 mode="vertical"
             >
-                <SidebarItem v-for="route in permissionRoutes" :key="route.path" :item="route" :base-path="route.path" />
+                <SidebarItem v-for="route in permissionRoutes" :key="route.path" :item="route" :base-path="route.path"/>
             </el-menu>
         </el-scrollbar>
+        <CreateModalPost></CreateModalPost>
     </div>
 </template>
 <script setup lang="ts">

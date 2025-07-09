@@ -64,12 +64,6 @@ export const constantRoutes = [
           } 
       },
       { 
-        path: "posts", 
-        name: "AdminPosts", 
-        component: () => import('../views/Admin/Post/index.vue'), 
-        meta: {title: 'Mis Posts'} 
-      },
-      { 
         path: "about", 
         name: "about", 
         component: () => import('../views/AboutView.vue'), 
@@ -78,6 +72,27 @@ export const constantRoutes = [
       // { path: "/surveys/create", name: "SurveyCreate", component: SurveyView },
       // { path: "/surveys/:id", name: "SurveyView", component: SurveyView },
     ],
+  },
+  {
+    path: '/admin/posts',
+    hidden: false,
+    component: AdminLayout,
+    redirect: "/admin/index",
+    title: 'Publicaciones',
+    meta: {
+      requiresAuth: true,
+      icon: 'Document',
+      roles: ['admin'],
+      title: 'Listado de posts'
+    },
+    children: [
+      { 
+        path: "index", 
+        name: "PostsIndex", 
+        component: () => import('../views/Admin/Post/index.vue'), 
+        meta: {title: 'Mis Posts'} 
+      },
+    ]
   },
   {
     path: "/auth",
