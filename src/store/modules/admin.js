@@ -44,6 +44,8 @@ const mutations = {
     },
     setAuthenticated(state, value) {
         state.authenticated = value;
+        sessionStorage.setItem('isAuthenticated', value)
+
     },
 }
 
@@ -52,12 +54,10 @@ const actions = {
       return new Promise((resolve, reject) => {
         axiosClient.post('/login', user)
           .then(({data}) => {
-            console.log(data)
             if (data.user) {
               commit('setUser', data.user);
               commit('SET_NAME', data.user)
               commit('setAuthenticated', true);
-              sessionStorage.setItem('isAuthenticated', true)
             }
             resolve(data)
           }).catch(err => {

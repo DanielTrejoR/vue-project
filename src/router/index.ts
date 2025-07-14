@@ -92,6 +92,15 @@ export const constantRoutes = [
         component: () => import('../views/Admin/Post/index.vue'), 
         meta: {title: 'Mis Posts'} 
       },
+      {
+        path: "create",
+        name: "postsCreate",
+        component: () => import('../views/Admin/Post/create.vue'),
+        meta: {
+          title: "Crea un post",
+          icon: 'Edit'
+        }
+      }
     ]
   },
   {

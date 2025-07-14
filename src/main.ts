@@ -78,5 +78,5 @@ app.provide('emitter', emitter);
 app.use(router)
 app.use(store)
 app.use(vuetify)
-app.use(SvgIcon)
+app.component('SvgIcon',SvgIcon)
 app.mount("#app");

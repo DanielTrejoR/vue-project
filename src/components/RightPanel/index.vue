@@ -4,7 +4,7 @@
     <div class="rightPanel" ref="panelRef">
       <div class="handle-button" :style="{ top: `${buttonTop}px`, backgroundColor: theme }" @click="show=!show">
         <el-icon>
-          <transition name="icon-fade" mode="out-in">
+          <transition name="rotate-icon" mode="out-in">
             <component :is="iconComponent" :key="iconComponent.name"/>
           </transition>
         </el-icon>
@@ -157,4 +157,19 @@ onBeforeUnmount(() => {
     line-height: 48px;
   }
 }
+
+.rightPanel {
+  transition: transform 0.35s cubic-bezier(0.7, 0.3, 0.1, 1), opacity 0.3s ease;
+}
+
+.rotate-icon-enter-active,
+.rotate-icon-leave-active {
+  transition: transform 0.3s ease;
+}
+.rotate-icon-enter-from,
+.rotate-icon-leave-to {
+  transform: rotate(180deg);
+}
+
+
 </style>

@@ -3,7 +3,7 @@
     <h2>Listado de mis publicaciones</h2>
     <div>
         <div class="float-right pb-3">
-            <el-button :loading="loading" type="primary" @click="getOwnerPosts">Recargar publicaciones</el-button>
+            <el-button :style="{backgroundColor: theme, borderColor: theme}" :loading="loading" type="primary" @click="getOwnerPosts">Recargar publicaciones</el-button>
         </div>
         <el-table v-loading="loading" element-loading-text="Cargando..." :style="{ opacity: loading ? 0.7 : 1 }" :data="tableData" style="width: 100%">
             <el-table-column fixed prop="id" label="ID" />
@@ -61,7 +61,7 @@
 </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, inject } from 'vue';
+import { onMounted, ref, inject, computed } from 'vue';
 import store  from '~/store';
 import BaseModal from '~/components/Admin/BaseModal.vue';
 import type { ComponentSize } from 'element-plus'
@@ -74,6 +74,8 @@ const loading = ref(false)
 const paginator = ref({
     data: []
 })
+const theme = computed(() => store.state.settings?.theme || '#1890ff');
+
 const handleClick = (postId: any) => {
     postInfo.value = postId;
     showModal.value = true;

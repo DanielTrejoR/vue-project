@@ -16,6 +16,24 @@ const actions = {
         } catch (err) {
             throw err
         }
+    },
+    async fetchCategoriesAndTags({commit}){
+        try {
+            const res = await axiosClient.get('/admin/posts/create')
+            return res.data
+        } catch (err) {
+            throw err
+        }
+    },
+    async storePost({commit}, postData){
+        try {
+            const res = await axiosClient.post('/admin/posts', postData);
+            if(res.status === 200){
+                return res.data;
+            }
+        } catch (err) {
+            
+        }
     }
 }
 
