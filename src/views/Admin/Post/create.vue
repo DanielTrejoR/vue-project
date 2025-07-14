@@ -147,32 +147,75 @@
             <el-upload
               class="upload-demo"
               drag
-              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+              name="photo"
+              ref="uploadRef"
+              :action="uploadUrl+'/admin/photos/store'"
+              :with-credentials="true"
               multiple
+              :headers="uploadHeaders.headers"
+              :file-list="fileList"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :on-change="handleChange"
               :auto-upload="false"
+              :on-error="handleError"
+              :limit="10"
+              :on-progress="handleProgress"
+              list-type="picture"
             >
-              <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-              <div class="el-upload__text">
-                Drop file here or <em>click to upload</em>
+              <el-icon class="ep-icon--upload"><upload-filled /></el-icon>
+              <div class="ep-upload__text">
+                Arrastra las imagenes aqui o <em>haz click aqui para cargar imagenes</em>
               </div>
               <template #tip>
-                <div class="el-upload__tip">
-                  jpg/png files with a size less than 500kb
+                <div class="ep-upload__tip">
+                  imagenes jpg/png con menos de 2 MB
+                </div>
+              </template>
+              <template #file="{ file }" >
+                <div class="upload-preview">
+                  <img :src="getPreviewUrl(file)" class="upload-image cursor-pointer" @click="handlePictureCardPreview(file)"/>
+                  <el-progress :percentage="file.percentage" status="success" />
+                  <span class="upload-name">{{ file.name }}</span>
+                  <span class="d-flex justify-center pt-4 delete">
+                    <el-icon @click="handleRemove(file)"><Delete/></el-icon>
+                  </span>
                 </div>
               </template>
             </el-upload>
+            <h3>Cambia el orden de tus imagenes</h3>
+            <draggable v-model="fileList" tag="ul" item-key="uid">
+              <template #item="{ element }">
+                <li class="upload-thumb">
+                  <img :src="getPreviewUrl(element)" />
+                  <span>{{ element.name }}</span>
+                </li>
+              </template>
+            </draggable>
           </div>
         </el-col>
       </el-row>
     </el-form>
+  <el-dialog v-model="dialogVisible">
+    <img w-full :src="dialogImageUrl" alt="Preview Image" />
+  </el-dialog>
   </div>
 </template>
 <script lang="ts" setup>
 import { ref, reactive, computed, onMounted } from "vue";
-import { ElMessage, FormInstance, FormRules } from "element-plus";
+import { ElImageViewer, ElMessage, FormInstance, FormRules, UploadFile, UploadFiles, UploadInstance } from "element-plus";
 import { useStore } from "vuex";
+import Cookies from "js-cookie";
+import draggable from 'vuedraggable'
 defineEmits(["update:modelValue"]);
 const store = useStore();
+const uploadRef = ref<UploadInstance>()
+const uploadUrl = import.meta.env.VITE_API_BASE_URL
+const uploadHeaders = ref({
+  headers: {
+      "X-XSRF-TOKEN": Cookies.get('XSRF-TOKEN')
+  }
+})
 
 interface PostForm {
   title: string;
@@ -219,6 +262,7 @@ const postForm = reactive<PostForm>({
   category_id: "",
   tags: [],
 });
+
 const rules = reactive<FormRules<PostForm>>({
   title: [
     { required: true, message: "Título requerido", trigger: "blur", min: 3 },
@@ -251,7 +295,13 @@ const rules = reactive<FormRules<PostForm>>({
   ],
 });
 
+const submitUpload = () => {
+  uploadRef.value!.submit()
+}
+
 const handleSubmit = async (formEl: FormInstance | undefined) => {
+  submitUpload();
+  return;
   if (!formEl) return;
   loading.value = true;
   await formEl.validate((valid, fields) => {
@@ -287,9 +337,58 @@ const getCategoriesAndTags = async () => {
 const contentShortLength = computed(() => {
   return postForm.excerpt.length;
 });
+
+//El upload 
+const fileList = ref([])
+
+const handlePreview = (file: UploadFile) => {
+  ElImageViewer.open({ urlList: [file.url || file.raw], initialIndex: 0 })
+}
+
+const handleRemove = (file: UploadFile) => {
+  const index = fileList.value.findIndex(f => f.uid === file.uid)
+  if (index !== -1) fileList.value.splice(index, 1)
+}
+
+const handleChange = (file: UploadFile, files: UploadFile[]) => {
+  fileList.value = files
+}
+
+const handleError = (error: Error,uploadFile: UploadFile, uploadFiles: UploadFiles) => {
+  console.log(error, uploadFile, uploadFiles);
+}
+
+const handleProgress = (event: { percent: number }, file: UploadFile, fileListRef: UploadFile[]) => {
+  const target = fileList.value.find(f => f.uid === file.uid)
+  if (target) target.percentage = Math.floor(event.percent)
+}
+
+const getPreviewUrl = (file: UploadFile): string => {
+  return file.url || URL.createObjectURL(file.raw)
+}
+
+const dialogImageUrl = ref('')
+const dialogVisible = ref(false)
+const handlePictureCardPreview = (file: UploadFile) => {
+  dialogImageUrl.value = file.url!
+  dialogVisible.value = true
+}
+
+const submitPhotos = async () => {
+
+  try {
+    uploadRef.value!.submit()
+
+    ElMessage.success('Galería subida')
+  } catch (error) {
+    ElMessage.error('Error al subir imágenes')
+  }
+}
+
 onMounted(() => {
   getCategoriesAndTags();
 });
+
 </script>
 <style lang="scss" scoped>
 @use "~/styles/mixin.scss";
@@ -339,5 +438,38 @@ onMounted(() => {
     border-radius: 0px;
     border-bottom: 1px solid #bfcbd9;
   }
+}
+
+.upload-thumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.upload-thumb img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.upload-image {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  object-fit: cover;
+}
+:deep(.ep-upload-list--picture .ep-upload-list__item){
+  width: 27%;
+}
+
+:deep(.ep-upload-list) {
+  display: flex !important;
+}
+
+.delete:hover {
+  color: red;
+  cursor: pointer;
 }
 </style>
