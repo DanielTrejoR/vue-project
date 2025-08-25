@@ -61,7 +61,8 @@ const vuetify = createVuetify({
 
 import './permission' // permission control
 import SvgIcon from '~/components/SvgIcon/index.vue' 
-
+import { registerSvgIcons } from '@/utils/register-icons'
+registerSvgIcons()
 //Mitt
 import mitt from 'mitt';
 const emitter = mitt();

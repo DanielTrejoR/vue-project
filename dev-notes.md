@@ -27,6 +27,11 @@ Este documento recoge decisiones de arquitectura, ideas en desarrollo, pendiente
 
 ## 📝 Pendientes a futuro
 
+## Pendientes por implementar (actualizado)
+- [x] Optimización de imágenes con spatie/laravel-image-optimizer
+
+- [ ] Conversión a WebP para mejor rendimiento (pendiente)
+
 ### 🌗 Refactor a plugin global
 
 - [ ] Crear `radial-theme.ts` que exponga `toggleTheme()` e `isDark`
@@ -54,6 +59,16 @@ Este documento recoge decisiones de arquitectura, ideas en desarrollo, pendiente
 - [ ] Reintegrar `RightPanel`, `Navbar`, `TagsView` según diseño final
 
 ---
+
+## Visualización y dashboards
+- [ ] Diseñar dashboard con métricas clave (órdenes, estados, usuarios activos).
+
+- [ ] Implementar filtros por rango de fechas y estado en frontend.
+
+- [ ] Evaluar librerías de visualización más ligeras si hay problemas de rendimiento.
+
+---
+
 
 ## 💡 Otras ideas futuras
 

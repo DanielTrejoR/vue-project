@@ -21,8 +21,9 @@
 <script setup lang="ts">
 import pathToRegexp from 'path-to-regexp'
 import { ref, watch, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import type { RouteRecordNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import emitter from '~/utils/emitter'
 
 const route = useRoute()
 const router = useRouter()
@@ -48,7 +49,7 @@ function getBreadcrumb() {
       ...matched,
     ]
   }
-
+  
   levelList.value = matched.filter(item => item.meta?.title && item.meta?.breadcrumb !== false)
 }
 
@@ -69,6 +70,18 @@ function handleLink(item: RouteRecordNormalized) {
     router.push(compilePath(item.path))
   }
 }
+
+onMounted( () => {
+  emitter.on('updateBreadcrumbTitle', (newTitle: string) => {
+    const last = route.matched[route.matched.length - 1]
+    if (last?.meta) {
+      last.meta.title = newTitle
+    }
+    route.meta.title = newTitle
+    getBreadcrumb();
+  })
+})
+
 </script>
 
 <style scoped lang="scss">

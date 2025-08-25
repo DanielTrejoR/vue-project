@@ -8,11 +8,18 @@ const state = {
 const mutations = {}
 
 const actions = {
-    async fetchPosts({ commit }, data){
+    async fetchPosts({ commit }, { page = 1, size = 10, filters }){
         try {
-            const res = await axiosClient.get('/admin/posts')
-            console.log(res)
-            return res.data.posts
+            console.log(filters, page, size);
+            
+            const res = await axiosClient.get(`/admin/posts`, {
+                        params: {
+                            page,
+                            perpage: size,
+                            ...filters
+                        }
+        })
+            return res.data
         } catch (err) {
             throw err
         }
@@ -28,11 +35,41 @@ const actions = {
     async storePost({commit}, postData){
         try {
             const res = await axiosClient.post('/admin/posts', postData);
-            if(res.status === 200){
-                return res.data;
-            }
+            return res.data;
         } catch (err) {
-            
+            throw err
+        }
+    },
+    async updatePost({commit}, data){
+        try {
+            const res = await axiosClient.put(`/admin/posts/${data.postId}`, data.postData);
+            return res.data;
+        } catch (err) {
+            throw err
+        }
+    },
+    async editPost({commit}, postId) {
+        try {
+            const res = await axiosClient.get(`/admin/posts/${postId}/edit`);
+            return res
+        } catch (err) {
+            throw err
+        }
+    },
+    async deletePhoto({commit}, photoId) {
+        try {
+            const res = await axiosClient.delete(`/admin/photo/${photoId}`);
+            return res;
+        } catch (err) {
+            throw err
+        }
+    },
+    async getHistory({commit}, postId) {
+        try {
+            const res = await axiosClient.get(`/admin/posts/${postId}/history`);
+            return res;
+        } catch (err) {
+            throw err
         }
     }
 }

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AdminLayout from '@/layouts/Admin/Index.vue';
 import FrontLayout from '@/components/FrontLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
+import { title } from 'process';
 
 export const constantRoutes = [
   {
@@ -99,6 +100,16 @@ export const constantRoutes = [
         meta: {
           title: "Crea un post",
           icon: 'Edit'
+        }
+      },
+      {
+        path: 'edit/:url',
+        name: 'EditPost',
+        component: () => import('~/views/Admin/Post/edit.vue'),
+        props: true,
+        hidden: true,
+        meta: {
+          title: "Editando tu post"
         }
       }
     ]
