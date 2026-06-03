@@ -67,12 +67,31 @@ export const constantRoutes = [
       { 
         path: "about", 
         name: "about", 
-        component: () => import('../views/AboutView.vue'), 
+        component: () => import('~/views/AboutView.vue'), 
         meta: {title: 'Acerca de nosotros'} 
       },
       // { path: "/surveys/create", name: "SurveyCreate", component: SurveyView },
       // { path: "/surveys/:id", name: "SurveyView", component: SurveyView },
     ],
+  },
+  {
+    path: '/admin/profile',
+    hidden: true,
+    component: AdminLayout,
+    redirect: "/admin/profile/index",
+    meta: {
+      requiresAuth: true,
+      roles: ['admin'],
+      title: 'Perfil de Usuario'
+    },
+    children: [
+      {
+        path: "index",
+        name: "ProfileIndex",
+        component: () => import('~/views/Admin/Profile/index.vue'),
+        meta: {title: 'Perfil de usuario'}
+      }
+    ]
   },
   {
     path: '/admin/posts',

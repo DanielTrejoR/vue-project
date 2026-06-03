@@ -71,6 +71,14 @@ const actions = {
         } catch (err) {
             throw err
         }
+    },
+    async deletePost({commit}, post) {
+        try{
+            const res = await axiosClient.delete(`/admin/posts/${post}`);
+            return res;
+        }catch (err) {
+            throw err
+        }
     }
 }
 

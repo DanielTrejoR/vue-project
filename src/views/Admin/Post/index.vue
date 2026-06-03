@@ -3,7 +3,7 @@
     <h2>Listado de mis publicaciones</h2>
     <div>
         <div class="d-flex justify-end pb-2 mb-1">
-            <el-button :style="{backgroundColor: theme, borderColor: theme}" :loading="loading" type="primary" @click="getOwnerPosts()">Recargar publicaciones</el-button>
+            <el-button :color="theme" :loading="loading" type="primary" @click="getOwnerPosts()">Recargar publicaciones</el-button>
         </div>
         <div class="">
             <el-form :model="filters" inline @submit.prevent="getOwnerPosts" class="d-flex justify-center flex-column">
@@ -21,8 +21,8 @@
                 </div>
 
                 <div >
-                    <el-button type="primary" @click="getOwnerPosts">Filtrar</el-button>
-                    <el-button type="primary" @click="resetFilters">Limpiar Filtros</el-button>
+                    <el-button :loading="loading" :color="theme" @click="getOwnerPosts">Filtrar</el-button>
+                    <el-button :loading="loading" :color="theme" @click="resetFilters">Limpiar Filtros</el-button>
                 </div>
             </el-form>
         </div>
@@ -40,11 +40,24 @@
             <el-table-column prop="published_at" label="Publicado el: " />
             <el-table-column fixed="right" label="Operations" >
             <template #default="scope">
-                <el-button link type="primary" size="small" @click="handleClick(scope.row)">
+                <el-button :color="theme" type="primary" size="small" @click="handleClick(scope.row)">
                     Detalles
                 </el-button>
-                <el-button link type="primary" size="small" @click="editPost(scope.row.url)">Edit</el-button>
-                <el-button link type="primary" size="small">Ver</el-button>
+                <el-button :color="theme" type="primary" size="small" @click="editPost(scope.row.url)">Edit</el-button>
+                <el-button :color="theme" type="primary" size="small">Ver</el-button>
+                <el-popconfirm
+                    confirm-button-text="Yes"
+                    cancel-button-text="No"
+                    :icon="InfoFilled"
+                    icon-color="#626AEF"
+                    title="Are you sure to delete this?"
+                    @confirm="deletePost(scope.row.url)"
+                    @cancel="cancelEvent"
+                >
+                    <template #reference>
+                    <el-button>Delete</el-button>
+                    </template>
+                </el-popconfirm>
             </template>
             </el-table-column>
         </el-table>
@@ -76,7 +89,9 @@ import BaseModal from '~/components/Admin/BaseModal.vue';
 import type { ComponentSize } from 'element-plus'
 import { number } from 'echarts';
 import router from "~/router";
-
+import { ElMessage } from 'element-plus'
+import { InfoFilled } from '@element-plus/icons-vue'
+import { url } from 'inspector';
 const size = ref<ComponentSize>('default')
 const tableData = ref([]);
 const postForm = ref(null);
@@ -128,6 +143,7 @@ const getOwnerPosts = async (page: number, size: number) => {
         loading.value = false
     }
 }
+
 const cleanFilters = (filters: Record<string, any>) => {
   return Object.fromEntries(
     Object.entries(filters).filter(([_, v]) => {
@@ -152,6 +168,28 @@ const handlePageChange = async (page: number) => {
   } finally {
     loading.value = false
   }
+}
+
+const deletePost = async (urlKey: string) => {
+  try {
+    loading.value = true;
+    ElMessage.success('Post eliminado correctamente');
+    const deletePostByKey = await store.dispatch('posts/deletePost', urlKey);
+    if (deletePostByKey){
+        getOwnerPosts(1, 10);
+    }
+    loading.value = false;
+    // refrescar lista
+  } catch (error) {
+    console.log(error)
+    loading.value = false;
+
+  }
+};
+
+const cancelEvent = () => {
+    ElMessage.success('Tu post sigue a salvo');
+
 }
 
 const resetFilters = () => {

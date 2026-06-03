@@ -9,7 +9,6 @@ import { computed } from 'vue';
 import { useStore } from 'vuex';
 
 const store = useStore();
-console.log(store.getters, 'dasdasdasds')
 const userName = computed(() => store.getters['user/name']);
 
 </script>

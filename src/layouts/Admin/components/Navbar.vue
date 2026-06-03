@@ -10,7 +10,7 @@
       
       <div class="float-right d-flex align-center">
         <div class="pl-1 pr-1" >
-        <HeaderSearch />
+          <HeaderSearch />
         </div>
         <el-switch class="ml-2 d-flex align-center pl-1 pr-1"
             :model-value="isDark"
@@ -19,13 +19,39 @@
             :active-action-icon="IconMoon"
             :inactive-action-icon="IconSunny"
         />  
+        <div class="pl-1 pr-1" >
+          <el-dropdown trigger="click">
+            <span class="el-dropdown-link user-dropdown">
+              <el-avatar
+                :src="store.getters['user'].user.avatar || ''"
+                size="small"
+                style="margin-right: 8px"
+              />
+              <span class="user-name">{{ store.getters['user'].user.name }}</span>
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="goProfile">
+                  <RouterLink :to="{'name': 'ProfileIndex'}">Mi Perfil</RouterLink>
+                </el-dropdown-item>
+                <el-dropdown-item @click="goSettings">
+                  Configuración
+                </el-dropdown-item>
+                <el-dropdown-item divided @click="logout">
+                  Cerrar sesión
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
         <!-- Menú móvil -->
         <el-icon class="hamburger" @click="drawerVisible = true">
             <Menu />
         </el-icon>
       </div>
       <!-- Acciones o toggle de tema -->
-
+        
         <el-drawer
             v-model="drawerVisible"
             direction="rtl"
@@ -33,13 +59,13 @@
             title="Navegación"
         >
             <el-menu
-            mode="vertical"
-            :router="true"
-            :default-active="$route.path"
+              mode="vertical"
+              :router="true"
+              :default-active="$route.path"
             >
-            <el-menu-item index="/admin/dashboard">Dashboard</el-menu-item>
-            <el-menu-item index="/usuarios">Usuarios</el-menu-item>
-            <el-menu-item index="/ajustes">Ajustes</el-menu-item>
+              <el-menu-item index="/admin/dashboard">Dashboard</el-menu-item>
+              <el-menu-item index="/usuarios">Usuarios</el-menu-item>
+              <el-menu-item index="/ajustes">Ajustes</el-menu-item>
             </el-menu>
         </el-drawer>
     </el-row>
@@ -48,10 +74,17 @@
 <script lang="ts" setup>
 import IconMoon from '~/components/icons/IconMoon.vue';
 import IconSunny from '~/components/icons/IconSunny.vue';
-import {onMounted, onUnmounted, ref} from 'vue';
+import {onMounted, onUnmounted, ref, computed} from 'vue';
 import { useRadialThemeToggle } from '~/composables/useRadialThemeToggle'
+import { useStore } from 'vuex';
+
 const { isDark, toggleRadialTheme } = useRadialThemeToggle()
 const drawerVisible = ref(false)
+const store = useStore();
+console.log(store.getters['user'])
+const userName = computed(() => store.getters['user'].user.name);
+const userEmail = computed(() => store.getters['user'].user.email);
+const userRoles = computed(() => store.getters['user'].roles);
 function handleSwitchClick(event: MouseEvent) {
   if (!(event instanceof MouseEvent)) return
 
@@ -66,6 +99,17 @@ onUnmounted(() => {
 })
 </script>
 <style lang="scss" scoped>
+.user-dropdown {
+  display: flex;
+  align-items: center;   /* centra verticalmente avatar y texto */
+  gap: 8px;              /* espacio entre avatar y nombre */
+  cursor: pointer;
+}
+
+.user-name {
+  font-weight: 500;
+}
+
 .navbar {
   background-color: var(--bg-color);
   padding: 0 24px;

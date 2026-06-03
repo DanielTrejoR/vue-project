@@ -33,25 +33,24 @@ router.beforeEach(async(to, from, next) => {
                 } else {
                     try {
                         await store.dispatch('auth/fetchUser')
-                        const { roles } = store.getters.user
+                        const { roles } = store.getters.user || {};
                         if (!roles || roles.length === 0) {
-                            ElMessage.warning('Tu cuenta no tiene permisos asignados')
-                            return next('/login')
+                            ElMessage.warning('Tu cuenta no tiene permisos asignados');
+                            // IMPORTANTE: no redirigir si ya estás en login
+                            return next('/login');
                         }
                         const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-                        accessRoutes.forEach(route => {
-                            router.addRoute(route)
-                        })
-                        if (to.matched.length === 0) {
-                            next({ ...to, replace: true })
-                        } else {
-                            next()
-                        }
+                        accessRoutes.forEach(route => router.addRoute(route));
+                        next({ ...to, replace: true });
+                        
                     } catch (error) {
                         console.log('jkhdshjkdajhkadsjhk')
                         ElMessage.error(error || 'Has Error')
-                        next(`/login?redirect=${to.path}`)
-                        NProgress.done()
+                        if (to.path !== '/login') {
+                            next(`/login?redirect=${to.path}`);
+                        } else {
+                            next();
+                        }
                     }
                 }
         }

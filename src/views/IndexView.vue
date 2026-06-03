@@ -1,3 +1,4 @@
 <template>
-    <h2>kaljsdalksdjla</h2>
+    <h2>Listado de Post</h2>
+    
 </template>
