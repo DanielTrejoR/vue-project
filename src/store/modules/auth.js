@@ -2,6 +2,7 @@ import axiosClient from '~/plugins/axios';
 import router, { resetRouter } from '@/router'
 
 const state = () => ({
+    authenticated: false,
     user: null,
     roles: [],
     permissions: [],
@@ -22,6 +23,9 @@ const mutations = {
         state.user = null;
         state.roles = [];
         state.permissions = [];
+    },
+    setAuthenticated(state, value) {
+        state.authenticated = value;
     }
 };
 

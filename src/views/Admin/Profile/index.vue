@@ -9,13 +9,13 @@
           <el-card>
             <el-tabs v-model="activeTab">
               <el-tab-pane label="Activity" name="activity">
-                <activity />
+                <!-- <activity /> -->
               </el-tab-pane>
               <el-tab-pane label="Timeline" name="timeline">
-                <timeline />
+                <!-- <timeline /> -->
               </el-tab-pane>
               <el-tab-pane label="Account" name="account">
-                <account :user="user" />
+                <!-- <account :user="user" /> -->asd
               </el-tab-pane>
             </el-tabs>
           </el-card>
@@ -51,11 +51,12 @@
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import UserCard from './components/UserCard.vue'
+import {ref} from 'vue';
 const store = useStore()
 const router = useRouter()
 
 const user = store.getters['user'].user
-
+const activeTab = ref('first')
 const editProfile = () => {
   router.push('/settings') // o tu ruta de edición
 }

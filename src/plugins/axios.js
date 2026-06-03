@@ -26,13 +26,31 @@ axiosClient.defaults.withXSRFToken = true;
 axiosClient.interceptors.request.use(async (config) => {
     console.log('➡️ Request URL:', import.meta.env.VITE_API_BASE_URL);
 
-    if ((config.method.toString()).toLowerCase() !== 'get') {
+    if ((config.method || '').toLowerCase() !== 'get') {
         await axiosClient.get('/csrf-cookie').then()
 
         config.headers['X-XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN')
     }
     return config
 })
+axiosClient.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response) {
+      if (error.response.status === 401) {
+        // Limpia el store si lo usas
+        store.commit('setAuthenticated', false)
+        store.commit('setUser', {})
+
+        // Redirige al login
+        router.push({ name: 'Login' })  
+      } else if (error.response.status === 404) {
+        router.push({ name: 'NotFound' })
+      }
+    }
+    return Promise.reject(error)
+  }
+)
 
 // axiosClient.interceptors.response.use(response => {
 //     return response;

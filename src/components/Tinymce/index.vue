@@ -114,7 +114,7 @@ function imageSuccessCBK(arr: Array<{ url: string }>) {
   position: relative;
   line-height: normal;
 
-  ::v-deep(.mce-fullscreen) {
+  :deep(.mce-fullscreen) {
     z-index: 10000;
   }
 }

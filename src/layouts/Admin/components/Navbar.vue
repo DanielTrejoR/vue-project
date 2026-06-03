@@ -33,9 +33,9 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="goProfile">
-                  <RouterLink :to="{'name': 'ProfileIndex'}">Mi Perfil</RouterLink>
+                  Mi Perfil
                 </el-dropdown-item>
-                <el-dropdown-item @click="goSettings">
+                <el-dropdown-item >
                   Configuración
                 </el-dropdown-item>
                 <el-dropdown-item divided @click="logout">
@@ -77,11 +77,11 @@ import IconSunny from '~/components/icons/IconSunny.vue';
 import {onMounted, onUnmounted, ref, computed} from 'vue';
 import { useRadialThemeToggle } from '~/composables/useRadialThemeToggle'
 import { useStore } from 'vuex';
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const { isDark, toggleRadialTheme } = useRadialThemeToggle()
 const drawerVisible = ref(false)
 const store = useStore();
-console.log(store.getters['user'])
 const userName = computed(() => store.getters['user'].user.name);
 const userEmail = computed(() => store.getters['user'].user.email);
 const userRoles = computed(() => store.getters['user'].roles);
@@ -90,7 +90,14 @@ function handleSwitchClick(event: MouseEvent) {
 
   toggleRadialTheme(event)
 }
+const logout = async () => {
+  await store.dispatch('admin/logout')
+  router.push('/login')
+}
 
+const goProfile = () => {
+  router.push({ name: 'ProfileIndex' })
+}
 onMounted(() => {
   console.log('Navbar mounted')
 })

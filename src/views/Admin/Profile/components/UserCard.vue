@@ -1,15 +1,15 @@
 <template>
   <el-card style="margin-bottom:20px;">
     <slot class="clearfix">
-      <span>About me</span>
+      <span>Acerca de mi</span>
     </slot>
 
     <div class="user-profile">
       <div class="box-center">
-        <pan-thumb :image="user.avatar" :height="'100px'" :width="'100px'" :hoverable="false">
-          <div>Hello</div>
+        <PanThumb :image="user.avatar" :height="'100px'" :width="'100px'" :hoverable="false">
+          <div>Hola</div>
           {{ user.role }}
-        </pan-thumb>
+        </PanThumb>
       </div>
       <div class="box-center">
         <div class="user-name text-center">{{ user.name }}</div>
@@ -53,10 +53,8 @@
 </template>
 
 <script>
-// import PanThumb from '@/components/PanThumb'
 
 export default {
-  components: { PanThumb },
   props: {
     user: {
       type: Object,
