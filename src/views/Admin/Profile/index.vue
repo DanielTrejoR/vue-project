@@ -9,39 +9,17 @@
           <el-card>
             <el-tabs v-model="activeTab">
               <el-tab-pane label="Activity" name="activity">
-                <!-- <activity /> -->
+                <activity />
               </el-tab-pane>
               <el-tab-pane label="Timeline" name="timeline">
-                <!-- <timeline /> -->
+                <time-line />
               </el-tab-pane>
               <el-tab-pane label="Account" name="account">
-                <!-- <account :user="user" /> -->asd
+                <account :user="user" />
               </el-tab-pane>
             </el-tabs>
           </el-card>
         </el-col>
-        <!-- <el-card class="profile-card">
-        <div class="profile-header">
-            <el-avatar
-            :src="user.avatar || ''"
-            size="large"
-            class="profile-avatar"
-            />
-            <div class="profile-info">
-            <h2>{{ user.name }}</h2>
-            <p>{{ user.email }}</p>
-            <el-tag type="success" v-if="user.is_active">Activo</el-tag>
-            <el-tag type="danger" v-else>Inactivo</el-tag>
-            </div>
-        </div>
-
-        <el-divider />
-
-        <div class="profile-actions">
-            <el-button type="primary" @click="editProfile">Editar perfil</el-button>
-            <el-button type="danger" @click="logout">Cerrar sesión</el-button>
-        </div>
-        </el-card> -->
         </el-row>
     </div>
 </div>
@@ -51,12 +29,15 @@
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import UserCard from './components/UserCard.vue'
+import TimeLine from './components/TimeLine.vue'
+import Account from './components/Account.vue'
+import Activity from './components/Activity.vue'
 import {ref} from 'vue';
 const store = useStore()
 const router = useRouter()
 
 const user = store.getters['user'].user
-const activeTab = ref('first')
+const activeTab = ref('activity')
 const editProfile = () => {
   router.push('/settings') // o tu ruta de edición
 }

@@ -81,6 +81,14 @@ const actions = {
           return error;
         });
     },
+    async getActivities({commit}){
+      return await axiosClient.get(`/admin/user/activities`)
+      .then((res) => {
+        return res;
+      }).catch((err) => {
+        reject(err)
+      });
+    },
     //config
     stateSideBar({commit}, collapse) {
       commit('setConfigSideBar', collapse)
