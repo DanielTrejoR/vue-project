@@ -32,7 +32,7 @@ function formatDate(date) {
 }
 
 const getActivities = async () => {
-    store.dispatch('admin/getActivities').then((res) => {
+    store.dispatch('user/getActivities').then((res) => {
         activities.value = res.data
     }).catch((err) => {
         

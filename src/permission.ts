@@ -1,5 +1,5 @@
 import router from './router'
-import store from './store'
+import store from '@/store'
 import { ElMessage } from 'element-plus'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
@@ -38,13 +38,13 @@ router.beforeEach(async(to, from, next) => {
         } else{
             try {
                 await store.dispatch('auth/fetchUser')
-                const { roles } = store.getters.user || {};
+                const { roles, permissions } = store.getters.user || {};
                 if (!roles || roles.length === 0) {
                     ElMessage.warning('Tu cuenta no tiene permisos asignados');
                     // IMPORTANTE: no redirigir si ya estás en login
                     return next('/login');
                 }
-                const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+                const accessRoutes = await store.dispatch('permission/generateRoutes', {roles, permissions})
                 accessRoutes.forEach(route => router.addRoute(route));
                 next({ ...to, replace: true });
                 

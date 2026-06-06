@@ -7,6 +7,7 @@
             </el-col>
         <el-col :span="18" :xs="24">
           <el-card>
+            {{ user.permissions }}
             <el-tabs v-model="activeTab">
               <el-tab-pane label="Activity" name="activity">
                 <activity />
@@ -36,7 +37,7 @@ import {ref} from 'vue';
 const store = useStore()
 const router = useRouter()
 
-const user = store.getters['user'].user
+const user = store.getters['user']
 const activeTab = ref('activity')
 const editProfile = () => {
   router.push('/settings') // o tu ruta de edición

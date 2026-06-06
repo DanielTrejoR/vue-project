@@ -61,7 +61,7 @@ export const constantRoutes = [
         component: () => import('~/views/Admin/DashboardView.vue'), 
         meta: {
           title: 'Dashboard',
-          roles: ['admin']
+          roles: ['mode']
           } 
       },
       { 

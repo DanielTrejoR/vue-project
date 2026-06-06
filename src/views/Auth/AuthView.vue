@@ -101,7 +101,7 @@ const submitForm = () => {
   loginFormRef.value.validate((valid) => {
     if (valid) {
       store
-        .dispatch('admin/login', loginForm)
+        .dispatch('user/login', loginForm)
         .then(() => {
           const target = redirect.value || '/admin/dashboard'
           router.push(target)

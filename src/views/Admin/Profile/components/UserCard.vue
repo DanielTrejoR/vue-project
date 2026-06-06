@@ -8,12 +8,13 @@
       <div class="box-center">
         <PanThumb :image="user.avatar" :height="'100px'" :width="'100px'" :hoverable="false">
           <div>Hola</div>
-          {{ user.role }}
+          {{ user.roles.join(', ') }}
         </PanThumb>
       </div>
       <div class="box-center">
         <div class="user-name text-center">{{ user.name }}</div>
         <div class="user-role text-center text-muted">{{ user.role }}</div>
+        <el-tag v-for="role in user.roles" :key="role" type="success">{{ role }}</el-tag>
       </div>
     </div>
 
@@ -63,7 +64,7 @@ export default {
           name: '',
           email: '',
           avatar: '',
-          role: ''
+          roles: []
         }
       }
     }
@@ -111,7 +112,7 @@ export default {
 
 .user-bio {
   margin-top: 20px;
-  color: #606266;
+  color: var(--text-color);
 
   span {
     padding-left: 4px;
@@ -126,6 +127,7 @@ export default {
       padding-bottom: 10px;
       margin-bottom: 10px;
       font-weight: bold;
+      color: var(--text-color);
     }
   }
 }

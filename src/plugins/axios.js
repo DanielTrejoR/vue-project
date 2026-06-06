@@ -1,6 +1,7 @@
 import axios from "axios";
 import router from "../router";
 import Cookies from 'js-cookie';
+import store from '@/store'
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 

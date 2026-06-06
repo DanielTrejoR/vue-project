@@ -30,19 +30,21 @@ const mutations = {
 };
 
 const actions = {
-    fetchUser({ commit, state }) {
+    fetchUser({ commit, state, dispatch }) {
         return new Promise((resolve, reject) => {
             axiosClient.get('/user').then((res) => {
                 const { data } = res;
-                if(!data){
-                    store.dispatch('admin/logout')
-                    reject('User verification failed');
+                console.log(data)
+                if (!data) {
+                    dispatch('user/logout', null, { root: true })
+                    throw new Error('User verification failed')
                 }
                 
                 commit('setUser', data);
 
                 if (data.roles) commit('setRoles', data.roles);
                 if (data.permissions) commit('setPermissions', data.permissions);
+
                 resolve(data)
             }).catch(error => {
                 reject(error)

@@ -12,7 +12,7 @@
         <div class="pl-1 pr-1" >
           <HeaderSearch />
         </div>
-        <el-switch class="ml-2 d-flex align-center pl-1 pr-1"
+        <el-switch class="ml-2 d-flex align-center pl-1 pr-3"
             :model-value="isDark"
             style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949; "
             @click="handleSwitchClick"
@@ -23,11 +23,11 @@
           <el-dropdown trigger="click">
             <span class="el-dropdown-link user-dropdown">
               <el-avatar
-                :src="store.getters['user'].user.avatar || ''"
+                :src="store.getters['user'].avatar || ''"
                 size="small"
                 style="margin-right: 8px"
               />
-              <span class="user-name">{{ store.getters['user'].user.name }}</span>
+              <span class="user-name">{{ store.getters['user'].name }}</span> 
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <template #dropdown>
@@ -91,7 +91,7 @@ if (!(event instanceof MouseEvent)) return
   toggleRadialTheme(event)
 }
 const logout = async () => {
-  await store.dispatch('admin/logout')
+  await store.dispatch('user/logout')
   router.push('/login')
 }
 

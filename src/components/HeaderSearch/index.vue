@@ -59,7 +59,7 @@ const generateRoutes = (routes, basePath = '/', prefixTitle = []) => {
     }
     if (router.meta && router.meta.title) {
       data.title = [...data.title, router.meta.title]
-      console.log(data.title)
+      
       if (router.redirect !== 'noRedirect') {
         res.push(data)
       }

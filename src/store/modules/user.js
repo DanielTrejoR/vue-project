@@ -12,13 +12,6 @@ const state = {
     },
     data: {},
   },
-  admin: {
-        config: {
-        collapseSideBar: sessionStorage.getItem('isCollapse') === 'true',
-        darkMode: sessionStorage.getItem('dark_theme') === 'dark' ? "dark" : "light"
-        },
-        data: {},
-  },
   permissions: [],
   role: sessionStorage.getItem('roleUser') ?? null,
   authenticated: sessionStorage.getItem('isAuthenticated') ?? false
@@ -34,13 +27,19 @@ const mutations = {
         sessionStorage.setItem('dark_theme', isDark)
     },
     setUser: (state, user) => {
-        state.admin.data = user;
+        state.user.data = user;
     },
     SET_NAME(state, user) {
         state.name = user.name
     },
+    SET_AVATAR: (state, user) => {
+      state.avatar = user.avatar
+    },
     SET_ROLES: (state, roles) => {
         state.roles = roles
+    },
+    SET_PERMISSIONS: (state, permissions) => {
+        state.permissions = permissions
     },
     setAuthenticated(state, value) {
         state.authenticated = value;
@@ -54,9 +53,12 @@ const actions = {
       return new Promise((resolve, reject) => {
         axiosClient.post('/login', user)
           .then(({data}) => {
+            console.log(data.user)
             if (data.user) {
               commit('setUser', data.user);
               commit('SET_NAME', data.user)
+              commit('SET_AVATAR', data.user)
+              commit('SET_PERMISSIONS', data.user)
               commit('setAuthenticated', true);
             }
             resolve(data)
