@@ -34,7 +34,6 @@ const actions = {
         return new Promise((resolve, reject) => {
             axiosClient.get('/user').then((res) => {
                 const { data } = res;
-                console.log(data)
                 if (!data) {
                     dispatch('user/logout', null, { root: true })
                     throw new Error('User verification failed')
@@ -44,7 +43,7 @@ const actions = {
 
                 if (data.roles) commit('setRoles', data.roles);
                 if (data.permissions) commit('setPermissions', data.permissions);
-
+                dispatch('user/setUser', data, {root: true})
                 resolve(data)
             }).catch(error => {
                 reject(error)

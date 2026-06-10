@@ -13,7 +13,6 @@ const state = {
     data: {},
   },
   permissions: [],
-  role: sessionStorage.getItem('roleUser') ?? null,
   authenticated: sessionStorage.getItem('isAuthenticated') ?? false
 }
 
@@ -36,6 +35,7 @@ const mutations = {
       state.avatar = user.avatar
     },
     SET_ROLES: (state, roles) => {
+      console.log(roles)
         state.roles = roles
     },
     SET_PERMISSIONS: (state, permissions) => {
@@ -90,6 +90,15 @@ const actions = {
       }).catch((err) => {
         reject(err)
       });
+    },
+    setUser({commit}, data){
+      console.log(data.roles)
+        commit('setUser', data);
+        commit('SET_NAME', data)
+        commit('SET_AVATAR', data)
+        commit('SET_ROLES', data.roles)
+        commit('SET_PERMISSIONS', data.permissions)
+        commit('setAuthenticated', true);
     },
     //config
     stateSideBar({commit}, collapse) {
