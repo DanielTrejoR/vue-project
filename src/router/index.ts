@@ -81,7 +81,7 @@ export const constantRoutes = [
     redirect: "/admin/profile/index",
     meta: {
       requiresAuth: true,
-      roles: ['admin'],
+      roles: ['Admin'],
       title: 'Perfil de Usuario'
     },
     children: [
@@ -102,7 +102,7 @@ export const constantRoutes = [
     meta: {
       requiresAuth: true,
       icon: 'Document',
-      roles: ['admin'],
+      roles: ['Admin'],
       title: 'Listado de posts'
     },
     children: [
@@ -129,6 +129,40 @@ export const constantRoutes = [
         hidden: true,
         meta: {
           title: "Editando tu post"
+        }
+      }
+    ]
+  },
+  {
+    path: "/admin/control-center",
+    hidden: false,
+    component: AdminLayout,
+    redirect: "/admin/control-center/index",
+    meta: {
+      requiresAuth: true,
+      icon: 'Lock',
+      roles: ['Admin'],
+      title: 'Centro de control'
+    },
+    children: [
+      {
+        path: 'roles/index',
+        name: 'RolesIndex',
+        component: () => import('~/views/Admin/Roles/index.vue'),
+        meta: {
+          title: "Roles",
+          roles: ['Admin'],
+          icon: "RefreshLeft"
+        }
+      },
+      {
+        path: 'permissions/index',
+        name: 'PermissionsIndex',
+        component: () => import('~/views/Admin/Permissions/index.vue'),
+        meta: {
+          title: "Permisos",
+          roles: ['Admin'],
+          icon: "RefreshLeft"
         }
       }
     ]

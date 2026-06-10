@@ -1,4 +1,5 @@
 import { asyncRoutes, constantRoutes } from '@/router'
+import axiosClient from '~/plugins/axios.js'
 
 /**
  * Use meta.role to determine if the current user has permission
@@ -68,6 +69,16 @@ const actions = {
       }
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
+    })
+  },
+  getPermissions({commit}){
+    return new Promise((resolve, reject) => {
+      axiosClient.get('/admin/permissions').then((res) => {
+        resolve(res);
+        return res;
+      }).catch((err) => {
+        return err
+      });
     })
   }
 }
