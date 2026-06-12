@@ -79,6 +79,14 @@ const actions = {
         }catch (err) {
             throw err
         }
+    },
+    //Front end urls
+    async viewPost({commit}, url){
+        try {
+            return await axiosClient.get(`/posts/${url}`);
+        } catch (error) {
+            throw error;
+        }
     }
 }
 

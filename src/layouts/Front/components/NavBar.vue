@@ -1,15 +1,8 @@
 <template>
     <v-app-bar
       flat
-      
+      class="pl-5 ml-1"
     >
-      
-      <v-avatar
-        class="mx-2"
-        color="surface-variant"
-        size="32"
-        variant="flat"
-      ></v-avatar>
       <RouterLink :to="{name: 'Index'}">
         <v-btn
           class="me-2"
@@ -42,12 +35,14 @@
       <template v-slot:append>
           
           <v-btn
+            v-if="user.authenticated"
             class="me-2"
             color="grey"
             height="40"
             variant="flat"
           >Login / Sign up</v-btn>
           <v-btn
+            v-if="!user.authenticated"
             class="me-2"
             color="grey"
             height="40"
@@ -68,8 +63,8 @@
                 <v-avatar
                   color="brown"
                   size="large"
+                  :image="user.avatar"
                 >
-                  <span class="text-h5">Joe</span>
                 </v-avatar>
               </v-btn>
             </template>
@@ -78,12 +73,12 @@
                 <div class="mx-auto text-center">
                   <v-avatar
                     color="brown"
+                    :image="user.avatar"
                   >
-                    <span class="text-h5">Joe</span>
                   </v-avatar>
-                  <h3>Joe</h3>
+                  <h3>{{ user.name }}</h3>
                   <p class="text-caption mt-1">
-                    Joe@me.com
+                    {{ user.email }}
                   </p>
                   <v-divider class="my-3"></v-divider>
                   <v-btn
@@ -119,6 +114,7 @@
         v-model="drawer"
         temporary
         location="right"
+        :width="325"
       >
         
         <ConfigMenu title="Configuracion"></ConfigMenu>
@@ -134,12 +130,6 @@ const theme = useTheme()
 const drawer = ref(null)
 const ex11 = ref(false)
 const { toggleRadialTheme } = useRadialThemeToggle()
-
-const toggleTheme = (event) => {
-    const isDark = !store.state.user.user.config.darkMode
-    theme.global.name.value = isDark ? 'dark' : 'light'
-    store.dispatch('user/toggleDarkMode', isDark)
-}
-    
+const user = store.getters['user']   
 
 </script>

@@ -14,19 +14,24 @@
                 
             >
                 <v-switch
-                v-model="switche"
+                v-model="switcher"
                 label="red"
                 color="red"
                 value="red"
                 hide-details
                 ></v-switch>
                 <v-switch
-                v-model="switche"
+                v-model="switcher"
                 label="orange-darken-3"
                 color="orange-darken-3"
                 value="orange-darken-3"
                 hide-details
                 ></v-switch>
+                <v-color-picker 
+                    hide-inputs 
+                    show-swatches
+                    swatches-max-height="200px"
+                ></v-color-picker>
             </v-col>
         </v-row>
     </v-container>
@@ -41,7 +46,7 @@ export default{
         }
     },
     data: () => ({
-        switche: false
+        switcher: false
     }),
 }
 </script>

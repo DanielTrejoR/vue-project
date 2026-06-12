@@ -1,7 +1,14 @@
 <template>
     <div>
-        <component :is="componentImport" :items="items"></component>
-        <PaginationLinks :pagination="pagination" @change-page="getPost"></PaginationLinks>
+        <div class="mx-auto float-end">
+            <v-btn variant="outlined" @click="getPost(1)">
+             Recargar Publicaciones
+            </v-btn>
+        </div>
+        <div class="pt-8">
+            <component :is="componentImport" :items="items"></component>
+            <PaginationLinks :pagination="pagination" @change-page="getPost"></PaginationLinks>
+        </div>
     </div>
 </template>
 <script>
@@ -26,7 +33,7 @@ export default {
     },
     methods: {
         getPost(page = 1) {
-            store.dispatch('base/getPosts', {
+            store.dispatch('user/getPosts', {
             url: this.url,
             page: page
             })

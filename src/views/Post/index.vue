@@ -1,6 +1,5 @@
 <template>
-<div>
-    pagina principal
-    <!-- <Paginator url="/posts" component-name="PostList" /> -->
-</div>
+    <div>
+        <Paginator url="/posts" component-name="PostList" />
+    </div>
 </template>

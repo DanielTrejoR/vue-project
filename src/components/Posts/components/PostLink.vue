@@ -1,12 +1,11 @@
 <template>
-	<!-- <router-link
-	:to="{name: 'posts_show', params: {url: post.url}}
+<div>
+	<RouterLink
+	:to="{name: 'ViewPost', params: {url: post.url} }
 	">
 		<slot />
-	</router-link> -->
-	<div>
-		<slot />
-	</div>
+	</RouterLink>
+</div>
 </template>
 <script>
 	export default{

@@ -23,6 +23,7 @@ const mutations = {
     },
     setDarkMode: (state, isDark) => {
         state.user.config.darkMode = isDark
+        console.log(isDark)
         sessionStorage.setItem('dark_theme', isDark)
     },
     setUser: (state, user) => {

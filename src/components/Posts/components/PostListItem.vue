@@ -4,7 +4,7 @@
             class="mx-auto"
             max-width="800"
         >
-            <CarouselComponent :photos="['https://cdn.vuetifyjs.com/images/cards/sunshine.jpg']"></CarouselComponent>
+            <CarouselComponent v-if="post.photos.length > 0" :photos="post.photos"></CarouselComponent>
             <v-card-title>
                 <PostHeader :post="post"></PostHeader>
             </v-card-title>

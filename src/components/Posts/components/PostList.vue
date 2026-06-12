@@ -4,7 +4,7 @@
         :post="post"
         :key="post.id"
         />
-
+    
         <article class="post" v-if="! items.length">
 
             <v-card

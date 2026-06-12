@@ -2,14 +2,17 @@
 import { useTheme } from 'vuetify'
 import { isDark } from '../dark'
 import { nextTick } from 'vue'
+import { mapState, useStore } from 'vuex'
 
 export function useRadialThemeToggle() {
   const theme = useTheme()
+  const store = useStore();
 
   const toggleRadialTheme = async (event?: MouseEvent) => {
     const isDark = theme.global.current.value.dark
+    
     const nextTheme = isDark ? 'light' : 'dark'
-
+    store.dispatch('user/toggleDarkMode', isDark)
     // Fallback para navegadores sin soporte
     if (!document.startViewTransition || !event) {
       theme.global.name.value = nextTheme
