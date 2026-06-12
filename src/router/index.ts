@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import AdminLayout from '@/layouts/Admin/Index.vue';
-import FrontLayout from '@/components/FrontLayout.vue';
+import FrontLayout from '@/layouts/Front/Index.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { title } from 'process';
+
 
 export const constantRoutes = [
   {

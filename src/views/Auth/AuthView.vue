@@ -1,4 +1,5 @@
 <template>
+<div>
   <el-row>
     <el-col :span="24"><h2>Bienvenido</h2></el-col>
   </el-row>
@@ -48,6 +49,7 @@
       </el-card>
     </el-col>
   </el-row>
+</div>
 </template>
 
 <script lang="ts" setup>

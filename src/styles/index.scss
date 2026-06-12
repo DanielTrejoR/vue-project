@@ -30,6 +30,7 @@ body {
 
 html {
   transition: color-scheme 0.3s ease;
+  isolation: isolate;
 }
 
 html.dark {
@@ -47,15 +48,15 @@ html:not(.dark) {
 }
 
 ::view-transition-old(root) {
-  z-index: 1;
+  z-index: -1;
 }
 
 ::view-transition-new(root) {
-  z-index: 999;
+  z-index: 1;
 }
 
 .dark::view-transition-old(root) {
-  z-index: 999;
+  z-index: -1;
 }
 
 .dark::view-transition-new(root) {

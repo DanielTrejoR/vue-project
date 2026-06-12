@@ -17,3 +17,10 @@ onMounted(() => {
   }
 })
 </script>
+
+<style>
+html {
+  view-transition-name: root;
+}
+
+</style>

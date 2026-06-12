@@ -86,7 +86,7 @@ const userName = computed(() => store.getters['user'].user.name);
 const userEmail = computed(() => store.getters['user'].user.email);
 const userRoles = computed(() => store.getters['user'].roles);
 function handleSwitchClick(event: MouseEvent) {
-if (!(event instanceof MouseEvent)) return
+  if (!(event instanceof MouseEvent)) return
 
   toggleRadialTheme(event)
 }

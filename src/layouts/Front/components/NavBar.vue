@@ -1,7 +1,7 @@
 <template>
     <v-app-bar
       flat
-      height="72"
+      
     >
       
       <v-avatar
@@ -106,10 +106,10 @@
           <v-btn
             class=""
               icon id="mode-switcher"
-              @click="toggleTheme"
+              @click="toggleRadialTheme($event)"
           >   
-              <v-icon :color="($vuetify.theme.global.name === 'dark') ? 'primary' : 'primary lighten-4'">
-              mdi {{ ($vuetify.theme.global.name === 'dark') ? 'mdi-weather-night' : 'mdi-weather-sunny' }}
+              <v-icon :color="(theme.global.name.value === 'dark') ? 'primary' : 'primary lighten-4'">
+              mdi {{ (theme.global.name.value === 'dark') ? 'mdi-weather-night' : 'mdi-weather-sunny' }}
               </v-icon>
           </v-btn>
           <v-btn @click.stop="drawer = !drawer" icon="mdi mdi-cog"></v-btn>
@@ -124,24 +124,22 @@
         <ConfigMenu title="Configuracion"></ConfigMenu>
       </v-navigation-drawer>
 </template>
-<script>
-import store from '~/store/index.js'
+<script setup>
+import { useRadialThemeToggle } from '@/composables/Front/useRadialThemeToggle'
+import { mapState, useStore } from 'vuex'
+import { ref } from 'vue'
+import { useTheme } from 'vuetify'
+const store = useStore();
+const theme = useTheme()
+const drawer = ref(null)
+const ex11 = ref(false)
+const { toggleRadialTheme } = useRadialThemeToggle()
 
-export default {
-    data: () => ({
-      drawer: null,
-      ex11: false
-    }),
-    methods: {
-        toggleTheme() {
-            const dark = this.$vuetify.theme.global.name = this.$vuetify.theme.global.current.dark ? 'light' : 'dark'
-            store.dispatch('base/toggleDarkMode', dark)
-        }
-    },
-    mounted() {
-        // if(store.state.base.user_admin.config.darkMode){
-        //     this.$vuetify.theme.global.name = store.state.base.user_admin.config.darkMode
-        // }
-    }
+const toggleTheme = (event) => {
+    const isDark = !store.state.user.user.config.darkMode
+    theme.global.name.value = isDark ? 'dark' : 'light'
+    store.dispatch('user/toggleDarkMode', isDark)
 }
+    
+
 </script>

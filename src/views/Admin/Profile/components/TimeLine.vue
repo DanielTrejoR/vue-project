@@ -39,7 +39,7 @@ const getActivities = async () => {
     });
 }
 
-onMounted(() => {
+onMounted(async () => {
     getActivities()
 })
 </script>

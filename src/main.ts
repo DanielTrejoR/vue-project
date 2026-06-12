@@ -45,6 +45,8 @@ import * as directives from 'vuetify/directives'
 import { aliases, fa } from 'vuetify/iconsets/fa'
 import { mdi } from 'vuetify/iconsets/mdi'
 import { md } from 'vuetify/iconsets/md'
+
+const savedDark = sessionStorage.getItem('dark_theme') === 'true'
 const vuetify = createVuetify({
     components,
     directives,
@@ -57,7 +59,11 @@ const vuetify = createVuetify({
             md,
         },
     },
+    theme: {
+        defaultTheme: savedDark ? 'dark' : 'light'
+    }
 })
+store.commit('user/setDarkMode', savedDark)
 
 import './permission' // permission control
 import SvgIcon from '~/components/SvgIcon/index.vue' 

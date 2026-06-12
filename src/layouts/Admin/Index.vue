@@ -41,7 +41,6 @@ const classObj = computed(() => ({
 }));
 
 onMounted(() => {
-  console.log('Admin mounted')
   const el = document.querySelector('#navbar-root')
   if (el) el.style.border = '2px solid red'
 })
