@@ -3,17 +3,22 @@
     :to="{name: 'category_posts', params: {category: category.url }}"
     > -->
         
-		<v-chip
+		<v-chip v-if="props.category"
 		class="ma-2"
 		color="pink"
 		>
-		#{{ category.name }}
+		#{{ props.category.name }}
 		</v-chip>
 	<!-- </RouterLink> -->
 </template>
+<script setup>
+import { defineProps } from 'vue'
 
-<script>
-	export default{
-		props: ['category']
-	}
+// Definición de props con Composition API
+const props = defineProps({
+    category: {
+        type: Object,
+        required: true
+    }
+})
 </script>

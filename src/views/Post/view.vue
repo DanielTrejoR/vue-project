@@ -34,8 +34,6 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { mapState, useStore } from 'vuex'
-import Tags from './components/tags.vue'
-import Header from './components/header.vue'
 import SocialLinks from './components/social-links.vue'
 const store = useStore();
 
