@@ -10,10 +10,10 @@ export function useRadialThemeToggle() {
 
   const toggleRadialTheme = async (event?: MouseEvent) => {
     const isDark = theme.global.current.value.dark
-    
-    const nextTheme = isDark ? 'light' : 'dark'
+    const nextTheme = isDark ? 'light' : 'dark';
+    sessionStorage.setItem('dark_theme', nextTheme)
     store.dispatch('user/toggleDarkMode', isDark)
-    // Fallback para navegadores sin soporte
+    console.log(nextTheme);
     if (!document.startViewTransition || !event) {
       theme.global.name.value = nextTheme
       return

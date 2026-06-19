@@ -8,7 +8,7 @@ const state = {
   user: {
     config: {
     collapseSideBar: sessionStorage.getItem('isCollapse') === 'true',
-    darkMode: sessionStorage.getItem('dark_theme') === 'dark' ? "dark" : "light"
+    darkMode: sessionStorage.getItem('dark_theme')
     },
     data: {},
   },
@@ -23,7 +23,6 @@ const mutations = {
     },
     setDarkMode: (state, isDark) => {
         state.user.config.darkMode = isDark
-        console.log(isDark)
         sessionStorage.setItem('dark_theme', isDark)
     },
     setUser: (state, user) => {

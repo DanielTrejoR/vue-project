@@ -1,6 +1,7 @@
 <template>
 <div class="d-flex align-center float-end">
         <v-list
+        color=""
             class="d-flex"
         >
             <v-list-item

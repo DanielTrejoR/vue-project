@@ -3,26 +3,26 @@
     <v-card>
         <v-card-subtitle><PostHeader :post="post" /></v-card-subtitle>
         <v-card-text >
-            <div v-if="post.photos">
+            <div v-if="post.photos && post.photos.length > 0">
                 <img v-if="post.photos?.length < 2" :src="post.photos[0].full_url" class="mb-4" />
                 <CarouselComponent v-else-if="post.photos.length > 1" :photos="post.photos" />
             </div>
             <div v-html="post.body"></div>
             <!-- Iframe embebido -->
-            <div v-if="post.iframe" class="mt-4">
+             <div v-if="post.iframe" class="mt-4">
                 <div v-html="post.iframe"></div>
             </div>
             <div v-if="post.title">
                 <SocialLinks :title="post.title" :current-url="currentUrl" />
             </div>
             <v-card-actions class="">
-                <div class="float-end" v-if="post.tags">
+                <div class="float-end" v-if="post.tags && post.tags.length > 0">
                     <TagLink :tags="post.tags" />
                 </div>
             </v-card-actions>
         </v-card-text>
     </v-card>
-    <h2>Deja tu comentario</h2>
+    <h2 class="pt-5 mt-5">Deja tu comentario</h2>
     <v-card>
         <v-card-title>Caja de comentarios</v-card-title>
     </v-card>

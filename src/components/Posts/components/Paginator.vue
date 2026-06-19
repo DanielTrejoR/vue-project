@@ -32,7 +32,7 @@ export default {
         }
     },
     methods: {
-        getPost(page = 1) {
+        async getPost(page = 1) {
             store.dispatch('user/getPosts', {
             url: this.url,
             page: page

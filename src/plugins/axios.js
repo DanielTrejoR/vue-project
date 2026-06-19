@@ -40,8 +40,9 @@ axiosClient.interceptors.response.use(
     if (error.response) {
       if (error.response.status === 401) {
         // Limpia el store si lo usas
-        store.commit('setAuthenticated', false)
-        store.commit('setUser', {})
+        store.user.commit('setAuthenticated', false)
+        store.auth.commit('setAuthenticated', false)
+        store.user.commit('setUser', {})
 
         // Redirige al login
         router.push({ name: 'Login' })  

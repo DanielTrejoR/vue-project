@@ -6,7 +6,7 @@
         color="pink"
         label
     >
-        <v-icon icon="mdi mdi-label" start></v-icon>
+        <v-icon icon="mdi-label" start></v-icon>
         {{ tag.name }}
     </v-chip>
 </template>

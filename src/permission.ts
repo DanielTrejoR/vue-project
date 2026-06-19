@@ -14,7 +14,14 @@ router.beforeEach(async(to, from, next) => {
     
     document.title = getPageTitle(to.meta.title)
     const isAuth = store.getters.isAuthenticated;
+
+    if (to.meta.requiresAuth === false) {
+        NProgress.done()
+        return next()
+    }
+
     if (!isAuth) {
+
         if (whiteList.includes(to.path)) {
             return next();
         }
@@ -23,6 +30,7 @@ router.beforeEach(async(to, from, next) => {
     }
         if (to.path === '/login') {
             // if is logged in, redirect to the home page
+            
             if(store.state.auth.roles.includes('admin')){
                 next({ path: '/admin' })
                 NProgress.done()
@@ -30,12 +38,13 @@ router.beforeEach(async(to, from, next) => {
                 NProgress.done()
                 next({path: '/'})
             }
-
         }
+
         const hasRoles = store.getters.roles && store.getters.roles.length > 0;
         if (hasRoles) {
             next()
         } else{
+            
             try {
                 await store.dispatch('auth/fetchUser')
                 const { roles, permissions } = store.getters.user || {};
