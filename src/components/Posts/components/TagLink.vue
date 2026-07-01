@@ -7,7 +7,9 @@
         label
     >
         <v-icon icon="mdi-label" start></v-icon>
-        {{ tag.name }}
+        <RouterLink :to="{name: 'TagsPosts', params: {tag: tag.url }}" style="text-decoration:none">
+            {{ tag.name }}
+        </RouterLink>
     </v-chip>
 </template>
 <script setup>

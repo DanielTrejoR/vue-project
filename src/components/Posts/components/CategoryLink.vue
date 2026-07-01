@@ -1,7 +1,7 @@
 <template>
-	<!-- <RouterLink 
-    :to="{name: 'category_posts', params: {category: category.url }}"
-    > -->
+	<RouterLink 
+    :to="{name: 'CategoryPosts', params: {category: category.url }}"
+    >
         
 		<v-chip v-if="props.category"
 		class="ma-2"
@@ -9,7 +9,7 @@
 		>
 		#{{ props.category.name }}
 		</v-chip>
-	<!-- </RouterLink> -->
+	</RouterLink>
 </template>
 <script setup>
 import { defineProps } from 'vue'

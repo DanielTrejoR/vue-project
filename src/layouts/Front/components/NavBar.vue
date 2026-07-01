@@ -73,7 +73,7 @@
                   :image="user.avatar"
                 >
                 </v-avatar>
-                <v-avatar
+                <v-avatar v-else
                   color="brown"
                   size="large"
                 >

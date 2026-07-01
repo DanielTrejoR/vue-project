@@ -14,6 +14,7 @@ const getters = {
   // errorLogs: state => state.errorLog.logs,
   isAuthenticated: state => state.user.authenticated,
   user: state => state.auth.user,
-  configUser: state => state.user.user.config
+  configUser: state => state.user.user.config,
+  userData: state => state.user
 }
 export default getters

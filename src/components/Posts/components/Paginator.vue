@@ -38,6 +38,7 @@ export default {
             page: page
             })
             .then((res) => {
+                
                 this.pagination = res.data;
                 this.items = res.data.data;
                 delete this.pagination.data;

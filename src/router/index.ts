@@ -52,6 +52,18 @@ export const constantRoutes = [
         name: 'ViewPost',
         component: () => import('../views/Post/show.vue'),
         props: true
+      },
+      {
+        path: '/blog/category/:category',
+        name: "CategoryPosts",
+        component: () => import('../views/Post/Category/index.vue'),
+        props: true
+      },
+      {
+        path: '/blog/tags/:tag',
+        name: "TagsPosts",
+        component: () => import('../views/Post/Tag/index.vue'),
+        props: true
       }
       // { path: "/surveys/create", name: "SurveyCreate", component: SurveyView },
       // { path: "/surveys/:id", name: "SurveyView", component: SurveyView },

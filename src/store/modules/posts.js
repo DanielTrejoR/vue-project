@@ -87,6 +87,16 @@ const actions = {
         } catch (error) {
             throw error;
         }
+    },
+    //comments 
+    async storeComment({commit}, {comment, postId}){
+        try {
+            return await axiosClient.post(`/post/${postId}/comments`, {
+                comment: comment
+            });
+        } catch (error) {
+            
+        }
     }
 }
 
