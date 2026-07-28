@@ -95,7 +95,16 @@ const actions = {
                 comment: comment
             });
         } catch (error) {
+            throw error;
             
+        }
+    },
+    //ratings
+    async storeRating({commit}, {rating, postId}) {
+        try {
+            return await axiosClient.post(`/posts/${postId}/ratings`, { rating: rating })
+        } catch (error) {
+            throw error;
         }
     }
 }

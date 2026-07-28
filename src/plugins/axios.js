@@ -2,7 +2,6 @@ import axios from "axios";
 import router from "../router";
 import Cookies from 'js-cookie';
 import store from '@/store'
-
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 if (!baseURL) {
@@ -40,12 +39,12 @@ axiosClient.interceptors.response.use(
     if (error.response) {
       if (error.response.status === 401) {
         // Limpia el store si lo usas
-        store.user.commit('setAuthenticated', false)
-        store.auth.commit('setAuthenticated', false)
-        store.user.commit('setUser', {})
-
+        store.commit('user/setAuthenticated', false)
+        store.commit('auth/setAuthenticated', false)
+        store.commit('user/setUser', {})
+        
         // Redirige al login
-        router.push({ name: 'Login' })  
+        // router.push({ name: 'Login' })
       } else if (error.response.status === 404) {
         router.push({ name: 'NotFound' })
       }

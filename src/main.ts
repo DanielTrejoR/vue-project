@@ -55,7 +55,7 @@ const vuetify = createVuetify({
     components,
     directives,
     icons: {
-        defaultSet: 'mdi',
+        defaultSet: 'fa',
         aliases,
         sets: {
             fa,

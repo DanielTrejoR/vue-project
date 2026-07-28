@@ -164,7 +164,7 @@ const handlePageChange = async (page: number) => {
     perPage.value = page
     getOwnerPosts(perPage.value, sizePage.value);
   } catch (error) {
-    console.error(error)
+    console.error(error.status)
   } finally {
     loading.value = false
   }

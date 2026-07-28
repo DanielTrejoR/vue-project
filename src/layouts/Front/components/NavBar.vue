@@ -32,9 +32,6 @@
           color="primary"
         >Ultimos Posts</v-btn>
       </RouterLink>
-      <v-btn
-        
-      </v-btn>
 
       <v-spacer></v-spacer>
       <template v-slot:append>
@@ -153,7 +150,7 @@ const ex11 = ref(false)
 const { toggleRadialTheme } = useRadialThemeToggle()
 const user = store.getters['user'] 
 
-const themeIcon = ref('mdi-weather-sunny')
+const themeIcon = ref('mdi mdi-weather-sunny')
 // Guardamos el último tema claro y oscuro
 const lastLight = ref('light')
 const lastDark = ref('dark')
@@ -172,7 +169,7 @@ const hexToRgb = (hex) => {
 const getIconByBackground = (bg) => {
   const { r, g, b } = hexToRgb(bg)
   const luminance = (0.299*r + 0.587*g + 0.114*b) / 255
-  return luminance < 0.5 ? 'mdi-weather-night' : 'mdi-weather-sunny'
+  return luminance < 0.5 ? 'mdi mdi-weather-night' : 'mdi mdi-weather-sunny'
 }
 
 
@@ -183,7 +180,7 @@ watch(
     const bg = theme.global.current.value.colors.background || '#FFFFFF'
     themeIcon.value = getIconByBackground(bg)
 
-    if (themeIcon.value === 'mdi-weather-sunny') {
+    if (themeIcon.value === 'mdi mdi-weather-sunny') {
       lastLight.value = newTheme
     } else {
       lastDark.value = newTheme
@@ -194,7 +191,7 @@ watch(
 
 // Acción del botón: alternar entre último claro ↔ último oscuro
 const toggleTheme = () => {
-  if (themeIcon.value === 'mdi-weather-sunny') {
+  if (themeIcon.value === 'mdi mdi-weather-sunny') {
     theme.global.name.value = lastDark.value
   } else {
     theme.global.name.value = lastLight.value

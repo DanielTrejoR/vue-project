@@ -7,6 +7,7 @@
             <v-main>
                 <AppMain />
             </v-main>
+            <ShowAuthDialog v-model="showAuthDialog" />
             <!-- Footer -->
             <v-footer app color="primary" dark>
                 <v-col class="text-center">© 2026 Mi Blog {{savedTheme }}</v-col>
@@ -16,8 +17,12 @@
 </template>
 <script setup>
 import { AppMain, Navbar } from "./components"
-import { onMounted } from 'vue';
+import ShowAuthDialog from "./components/ShowAuthDialog.vue"
+import { showAuthDialog } from '@/composables/Front/useAuthDialog'
+import { onMounted, ref } from 'vue';
 import { useTheme } from 'vuetify'
+
+
 const theme = useTheme()
 const savedTheme = sessionStorage.getItem('dark_theme')
 const loadInitTheme = () => {
@@ -30,6 +35,7 @@ const loadInitTheme = () => {
       : 'dark'
   }
 }
+
 onMounted(() => {
   const el = document.querySelector('#navbar-root')
   if (el) el.style.border = '2px solid red';

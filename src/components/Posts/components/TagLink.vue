@@ -6,7 +6,7 @@
         color="pink"
         label
     >
-        <v-icon icon="mdi-label" start></v-icon>
+        <v-icon icon="mdi mdi-label" start></v-icon>
         <RouterLink :to="{name: 'TagsPosts', params: {tag: tag.url }}" style="text-decoration:none">
             {{ tag.name }}
         </RouterLink>

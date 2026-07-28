@@ -22,6 +22,20 @@
             </v-card-actions>
         </v-card-text>
     </v-card>
+    <div class="d-flex align-end flex-column">
+        <span class="pb-2 mt-2">    
+            Puntua este post
+        </span>
+        <v-rating
+            v-model="userRating"
+            half-increments
+            hover
+            :length="5"
+            :size="32"
+            active-color="primary"
+            @click="setRating"
+        />
+    </div>
     <h2 class="pt-5 mt-5">Deja tu comentario</h2>
     <v-card v-if="user">
         <div v-if="user.is_active && isAuthenticated">
@@ -61,12 +75,16 @@
             <v-card
                 v-for="comment in post.comments" :key="comment.id"
                 :loading="loading" variant="tonal" class="mt-5">
+                <template v-slot:append>
+                    {{ comment.created_at }}
+                </template>
                 <template v-slot:prepend>
                     <v-avatar
                         color="grey-darken-3"
                         :image="comment.user.avatar"
                     ></v-avatar>
                     <v-card-subtitle class="pl-4">{{ comment.user.name }}</v-card-subtitle>
+                    
                 </template>
                     <v-card-text class="py-2 d-flex flex-column mb-6">
                         {{ comment.comment }}
@@ -86,6 +104,7 @@ import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { mapState, useStore } from 'vuex'
 import SocialLinks from './components/social-links.vue'
+import { openAuthDialog } from '@/composables/Front/useAuthDialog'
 const store = useStore();
 
 const route = useRoute()
@@ -100,7 +119,7 @@ const comment = ref('');
 const description = 'Mira este post interesante'
 
 const facebookShareUrl = computed(() =>
-  `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}&t=${encodeURIComponent(description)}`
+    `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}&t=${encodeURIComponent(description)}`
 )
 
 const postComment = () => {
@@ -117,6 +136,24 @@ const postComment = () => {
     });
     
 }
+
+const average = ref(0)
+const userRating = ref(0)
+
+const setRating = async () => {
+  store.dispatch('posts/storeRating', {rating: userRating.value, postId: post.value.url})
+  .then((res) => {
+    
+  }).catch((err) => {
+    console.log(err.status)
+    if(err.status === 401){
+        openAuthDialog();
+        userRating.value = 0;
+    }
+  });
+//   loadRatings()
+}
+
 
 onMounted(async () => {
   const { data } = await store.dispatch('posts/viewPost', route.params.url)
