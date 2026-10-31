@@ -1,134 +1,108 @@
 <template>
-  <el-card style="margin-bottom:20px;">
-    <slot class="clearfix">
-      <span>Acerca de mi</span>
-    </slot>
-
-    <div class="user-profile">
-      <div class="box-center">
-        <PanThumb :image="user.avatar" :height="'100px'" :width="'100px'" :hoverable="false">
-          <div>Hola</div>
-          {{ user.roles.join(', ') }}
-        </PanThumb>
-      </div>
-      <div class="box-center">
-        <div class="user-name text-center">{{ user.name }}</div>
-        <div class="user-role text-center text-muted">{{ user.role }}</div>
-        <el-tag v-for="role in user.roles" :key="role" type="success">{{ role }}</el-tag>
+  <el-card shadow="never" class="user-card">
+    <div class="user-card__header">
+      <el-avatar :size="96" :src="user.avatar">{{ user.name?.charAt(0) }}</el-avatar>
+      <h2 class="user-card__name">{{ user.name }}</h2>
+      <div class="user-card__email">{{ user.email }}</div>
+      <div v-if="user.roles?.length" class="user-card__roles">
+        <el-tag v-for="role in user.roles" :key="role" type="success" effect="plain" round>{{ role }}</el-tag>
       </div>
     </div>
 
-    <div class="user-bio">
-      <div class="user-education user-bio-section">
-        <div class="user-bio-section-header"><svg-icon icon-class="education" /><span>Education</span></div>
-        <div class="user-bio-section-body">
-          <div class="text-muted">
-            JS in Computer Science from the University of Technology
-          </div>
-        </div>
-      </div>
+    <el-divider />
 
-      <div class="user-skills user-bio-section">
-        <div class="user-bio-section-header"><svg-icon icon-class="skill" /><span>Skills</span></div>
-        <div class="user-bio-section-body">
-          <div class="progress-item">
-            <span>Vue</span>
-            <el-progress :percentage="70" />
-          </div>
-          <div class="progress-item">
-            <span>JavaScript</span>
-            <el-progress :percentage="18" />
-          </div>
-          <div class="progress-item">
-            <span>Css</span>
-            <el-progress :percentage="12" />
-          </div>
-          <div class="progress-item">
-            <span>ESLint</span>
-            <el-progress :percentage="100" status="success" />
-          </div>
-        </div>
-      </div>
+    <ul class="user-card__facts">
+      <li v-if="user.created_at">
+        <el-icon><Calendar /></el-icon>
+        <span>Miembro desde {{ memberSince }}</span>
+      </li>
+      <li>
+        <el-icon><Key /></el-icon>
+        <!-- Admin no tiene permisos asignados uno a uno: pasa todas las comprobaciones (Gate::before) -->
+        <span v-if="user.roles?.includes('Admin')">Acceso total al panel</span>
+        <span v-else>{{ user.permissions?.length || 0 }} {{ user.permissions?.length === 1 ? 'permiso' : 'permisos' }}</span>
+      </li>
+    </ul>
+
+    <div class="user-card__links">
+      <el-button text icon="House" @click="router.push({ name: 'UserPosts' })">Mi espacio en el blog</el-button>
+      <el-button text icon="Edit" @click="router.replace({ query: { tab: 'account' } })">Editar cuenta</el-button>
     </div>
   </el-card>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import dayjs from 'dayjs'
+import 'dayjs/locale/es'
+import { Calendar, Key } from '@element-plus/icons-vue'
 
-export default {
-  props: {
-    user: {
-      type: Object,
-      default: () => {
-        return {
-          name: '',
-          email: '',
-          avatar: '',
-          roles: []
-        }
-      }
-    }
-  }
-}
+const props = defineProps<{
+  // usuario con sesión (User::authPayload en el backend)
+  user: Record<string, any>
+}>()
+
+const router = useRouter()
+const memberSince = computed(() => dayjs(props.user.created_at).locale('es').format('MMMM [de] YYYY'))
 </script>
 
-<style lang="scss" scoped>
-.box-center {
-  margin: 0 auto;
-  display: table;
+<style scoped>
+.user-card {
+  margin-bottom: 20px;
 }
 
-.text-muted {
-  color: #777;
+.user-card__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
 }
 
-.user-profile {
-  .user-name {
-    font-weight: bold;
-  }
-
-  .box-center {
-    padding-top: 10px;
-  }
-
-  .user-role {
-    padding-top: 10px;
-    font-weight: 400;
-    font-size: 14px;
-  }
-
-  .box-social {
-    padding-top: 30px;
-
-    .el-table {
-      border-top: 1px solid #dfe6ec;
-    }
-  }
-
-  .user-follow {
-    padding-top: 20px;
-  }
+.user-card__name {
+  margin: 8px 0 0;
+  font-size: 1.25rem;
 }
 
-.user-bio {
-  margin-top: 20px;
-  color: var(--text-color);
+.user-card__email {
+  color: var(--ep-text-color-secondary);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
 
-  span {
-    padding-left: 4px;
-  }
+.user-card__roles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+}
 
-  .user-bio-section {
-    font-size: 14px;
-    padding: 15px 0;
+.user-card__facts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
 
-    .user-bio-section-header {
-      border-bottom: 1px solid #dfe6ec;
-      padding-bottom: 10px;
-      margin-bottom: 10px;
-      font-weight: bold;
-      color: var(--text-color);
-    }
-  }
+.user-card__facts li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  color: var(--ep-text-color-regular);
+  font-size: 14px;
+}
+
+.user-card__links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+
+.user-card__links .ep-button + .ep-button {
+  margin-left: 0;
 }
 </style>

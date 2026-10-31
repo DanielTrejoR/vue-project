@@ -88,8 +88,27 @@ export const useAuthStore = defineStore('auth', {
                 this.clearSession()
             }
         },
-        getActivities() {
-            return axiosClient.get('/admin/user/activities')
+        // historial del perfil por cursor (scroll infinito): sin cursor trae la primera tanda
+        /** @param {string | null} [cursor] */
+        async getActivities(cursor = null) {
+            const { data } = await axiosClient.get('/user/activities', { params: { cursor: cursor || undefined } })
+            return data
+        },
+        // cuenta: cada respuesta trae el usuario actualizado y se refleja en toda la app
+        async updateProfile(form) {
+            const { data } = await axiosClient.put('/user/profile', form)
+            this.user = { ...this.user, ...data.user }
+            return data.user
+        },
+        async updateAvatar(file) {
+            const body = new FormData()
+            body.append('avatar', file)
+            const { data } = await axiosClient.post('/user/avatar', body)
+            this.user = { ...this.user, ...data.user }
+            return data.user
+        },
+        updatePassword(form) {
+            return axiosClient.put('/user/password', form)
         },
     },
 })

@@ -7,15 +7,16 @@
             </el-col>
         <el-col :span="18" :xs="24">
           <el-card>
+            <!-- la pestaña vive en la URL (?tab=) para poder volver a ella -->
             <el-tabs v-model="activeTab">
-              <el-tab-pane lazy label="Activity" name="activity">
+              <el-tab-pane lazy label="Actividad" name="activity">
                 <activity v-if="activeTab === 'activity'" />
               </el-tab-pane>
-              <el-tab-pane lazy label="Timeline" name="timeline">
+              <el-tab-pane lazy label="Historial" name="timeline">
                 <time-line v-if="activeTab === 'timeline'" />
               </el-tab-pane>
-              <el-tab-pane lazy label="Account" name="account">
-                <account :user="user" v-if="activeTab === 'account'" />
+              <el-tab-pane lazy label="Cuenta" name="account">
+                <account v-if="activeTab === 'account'" />
               </el-tab-pane>
             </el-tabs>
           </el-card>
@@ -26,56 +27,24 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
-import { useRouter } from 'vue-router'
 import UserCard from './components/UserCard.vue'
 import TimeLine from './components/TimeLine.vue'
 import Account from './components/Account.vue'
 import Activity from './components/Activity.vue'
-import {ref} from 'vue';
+
 const auth = useAuthStore()
+const route = useRoute()
 const router = useRouter()
 
-const user = auth.user
-const activeTab = ref('activity')
-const editProfile = () => {
-  router.push('/settings') // o tu ruta de edición
-}
+// computed: refleja al instante los cambios de nombre o foto hechos en la pestaña Cuenta
+const user = computed(() => auth.user)
 
-const logout = async () => {
-  await auth.logout()
-  router.push('/login')
-}
+const tabs = ['activity', 'timeline', 'account']
+const activeTab = computed({
+  get: () => (tabs.includes(route.query.tab) ? route.query.tab : 'activity'),
+  set: tab => router.replace({ query: { ...route.query, tab: tab === 'activity' ? undefined : tab } }),
+})
 </script>
-
-<style scoped>
-.profile-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
-}
-
-.profile-card {
-  width: 500px;
-}
-
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.profile-avatar {
-  border: 2px solid #409EFF;
-}
-
-.profile-info h2 {
-  margin: 0;
-}
-
-.profile-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-</style>
