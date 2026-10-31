@@ -9,7 +9,7 @@
                 <PostHeader :post="post"></PostHeader>
             </v-card-title>
             <v-card-text class="">
-                <p v-html="post.excerpt"></p>
+                <p v-html="safeExcerpt"></p>
             </v-card-text>
             <v-card-actions class="d-flex justify-start" v-if="post.tags && post.tags.length > 0">
                 <span class="c-gray-1 text-capitalize">
@@ -22,8 +22,16 @@
 </template>
 
 <script>
+    import DOMPurify from 'dompurify'
+
     export default {
-        props: ['post']
+        props: ['post'],
+        computed: {
+            // el backend solo purifica el body; el excerpt llega sin sanitizar
+            safeExcerpt() {
+                return DOMPurify.sanitize(this.post.excerpt || '')
+            }
+        }
     }
 </script>
 

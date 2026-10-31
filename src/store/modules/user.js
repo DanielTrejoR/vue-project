@@ -13,7 +13,8 @@ const state = {
     data: {},
   },
   permissions: [],
-  authenticated: sessionStorage.getItem('isAuthenticated') ?? false
+  // sessionStorage guarda strings: "false" es truthy, por eso se compara contra 'true'
+  authenticated: sessionStorage.getItem('isAuthenticated') === 'true'
 }
 
 const mutations = {
@@ -68,18 +69,21 @@ const actions = {
       })
     },
     async logout({commit}) {
+      const clearSession = () => {
+        commit('setAuthenticated', false);
+        commit('setUser', {});
+        commit('SET_NAME', '')
+        commit('SET_ROLES', [])
+        commit('auth/reset', null, { root: true })
+        commit('permission/RESET_ROUTES', null, { root: true })
+        resetRouter()
+      }
       return await axiosClient.post('/logout')
         .then((response) => {
-          commit('setAuthenticated', false);
-          commit('setUser', {});
-          commit('SET_NAME', '')
-          commit('SET_ROLES', [])
+          clearSession()
           return response.data;
         }).catch((error) => {
-          commit('setAuthenticated', false);
-          commit('setUser', {});
-          commit('SET_NAME', '')
-          commit('SET_ROLES', [])
+          clearSession()
           return error;
         });
     },
@@ -124,14 +128,13 @@ const actions = {
       });
     },
     async changeRoles({ commit, dispatch }, role) {
-        const { roles } = await dispatch('auth/fetchUser')
+        const { roles, permissions } = await dispatch('auth/fetchUser', null, { root: true })
         resetRouter()
 
         // generate accessible routes map based on roles
-        const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
+        const accessRoutes = await dispatch('permission/generateRoutes', { roles, permissions }, { root: true })
         // dynamically add accessible routes
-        
-        router.addRoutes(accessRoutes)
+        accessRoutes.forEach(route => router.addRoute(route))
 
         // reset visited views and cached views
         // dispatch('tagsView/delAllViews', null, { root: true })

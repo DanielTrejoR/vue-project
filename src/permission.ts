@@ -7,7 +7,7 @@ import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false })
 
-const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
+const whiteList = ['/login', '/register', '/404', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
     NProgress.start();
@@ -28,46 +28,36 @@ router.beforeEach(async(to, from, next) => {
         NProgress.done()
         return next(`/login`);
     }
-        if (to.path === '/login') {
-            // if is logged in, redirect to the home page
-            
-            if(store.state.auth.roles.includes('admin')){
-                next({ path: '/admin' })
-                NProgress.done()
-            }else{
-                NProgress.done()
-                next({path: '/'})
-            }
-        }
+    if (to.path === '/login') {
+        // si ya inició sesión, no tiene sentido mostrar el login
+        NProgress.done()
+        return next(store.getters.roles.includes('Admin') ? { path: '/admin' } : { path: '/' })
+    }
 
-        const hasRoles = store.getters.roles && store.getters.roles.length > 0;
-        if (hasRoles) {
-            next()
-        } else{
-            
-            try {
-                await store.dispatch('auth/fetchUser')
-                const { roles, permissions } = store.getters.user || {};
-                if (!roles || roles.length === 0) {
-                    ElMessage.warning('Tu cuenta no tiene permisos asignados');
-                    // IMPORTANTE: no redirigir si ya estás en login
-                    return next('/login');
-                }
-                const accessRoutes = await store.dispatch('permission/generateRoutes', {roles, permissions})
-                accessRoutes.forEach(route => router.addRoute(route));
-                next({ ...to, replace: true });
-                
-            } catch (error) {
-                console.log('Error en fetchUser', error);
-                ElMessage.error(error || 'Has Error')
-                if (to.path !== '/login') {
-                    next(`/login?redirect=${to.path}`);
-                } else {
-                    next();
-                }
-            }
+    // las rutas dinámicas se generan una sola vez por sesión (resetRouter las quita al cerrar sesión)
+    const routesReady = store.state.permission.addRoutes.length > 0;
+    if (routesReady) {
+        return next()
+    }
+
+    try {
+        await store.dispatch('auth/fetchUser')
+        const { roles, permissions } = store.getters.user || {};
+        if (!roles || roles.length === 0) {
+            ElMessage.warning('Tu cuenta no tiene permisos asignados');
+            NProgress.done()
+            return next('/');
         }
-            
+        const accessRoutes = await store.dispatch('permission/generateRoutes', {roles, permissions})
+        accessRoutes.forEach(route => router.addRoute(route));
+        return next({ ...to, replace: true });
+
+    } catch (error: any) {
+        console.log('Error en fetchUser', error);
+        ElMessage.error(error?.message || 'Error al verificar la sesión')
+        NProgress.done()
+        return next(`/login?redirect=${to.path}`);
+    }
 })
 
 router.afterEach(() => {

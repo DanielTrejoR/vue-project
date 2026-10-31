@@ -61,7 +61,7 @@
                         Iniciar sesion
                     </v-btn>
                 </RouterLink>
-                <RouterLink :to="{name: 'Login'}">
+                <RouterLink :to="{name: 'Register'}">
                     <v-btn prepend-icon="fa fa-plus" color="secondary" variant="tonal">
                         Registrarse
                     </v-btn>
@@ -86,7 +86,7 @@
                     <v-card-subtitle class="pl-4">{{ comment.user.name }}</v-card-subtitle>
                     
                 </template>
-                    <v-card-text class="py-2 d-flex flex-column mb-6">
+                    <v-card-text class="py-2 d-flex flex-column mb-6 float-left ml-15">
                         {{ comment.comment }}
                     </v-card-text>
             </v-card>
@@ -101,26 +101,20 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
-import { mapState, useStore } from 'vuex'
+import { useStore } from 'vuex'
 import SocialLinks from './components/social-links.vue'
 import { openAuthDialog } from '@/composables/Front/useAuthDialog'
 const store = useStore();
 
 const route = useRoute()
 const post = ref({})
-const user = store.getters['user'] 
-const isAuthenticated = store.getters['isAuthenticated'] 
+// computed para que se actualicen cuando fetchUser termina o cambia la sesión
+const user = computed(() => store.getters['user'])
+const isAuthenticated = computed(() => store.getters['isAuthenticated'])
 const loading = ref(false);
 // URL actual del post
 const currentUrl = window.location.origin + route.fullPath
 const comment = ref('');
-// Descripción opcional
-const description = 'Mira este post interesante'
-
-const facebookShareUrl = computed(() =>
-    `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}&t=${encodeURIComponent(description)}`
-)
 
 const postComment = () => {
     loading.value = true
@@ -128,7 +122,7 @@ const postComment = () => {
     .then((res) => {
         post.value.comments.push(res.data)
         loading.value = false
-        comment = ref('');
+        comment.value = ''
 
     }).catch((err) => {
         loading.value = false
@@ -137,7 +131,6 @@ const postComment = () => {
     
 }
 
-const average = ref(0)
 const userRating = ref(0)
 
 const setRating = async () => {

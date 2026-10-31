@@ -70,14 +70,47 @@ export const constantRoutes = [
     ],
   },
   {
+    path: "/auth",
+    redirect: "/login",
+    name: "Auth",
+    component: AuthLayout,
+    meta: {isGuest: true},
+    hidden: true,
+    children: [
+      {
+        path: "/login",
+        name: "Login",
+        component: () => import('../views/Auth/AuthView.vue'),
+      },
+      {
+        path: "/register",
+        name: "Register",
+        component: () => import('../views/Auth/AuthView.vue'),
+      },
+    ],
+  },
+  {
+    path: '/404',
+    name: 'NotFound',
+    hidden:true,
+    component: () => import('~/views/errors-page/404.vue'),
+    meta: { title: '404', hidden: true }
+  },
+];
+
+// Rutas que se agregan en permission.ts según los roles del usuario (ver store/modules/permission.js).
+// Los nombres de rol deben coincidir con los del backend (spatie): 'Admin', 'Writer'.
+export const asyncRoutes = [
+  {
     path: '/admin',
     hidden: false,
     component: AdminLayout,
     redirect: "/admin/dashboard",
+    name: 'Admin',
     meta: { 
       requiresAuth: true, 
       icon: 'House',
-      roles: ['admin'],
+      roles: ['Admin', 'Writer'],
       title: "Inicio"
     },
     children: [
@@ -86,8 +119,7 @@ export const constantRoutes = [
         name: "Dashboard", 
         component: () => import('~/views/Admin/DashboardView.vue'), 
         meta: {
-          title: 'Dashboard',
-          roles: ['mode']
+          title: 'Dashboard'
           } 
       },
       { 
@@ -105,9 +137,10 @@ export const constantRoutes = [
     hidden: true,
     component: AdminLayout,
     redirect: "/admin/profile/index",
+    name: 'AdminProfile',
     meta: {
       requiresAuth: true,
-      roles: ['Admin'],
+      roles: ['Admin', 'Writer'],
       title: 'Perfil de Usuario'
     },
     children: [
@@ -123,12 +156,12 @@ export const constantRoutes = [
     path: '/admin/posts',
     hidden: false,
     component: AdminLayout,
-    redirect: "/admin/index",
-    title: 'Publicaciones',
+    redirect: "/admin/posts/index",
+    name: 'AdminPosts',
     meta: {
       requiresAuth: true,
       icon: 'Document',
-      roles: ['Admin'],
+      roles: ['Admin', 'Writer'],
       title: 'Listado de posts'
     },
     children: [
@@ -163,7 +196,8 @@ export const constantRoutes = [
     path: "/admin/control-center",
     hidden: false,
     component: AdminLayout,
-    redirect: "/admin/control-center/index",
+    redirect: "/admin/control-center/roles/index",
+    name: 'ControlCenter',
     meta: {
       requiresAuth: true,
       icon: 'Lock',
@@ -193,38 +227,9 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: "/auth",
-    redirect: "/login",
-    name: "Auth",
-    component: AuthLayout,
-    meta: {isGuest: true},
-    hidden: true,
-    children: [
-      {
-        path: "/login",
-        name: "Login",
-        component: () => import('../views/Auth/AuthView.vue'),
-      },
-      {
-        path: "/register",
-        name: "Register",
-        component: () => import('../views/Auth/AuthView.vue'),
-      },
-    ],
-  },
-  {
-    path: '/404',
-    name: 'NotFound',
-    hidden:true,
-    component: () => import('~/views/errors-page/404.vue'),
-    meta: { title: '404', hidden: true }
-  },
-];
-
-export const asyncRoutes = [
   { 
     path: '/:pathMatch(.*)*',
+    name: 'CatchAll',
     redirect: '/404'
   }
 ];
@@ -240,13 +245,13 @@ const router = createRouter({
   routes: constantRoutes,
 });
 
+// Quita las rutas dinámicas (al cerrar sesión), para que el siguiente usuario no herede las del anterior
 export function resetRouter() {
-  const newRouter = createRouter({
-    history: createWebHistory(),
-    routes: constantRoutes,
-    scrollBehavior: () => ({ top: 0 }),
-  });
-  (router as any).matcher = (newRouter as any).matcher;
+  asyncRoutes.forEach(route => {
+    if (route.name && router.hasRoute(route.name)) {
+      router.removeRoute(route.name)
+    }
+  })
 }
 
 export default router

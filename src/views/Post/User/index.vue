@@ -40,8 +40,8 @@
 <script setup>
 import { useRadialThemeToggle } from '@/composables/Front/useRadialThemeToggle'
 import { mapState, useStore } from 'vuex'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useTheme } from 'vuetify'
 const store = useStore();
-const isAuth = store.getters['isAuthenticated']
+const isAuth = computed(() => store.getters['isAuthenticated'])
 </script>

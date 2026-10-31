@@ -66,7 +66,6 @@ declare module 'vue' {
     ElTimeline: typeof import('element-plus/es')['ElTimeline']
     ElTimelineItem: typeof import('element-plus/es')['ElTimelineItem']
     ElUpload: typeof import('element-plus/es')['ElUpload']
-    FrontLayout: typeof import('./components/FrontLayout.vue')['default']
     Hamburger: typeof import('./components/Hamburger/index.vue')['default']
     HeaderSearch: typeof import('./components/HeaderSearch/index.vue')['default']
     IconCommunity: typeof import('./components/icons/IconCommunity.vue')['default']

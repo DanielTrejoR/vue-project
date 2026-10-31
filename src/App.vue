@@ -10,7 +10,7 @@ import { onMounted } from 'vue'
 import { useStore } from 'vuex';
 
 const store = useStore();
-const isClientAuth = sessionStorage.getItem('isAuthenticated')
+const isClientAuth = sessionStorage.getItem('isAuthenticated') === 'true'
 onMounted(() => {
   if (isClientAuth) {
     store.dispatch('auth/fetchUser') // revalida con Sanctum
