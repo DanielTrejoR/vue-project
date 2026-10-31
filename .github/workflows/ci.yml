@@ -19,6 +19,9 @@ jobs:
 
       - run: npm ci
 
+      # .env no está en git: el build toma la URL de la API del ejemplo
+      - run: cp .env.example .env
+
       - run: npm run type-check
 
       - run: npm test
