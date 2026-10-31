@@ -4,7 +4,8 @@
 <script>
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import { LinesChart } from 'echarts/charts';
+// LineChart (series type 'line'); LinesChart es para líneas sobre mapas
+import { LineChart } from 'echarts/charts';
 import {
   TitleComponent,
   TooltipComponent,
@@ -17,10 +18,11 @@ import { defineComponent } from 'vue';
 import { isDark } from "~/composables/useRadialThemeToggle";
 use([
   CanvasRenderer,
-  LinesChart,
+  LineChart,
   TitleComponent,
   TooltipComponent,
   LegendComponent,
+  GridComponent,
 ]);
 export default defineComponent({ 
   components: {
