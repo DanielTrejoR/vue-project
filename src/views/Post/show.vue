@@ -118,10 +118,7 @@
                     </template>
                 </template>
                 <template v-slot:prepend>
-                    <v-avatar
-                        color="grey-darken-3"
-                        :image="item.user.avatar"
-                    ></v-avatar>
+                    <FrontUserAvatar :src="item.user.avatar" :name="item.user.name" />
                     <v-card-subtitle class="pl-4">{{ item.user.name }}</v-card-subtitle>
                 </template>
                 <v-card-text v-if="editingId === item.id" class="pt-2">
@@ -163,6 +160,7 @@
 </template>
 
 <script setup>
+import FrontUserAvatar from '~/components/UserAvatar/FrontUserAvatar.vue'
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'

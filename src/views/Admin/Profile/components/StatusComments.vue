@@ -5,7 +5,7 @@
     </el-button>
 
     <div v-for="comment in items" :key="comment.id" class="comment">
-      <el-avatar :size="28" :src="comment.user?.avatar">{{ comment.user?.name?.charAt(0) }}</el-avatar>
+      <UserAvatar :size="28" :src="comment.user?.avatar" :name="comment.user?.name" />
       <div class="comment__bubble">
         <div class="comment__meta">
           <strong>{{ comment.user?.name }}</strong>
@@ -35,7 +35,7 @@
 
     <!-- Enter envía; Shift+Enter hace un salto de línea -->
     <form class="comments__form" @submit.prevent="send">
-      <el-avatar :size="28" :src="auth.user?.avatar">{{ auth.user?.name?.charAt(0) }}</el-avatar>
+      <UserAvatar :size="28" :src="auth.user?.avatar" :name="auth.user?.name" />
       <el-input
         v-model="body"
         type="textarea"
@@ -50,6 +50,7 @@
 </template>
 
 <script setup lang="ts">
+import UserAvatar from '~/components/UserAvatar/UserAvatar.vue'
 import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '~/stores/auth'

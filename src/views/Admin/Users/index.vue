@@ -30,7 +30,7 @@
         <el-table-column label="Usuario" min-width="240" fixed>
             <template #default="{ row }">
                 <div class="user-cell">
-                    <el-avatar :src="row.avatar" :size="36" />
+                    <UserAvatar :src="row.avatar" :name="row.name" :size="36" />
                     <div class="user-cell__text">
                         <div class="user-cell__name">
                             {{ row.name }}
@@ -120,6 +120,7 @@
 <script lang="ts" setup>
 // el nombre coincide con la ruta: KeepAlive lo usa para conservar la vista (pestañas del admin)
 defineOptions({ name: 'UsersIndex' })
+import UserAvatar from '~/components/UserAvatar/UserAvatar.vue'
 import { computed, onMounted, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useAppStore } from '~/stores/app'

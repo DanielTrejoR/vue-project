@@ -1,7 +1,7 @@
 <template>
   <el-card shadow="never" class="user-card">
     <div class="user-card__header">
-      <el-avatar :size="96" :src="user.avatar">{{ user.name?.charAt(0) }}</el-avatar>
+      <UserAvatar :size="96" :src="user.avatar" :name="user.name" />
       <h2 class="user-card__name">{{ user.name }}</h2>
       <div class="user-card__email">{{ user.email }}</div>
       <div v-if="user.roles?.length" class="user-card__roles">
@@ -32,6 +32,7 @@
 </template>
 
 <script setup lang="ts">
+import UserAvatar from '~/components/UserAvatar/UserAvatar.vue'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'

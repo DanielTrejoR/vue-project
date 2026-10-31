@@ -30,7 +30,7 @@
           :class="{ 'notification--unread': !item.read }"
           @click="openItem(item)"
         >
-          <el-avatar :size="32" :src="item.actor?.avatar">{{ item.actor?.name?.charAt(0) }}</el-avatar>
+          <UserAvatar :size="32" :src="item.actor?.avatar" :name="item.actor?.name" />
           <span class="notification__text">
             <span>{{ item.text }}</span>
             <span v-if="item.excerpt" class="notification__excerpt">«{{ item.excerpt }}»</span>
@@ -51,6 +51,7 @@
 </template>
 
 <script setup lang="ts">
+import UserAvatar from '~/components/UserAvatar/UserAvatar.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter, type RouteLocationRaw } from 'vue-router'
 import { Bell } from '@element-plus/icons-vue'

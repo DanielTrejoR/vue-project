@@ -23,8 +23,9 @@
         <div class="pl-1 pr-1" >
           <el-dropdown trigger="click">
             <span class="el-dropdown-link user-dropdown">
-              <el-avatar
-                :src="user.avatar || ''"
+              <UserAvatar
+                :src="user.avatar"
+                :name="user.name"
                 size="small"
                 style="margin-right: 8px"
               />
@@ -51,6 +52,7 @@
   </el-header>
 </template>
 <script lang="ts" setup>
+import UserAvatar from '~/components/UserAvatar/UserAvatar.vue'
 import IconMoon from '~/components/icons/IconMoon.vue';
 import IconSunny from '~/components/icons/IconSunny.vue';
 import {onMounted, onUnmounted, ref, computed} from 'vue';

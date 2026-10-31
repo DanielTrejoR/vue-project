@@ -3,7 +3,7 @@
     <!-- nueva publicación: texto, imágenes o ambos -->
     <el-card shadow="never" class="composer">
       <div class="composer__row">
-        <el-avatar :size="40" :src="auth.user?.avatar">{{ auth.user?.name?.charAt(0) }}</el-avatar>
+        <UserAvatar :size="40" :src="auth.user?.avatar" :name="auth.user?.name" />
         <el-input
           v-model="body"
           type="textarea"
@@ -46,7 +46,7 @@
     <!-- muro -->
     <el-card v-for="status in items" :key="status.id" shadow="never" class="status">
       <header class="status__header">
-        <el-avatar :size="40" :src="status.user?.avatar">{{ status.user?.name?.charAt(0) }}</el-avatar>
+        <UserAvatar :size="40" :src="status.user?.avatar" :name="status.user?.name" />
         <div class="status__who">
           <strong>{{ status.user?.name }}</strong>
           <span class="status__when" :title="fullDate(status.created_at)">{{ fromNow(status.created_at) }}</span>
@@ -121,6 +121,7 @@
 </template>
 
 <script setup lang="ts">
+import UserAvatar from '~/components/UserAvatar/UserAvatar.vue'
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '~/stores/auth'

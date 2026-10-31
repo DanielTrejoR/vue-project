@@ -68,6 +68,7 @@ declare module 'vue' {
     ElTimelineItem: typeof import('element-plus/es')['ElTimelineItem']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElUpload: typeof import('element-plus/es')['ElUpload']
+    FrontUserAvatar: typeof import('./components/UserAvatar/FrontUserAvatar.vue')['default']
     Hamburger: typeof import('./components/Hamburger/index.vue')['default']
     HeaderSearch: typeof import('./components/HeaderSearch/index.vue')['default']
     IconMoon: typeof import('./components/icons/IconMoon.vue')['default']
@@ -89,6 +90,7 @@ declare module 'vue' {
     TagLink: typeof import('./components/Posts/components/TagLink.vue')['default']
     ThemePicker: typeof import('./components/ThemePicker/index.vue')['default']
     Tinymce: typeof import('./components/Tinymce/index.vue')['default']
+    UserAvatar: typeof import('./components/UserAvatar/UserAvatar.vue')['default']
   }
   export interface GlobalDirectives {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']

@@ -34,13 +34,12 @@
         <v-menu v-else min-width="260" max-width="92vw" location="bottom end" rounded>
           <template #activator="{ props }">
             <v-btn icon v-bind="props" aria-label="Menú de usuario">
-              <!-- sin contenido dentro: si v-avatar tiene slot, Vuetify ignora la imagen -->
-              <v-avatar size="36" color="surface" :image="user?.avatar" :text="user?.avatar ? undefined : user?.name?.charAt(0)" />
+              <FrontUserAvatar size="36" :src="user?.avatar" :name="user?.name" />
             </v-btn>
           </template>
           <v-card>
             <v-card-text class="text-center">
-              <v-avatar size="56" :image="user?.avatar" color="primary" class="mb-2" />
+              <FrontUserAvatar size="56" :src="user?.avatar" :name="user?.name" class="mb-2" />
               <div class="text-subtitle-1 font-weight-bold">{{ user?.name }}</div>
               <div class="text-caption text-medium-emphasis">{{ user?.email }}</div>
             </v-card-text>
@@ -90,6 +89,7 @@
     </v-navigation-drawer>
 </template>
 <script setup>
+import FrontUserAvatar from '~/components/UserAvatar/FrontUserAvatar.vue'
 import { useRadialThemeToggle } from '@/composables/Front/useRadialThemeToggle'
 import { useAuthStore } from '~/stores/auth'
 import { useRoute, useRouter } from 'vue-router'

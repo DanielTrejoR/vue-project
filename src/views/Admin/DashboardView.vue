@@ -91,7 +91,7 @@
           <template #header><div class="card-header"><span>Últimos comentarios</span></div></template>
           <ul v-if="data.recent_comments.length" class="feed">
             <li v-for="item in data.recent_comments" :key="item.id">
-              <el-avatar :size="32" :src="item.user?.avatar">{{ item.user?.name?.charAt(0) }}</el-avatar>
+              <UserAvatar :size="32" :src="item.user?.avatar" :name="item.user?.name" />
               <div class="feed__body">
                 <div class="feed__meta">
                   <strong>{{ item.user?.name || 'Usuario eliminado' }}</strong>
@@ -132,6 +132,7 @@
 <script setup lang="ts">
 // el nombre coincide con la ruta: KeepAlive lo usa para conservar la vista (pestañas del admin)
 defineOptions({ name: 'Dashboard' })
+import UserAvatar from '~/components/UserAvatar/UserAvatar.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {

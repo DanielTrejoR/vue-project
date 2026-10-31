@@ -4,7 +4,7 @@
     <section class="account__section">
       <h3>Foto de perfil</h3>
       <div class="account__avatar">
-        <el-avatar :size="88" :src="avatarPreview || auth.user?.avatar">{{ auth.user?.name?.charAt(0) }}</el-avatar>
+        <UserAvatar :size="88" :src="avatarPreview || auth.user?.avatar" :name="auth.user?.name" />
         <div>
           <el-upload
             :show-file-list="false"
@@ -56,6 +56,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import UserAvatar from '~/components/UserAvatar/UserAvatar.vue'
 import { computed, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules, UploadFile } from 'element-plus'
