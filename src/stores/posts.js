@@ -28,6 +28,11 @@ export const usePostsStore = defineStore('posts', {
         deletePhoto(photoId) {
             return axiosClient.delete(`/admin/photo/${photoId}`)
         },
+        // métricas del inicio del panel (todo el sitio para Admin, solo lo propio para Writer)
+        async getDashboard() {
+            const res = await axiosClient.get('/admin/dashboard')
+            return res.data
+        },
         getHistory(postId) {
             return axiosClient.get(`/admin/posts/${postId}/history`)
         },
