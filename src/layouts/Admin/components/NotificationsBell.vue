@@ -127,6 +127,11 @@ onBeforeUnmount(() => {
   background: var(--ep-fill-color-light);
 }
 
+/* el badge es inline-block y deja el espacio de la línea de texto bajo el ícono, que se ve subido */
+.bell :deep(.ep-badge) {
+  display: flex;
+}
+
 .notifications__header {
   display: flex;
   align-items: center;
