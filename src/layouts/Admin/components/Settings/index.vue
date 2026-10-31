@@ -1,27 +1,39 @@
 <template>
     <div class="drawer-container">
     <div>
-      <h3 class="drawer-title">Page style setting</h3>
+      <h3 class="drawer-title">Configuración</h3>
 
       <div class="drawer-item">
-        <span>Theme Color</span>
-        <ThemePicker style="float: right;height: 26px;margin: -3px 8px 0 0;" @change="themeChange" />
+        <span>Color principal</span>
+        <ThemePicker class="drawer-switch" @change="value => change('theme', value)" />
       </div>
 
       <div class="drawer-item">
-        <span>Open Tags-View</span>
-        <!-- <el-switch v-model="tagsView" class="drawer-switch" /> -->
+        <span>Modo oscuro</span>
+        <el-switch :model-value="settings.dark" class="drawer-switch" @change="value => change('dark', value)" />
       </div>
 
       <div class="drawer-item">
-        <span>Fixed Header</span>
-        <el-switch v-model="fixedHeader" class="drawer-switch" />
+        <span>Menú lateral colapsado</span>
+        <el-switch
+          :model-value="settings.sidebarCollapsed"
+          :disabled="isMobile"
+          class="drawer-switch"
+          @change="value => change('sidebarCollapsed', value)"
+        />
       </div>
 
       <div class="drawer-item">
-        <span>Sidebar Logo</span>
-        <el-switch v-model="sidebarLogo" class="drawer-switch" />
+        <span>Header fijo</span>
+        <el-switch :model-value="settings.fixedHeader" class="drawer-switch" @change="value => change('fixedHeader', value)" />
       </div>
+
+      <div class="drawer-item">
+        <span>Logo en el menú</span>
+        <el-switch :model-value="settings.sidebarLogo" class="drawer-switch" @change="value => change('sidebarLogo', value)" />
+      </div>
+
+      <p class="drawer-note">{{ syncText }}</p>
     </div>
   </div>
 </template>
@@ -30,40 +42,25 @@ defineOptions({
     name: 'Settings'
 });
 
-import { ref, computed } from 'vue';
-import { mapState, useStore } from 'vuex'
+import { computed } from 'vue';
+import { useStore } from 'vuex'
 const store = useStore();
 
-const fixedHeader = computed({
-  get() {
-    return store.state.settings.fixedHeader
-  },
-  set(val: string) {
-    return store.dispatch('settings/changeSetting', {
-            key: 'fixedHeader',
-            value: val
-        })
-  }
-});
+const settings = computed(() => store.state.settings)
+const isMobile = computed(() => store.state.app.device === 'mobile')
 
-const sidebarLogo = computed({
-    get() {
-    return store.state.settings.sidebarLogo
-    },
-    set(val) {
-    store.dispatch('settings/changeSetting', {
-        key: 'sidebarLogo',
-        value: val
-    })
-    }
-})
-
-function themeChange(val:string) {
-    store.dispatch('settings/changeSetting', {
-        key: 'theme',
-        value: val
-      })
+// cada cambio se aplica al momento y se guarda en el navegador y, con sesión, en la cuenta
+const change = (key: string, value: unknown) => {
+  store.dispatch('settings/changeSetting', { key, value })
 }
+
+const syncText = computed(() => {
+  if (!store.getters.isAuthenticated) return 'Guardado en este navegador.'
+  return {
+    saving: 'Guardando en tu cuenta…',
+    error: 'No se pudo guardar en tu cuenta; se mantiene en este navegador.',
+  }[settings.value.syncStatus as string] || 'Guardado en tu cuenta: se aplica al iniciar sesión.'
+})
 </script>
 <style lang="scss" scoped>
 .drawer-container {
@@ -74,35 +71,25 @@ function themeChange(val:string) {
 
   .drawer-title {
     margin-bottom: 12px;
-    color: rgba(0, 0, 0, .85);
-    font-size: 14px;
+    color: var(--ep-text-color-primary);
+    font-size: 16px;
     line-height: 22px;
   }
 
   .drawer-item {
-    color: rgba(0, 0, 0, .65);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--ep-text-color-regular);
     font-size: 14px;
     padding: 12px 0;
   }
 
-  .drawer-switch {
-    float: right
+  .drawer-note {
+    margin-top: 16px;
+    color: var(--ep-text-color-secondary);
+    font-size: 12px;
   }
 }
-
-:deep(.darker-switch.ep-switch.is-checked .ep-switch__core .ep-switch__action) {
-    left: calc(100% - 17px);
-    border-radius: 50%;
-    color: #cfd3dc !important;
-    background-color: #141414 !important;
-}
-:deep(.darker-switch.ep-switch.is-checked .ep-switch__core) {
-    background-color: #4C4D4F !important;
-}
-:deep(.darker-switch.ep-switch .ep-switch__core .ep-switch__action) {
-
-    color: #606266;
-}
-
-
 </style>

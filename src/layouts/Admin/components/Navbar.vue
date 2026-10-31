@@ -1,15 +1,15 @@
 <template>
   <el-header class="navbar" >
-    <el-row align="middle" justify="space-between" class="navbar-inner pt-4 d-flex align-center">
+    <el-row align="middle" justify="space-between" class="navbar-inner d-flex align-center">
       <!-- Branding -->
-      <div class="d-flex align-center">
-        <Hamburger class="" />
-        <Breadcrumb class="" />
+      <div class="d-flex align-center navbar-left">
+        <Hamburger :is-active="menuOpen" @toggle="store.dispatch('app/toggleMenu')" />
+        <Breadcrumb class="navbar-breadcrumb" />
       </div>
       <!-- Navegación -->
       
       <div class="float-right d-flex align-center">
-        <div class="pl-1 pr-1" >
+        <div class="pl-1 pr-1 navbar-search" >
           <HeaderSearch />
         </div>
         <el-switch class="ml-2 d-flex align-center pl-1 pr-3"
@@ -35,7 +35,7 @@
                 <el-dropdown-item @click="goProfile">
                   Mi Perfil
                 </el-dropdown-item>
-                <el-dropdown-item >
+                <el-dropdown-item @click="store.dispatch('app/setSettingsPanel', true)">
                   Configuración
                 </el-dropdown-item>
                 <el-dropdown-item divided @click="logout">
@@ -45,29 +45,7 @@
             </template>
           </el-dropdown>
         </div>
-        <!-- Menú móvil -->
-        <el-icon class="hamburger" @click="drawerVisible = true">
-            <Menu />
-        </el-icon>
       </div>
-      <!-- Acciones o toggle de tema -->
-        
-        <el-drawer
-            v-model="drawerVisible"
-            direction="rtl"
-            size="250px"
-            title="Navegación"
-        >
-            <el-menu
-              mode="vertical"
-              :router="true"
-              :default-active="$route.path"
-            >
-              <el-menu-item index="/admin/dashboard">Dashboard</el-menu-item>
-              <el-menu-item index="/usuarios">Usuarios</el-menu-item>
-              <el-menu-item index="/ajustes">Ajustes</el-menu-item>
-            </el-menu>
-        </el-drawer>
     </el-row>
   </el-header>
 </template>
@@ -80,7 +58,10 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const { isDark, toggleRadialTheme } = useRadialThemeToggle()
-const drawerVisible = ref(false)
+// ícono del botón de menú: abierto si el drawer móvil está abierto o el menú de escritorio expandido
+const menuOpen = computed(() => store.state.app.device === 'mobile'
+  ? store.state.app.mobileSidebar
+  : !store.state.settings.sidebarCollapsed)
 const store = useStore();
 const user = computed(() => store.getters['user'] || {});
 function handleSwitchClick(event: MouseEvent) {
@@ -96,12 +77,6 @@ const logout = async () => {
 const goProfile = () => {
   router.push({ name: 'ProfileIndex' })
 }
-onMounted(() => {
-  console.log('Navbar mounted')
-})
-onUnmounted(() => {
-  console.log('Navbar unmounted')
-})
 </script>
 <style lang="scss" scoped>
 .user-dropdown {
@@ -122,7 +97,12 @@ onUnmounted(() => {
 
   .navbar-inner {
     gap: 16px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    min-height: 56px;
+  }
+
+  .navbar-left {
+    min-width: 0;
   }
 
   .logo {
@@ -172,12 +152,19 @@ onUnmounted(() => {
     cursor: pointer;
   }
 
-  @media (max-width: 768px) {
-    .navbar-menu {
+  @media (max-width: 767px) {
+    padding: 0 8px;
+
+    .navbar-menu,
+    .navbar-breadcrumb,
+    .user-name {
       display: none;
     }
-    .hamburger {
-      display: block;
+  }
+
+  @media (max-width: 575px) {
+    .navbar-search {
+      display: none;
     }
   }
 }

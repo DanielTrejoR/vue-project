@@ -1,1 +1,1 @@
-export * from "./dark";
+export { isDark } from "./useRadialThemeToggle";

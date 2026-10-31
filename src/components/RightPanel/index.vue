@@ -23,7 +23,10 @@ import { useClickOutsideAdvanced } from '~/composables/useClickOutsideAdvanced';
 import { Setting, Close } from '@element-plus/icons-vue';
 const iconComponent = computed(() => show.value ? Close : Setting);
 const store = useStore();
-const show = ref(false)
+const show = computed({
+  get: () => store.state.app.settingsPanel,
+  set: (open: boolean) => store.dispatch('app/setSettingsPanel', open),
+})
 const rightPanel = ref<HTMLElement | null>(null);
 const panelRef = ref<HTMLElement | null>(null);
 
@@ -55,7 +58,9 @@ useClickOutsideAdvanced(
     '.ep-color-predefine',
     '.ep-color-dropdown',
     '.rightPanel',
-    '.darker-switch'
+    '.darker-switch',
+    // el ítem "Configuración" del menú de usuario abre el panel con este mismo clic
+    '.ep-dropdown-menu'
   ],
   show
 );
@@ -106,7 +111,7 @@ onBeforeUnmount(() => {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
   transform: translateX(100%);
   transition: transform 0.35s ease, opacity 0.3s ease;
-  background: #fff;
+  background: var(--ep-bg-color-overlay);
   z-index: 40000;
   &.mobile {
     transform: translateY(100%);

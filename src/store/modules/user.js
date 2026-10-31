@@ -66,6 +66,7 @@ const actions = {
       commit('auth/setUser', user, { root: true })
       commit('auth/setRoles', user.roles || [], { root: true })
       commit('auth/setPermissions', user.permissions || [], { root: true })
+      dispatch('settings/loadFromUser', user.preferences, { root: true })
     },
     async logout({commit}) {
       const clearSession = () => {

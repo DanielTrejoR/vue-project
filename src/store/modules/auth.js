@@ -44,6 +44,7 @@ const actions = {
                 if (data.roles) commit('setRoles', data.roles);
                 if (data.permissions) commit('setPermissions', data.permissions);
                 dispatch('user/setUser', data, {root: true})
+                dispatch('settings/loadFromUser', data.preferences, { root: true })
                 resolve(data)
             }).catch(error => {
                 reject(error)

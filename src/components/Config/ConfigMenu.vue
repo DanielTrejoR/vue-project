@@ -8,20 +8,23 @@
             :key="theme.name"
             size="56"
             :style="avatarStyle(theme)"
+            :title="theme.label"
+            role="button"
+            :aria-label="`Tema ${theme.label}`"
+            :aria-pressed="selectedTheme === theme.name"
             class="cursor-pointer"
             @click="selectTheme(theme.name)"
         />
       </div>
+      <p class="text-caption mt-6">{{ syncText }}</p>
     </v-container>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useThemeSwitcher } from '@/composables/Front/useThemeSwitcher'
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 
-const { setTheme, initTheme } = useThemeSwitcher()
-const drawer = ref(true)
-const selectedTheme = ref('light')
+const store = useStore()
 
 // Definimos los temas con sus colores
 const themes = [
@@ -35,6 +38,12 @@ const themes = [
     { name: 'turquoiseModern', label: 'Turquesa Moderno', primary: '#009688', background: '#FFFFFF' },
 ]
 
+const selectedTheme = computed(() => store.state.settings.blogTheme)
+
+const syncText = computed(() => store.getters.isAuthenticated
+    ? 'Se guarda en tu cuenta y se aplica al iniciar sesión en cualquier navegador.'
+    : 'Se guarda en este navegador. Inicia sesión para llevarlo a otros dispositivos.')
+
 const avatarStyle = (theme) => {
   const isActive = selectedTheme.value === theme.name
   return {
@@ -46,9 +55,6 @@ const avatarStyle = (theme) => {
 }
 
 const selectTheme = (name) => {
-  selectedTheme.value = name
-  setTheme(name)
+  store.dispatch('settings/changeSetting', { key: 'blogTheme', value: name })
 }
-
-initTheme()
 </script>

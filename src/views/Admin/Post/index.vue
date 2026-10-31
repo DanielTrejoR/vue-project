@@ -1,44 +1,40 @@
 <template>
-<div class="table-wrapper mr-10">
+<div class="table-wrapper">
     <h2>Listado de mis publicaciones</h2>
     <div>
         <div class="d-flex justify-end pb-2 mb-1">
             <el-button :color="theme" :loading="loading" type="primary" @click="getOwnerPosts()">Recargar publicaciones</el-button>
         </div>
         <div class="">
-            <el-form :model="filters" inline @submit.prevent="getOwnerPosts" class="d-flex justify-center flex-column">
-                <div class="pb-4">
-                    <el-select v-model="filters.status" placeholder="Estado" clearable class="pb-3">
-                        <el-option label="Borrador" value="draft" />
-                        <el-option label="Publicado" value="published" />
-                    </el-select>
-                    <el-input v-model="filters.search" placeholder="Buscar por título" clearable />
-                </div>
-                <div class="d-flex justify-start">
-                    <el-date-picker v-model="filters.published_from" type="date" placeholder="Desde" class="mr-5" />
-                    
-                    <el-date-picker v-model="filters.published_to" type="date" placeholder="Hasta" />
-                </div>
+            <el-form :model="filters" @submit.prevent="getOwnerPosts" class="posts-filters">
+                <el-select v-model="filters.status" placeholder="Estado" clearable>
+                    <el-option label="Borrador" value="draft" />
+                    <el-option label="Publicado" value="published" />
+                </el-select>
+                <el-input v-model="filters.search" placeholder="Buscar por título" clearable />
+                <el-date-picker v-model="filters.published_from" type="date" placeholder="Desde" />
+                <el-date-picker v-model="filters.published_to" type="date" placeholder="Hasta" />
 
-                <div >
+                <div class="posts-filters__actions">
                     <el-button :loading="loading" :color="theme" @click="getOwnerPosts">Filtrar</el-button>
                     <el-button :loading="loading" :color="theme" @click="resetFilters">Limpiar Filtros</el-button>
                 </div>
             </el-form>
         </div>
         <el-table v-loading="loading" element-loading-text="Cargando..." :style="{ opacity: loading ? 0.7 : 1 }" :data="tableData" style="width: 100%">
-            <el-table-column fixed prop="id" label="ID" />
-            <el-table-column prop="title" label="Titulo" />
-            <el-table-column prop="excerpt" label="Extracto" />
-            <el-table-column prop="created_at" label="Creado el:" />
-            <el-table-column prop="updated_at" label="Ultima actualizacón" />
-            <el-table-column label="Estatus ">
+            <!-- anchos mínimos: en pantallas chicas la tabla se desplaza en horizontal en vez de aplastarse -->
+            <el-table-column fixed prop="id" label="ID" width="60" />
+            <el-table-column prop="title" label="Titulo" min-width="160" />
+            <el-table-column prop="excerpt" label="Extracto" min-width="200" show-overflow-tooltip />
+            <el-table-column prop="created_at" label="Creado el:" min-width="140" />
+            <el-table-column prop="updated_at" label="Ultima actualizacón" min-width="150" />
+            <el-table-column label="Estatus " min-width="100">
                 <template #default="scope">
                     {{ scope.row.status === 'draft' ? 'Borrador' : 'Publicado' }}
                 </template>
             </el-table-column>
-            <el-table-column prop="published_at" label="Publicado el: " />
-            <el-table-column fixed="right" label="Operations" >
+            <el-table-column prop="published_at" label="Publicado el: " min-width="140" />
+            <el-table-column :fixed="isMobile ? false : 'right'" label="Operations" min-width="280">
             <template #default="scope">
                 <el-button :color="theme" type="primary" size="small" @click="handleClick(scope.row)">
                     Detalles
@@ -64,7 +60,8 @@
         <div class="d-flex justify-center pt-4 mt-5">
             <ElPagination 
                 background 
-                layout="total, prev, pager, next, jumper, sizes"
+                :layout="isMobile ? 'prev, pager, next' : 'total, prev, pager, next, jumper, sizes'"
+                :pager-count="isMobile ? 5 : 7"
                 :total="Number(paginator.total)"
                 :page-sizes="[10, 20, 30, 50]"
                 :size="size"
@@ -76,7 +73,7 @@
         </div>
     </div>
     <div>
-        <el-dialog v-model="showPreview" title="Vista previa del post" width="80%">
+        <el-dialog v-model="showPreview" title="Vista previa del post" :width="isMobile ? '95%' : '80%'">
             <PostPreview :post="postForm" />
         </el-dialog>
     </div>
@@ -93,6 +90,7 @@ import { ElMessage } from 'element-plus'
 import { InfoFilled } from '@element-plus/icons-vue'
 import { url } from 'inspector';
 const size = ref<ComponentSize>('default')
+const isMobile = computed(() => store.state.app.device === 'mobile')
 const tableData = ref([]);
 const postForm = ref(null);
 const showModal = ref(false);
@@ -211,5 +209,26 @@ onMounted(() => {
 <style>
 .el-loading-mask {
   transition: opacity 0.3s ease-in-out;
+}
+
+.posts-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.posts-filters .ep-date-editor.ep-input {
+  width: 100%;
+}
+
+.posts-filters__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.posts-filters__actions .ep-button + .ep-button {
+  margin-left: 0;
 }
 </style>

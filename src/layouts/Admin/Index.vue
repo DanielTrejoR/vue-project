@@ -1,15 +1,24 @@
 <template>
-  <div :class="classObj" class="navbar-root">
-    
-    <div v-if="device==='mobile'&& sidebar.opened" class="drawer-bg" @click="handleClickOutside" /> 
-    <!-- <div :class="{hasTagsView:needTagsView}"> -->
-    <el-container>
-      <el-aside width="200px" class="app-wrapper">
-        <Sidebar class="sidebar-container" />
+  <div :class="classObj" class="navbar-root admin-layout">
+    <el-container class="admin-shell">
+      <!-- escritorio: menú fijo a la izquierda (ancho según la preferencia de colapsado) -->
+      <el-aside v-if="!isMobile" :width="collapsed ? '64px' : '210px'" class="app-wrapper admin-aside">
+        <Sidebar />
       </el-aside>
-      <el-container>
-        <el-header class="app-wrapper"><Navbar /></el-header>
-        <el-main><AppMain ></AppMain></el-main>
+      <!-- móvil: el mismo menú en un drawer que abre el botón del header -->
+      <el-drawer
+        v-else
+        v-model="mobileSidebar"
+        direction="ltr"
+        size="260px"
+        :with-header="false"
+        class="admin-mobile-menu"
+      >
+        <Sidebar />
+      </el-drawer>
+      <el-container class="admin-content">
+        <el-header class="app-wrapper admin-header" :class="{ 'is-fixed': fixedHeader }"><Navbar /></el-header>
+        <el-main class="admin-main"><AppMain ></AppMain></el-main>
         <RightPanel v-if="showSettings">
           <Settings />
         </RightPanel> 
@@ -18,26 +27,39 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { mapState, useStore } from 'vuex'
+import { computed, watch, onBeforeUnmount } from 'vue';
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
 import {AppMain, Settings, Navbar} from "./components"
 const store = useStore();
+const route = useRoute();
 
-const handleClickOutside = (() => {
-  store.dispatch('app/closeSidebar', {withOutAnimation: false})
-})
+// por debajo de 992px el menú pasa a drawer
+const desktopQuery = window.matchMedia('(min-width: 992px)')
+const updateDevice = () => store.dispatch('app/toggleDevice', desktopQuery.matches ? 'desktop' : 'mobile')
+updateDevice()
+desktopQuery.addEventListener('change', updateDevice)
+onBeforeUnmount(() => desktopQuery.removeEventListener('change', updateDevice))
 
-const sidebar = computed(() => store.state.app.sidebar);
-const device = computed(() => store.state.app.device);
+const isMobile = computed(() => store.state.app.device === 'mobile');
+const collapsed = computed(() => store.state.settings.sidebarCollapsed);
 const showSettings = computed(() => store.state.settings.showSettings);
-const needTagsView = computed(() => store.state.settings.tagsView);
 const fixedHeader = computed(() => store.state.settings.fixedHeader);
 
+const mobileSidebar = computed({
+  get: () => store.state.app.mobileSidebar,
+  set: open => store.dispatch('app/setMobileSidebar', open),
+});
+
+// al elegir una sección desde el drawer, se cierra
+watch(() => route.fullPath, () => {
+  if (isMobile.value) mobileSidebar.value = false
+})
+
 const classObj = computed(() => ({
-  hideSidebar: !sidebar.value.opened,
-  openSidebar: sidebar.value.opened,
-  withoutAnimation: sidebar.value.withoutAnimation,
-  mobile: device.value === 'mobile'
+  hideSidebar: collapsed.value,
+  openSidebar: !collapsed.value,
+  mobile: isMobile.value
 }));
 
 </script>
@@ -73,6 +95,48 @@ const classObj = computed(() => ({
 .app-wrapper :deep(.ep-switch__core .ep-switch__action) {
     width: 14px;
     height: 14px;
+}
+
+.admin-shell {
+  min-height: 100vh;
+}
+
+.admin-aside {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  border-right: 1px solid var(--ep-border-color-light);
+  background: var(--ep-bg-color);
+  transition: width 0.25s ease;
+}
+
+.admin-content {
+  min-width: 0;
+}
+
+.admin-header {
+  height: auto;
+  padding: 0;
+  background: var(--ep-bg-color);
+
+  &.is-fixed {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--ep-box-shadow-lighter);
+  }
+}
+
+.admin-main {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+@media (max-width: 767px) {
+  .admin-main {
+    padding: 12px;
+  }
 }
 
 .fade-icon-enter-active,

@@ -1,11 +1,11 @@
 <template>
     <div>
-        <div class="mx-auto float-end">
+        <div class="d-flex justify-end">
             <v-btn variant="outlined" @click="getPost(1)">
              Recargar Publicaciones
             </v-btn>
         </div>
-        <div class="pt-8">
+        <div class="pt-4">
             <component :is="componentImport" :items="items"></component>
             <PaginationLinks :pagination="pagination" @change-page="getPost"></PaginationLinks>
         </div>

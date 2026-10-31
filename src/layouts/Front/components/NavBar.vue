@@ -1,9 +1,13 @@
 <template>
     <v-app-bar
       flat
-      class="pl-5 ml-1"
+      class="px-2"
       color="primary"
     >
+      <!-- móvil: los enlaces pasan a un menú lateral -->
+      <v-app-bar-nav-icon class="d-md-none" aria-label="Abrir menú" @click="navDrawer = !navDrawer" />
+
+      <div class="d-none d-md-flex">
       <RouterLink :to="{name: 'Index'}">
         <v-btn
           color="primary"
@@ -32,10 +36,11 @@
           color="primary"
         >Ultimos Posts</v-btn>
       </RouterLink>
+      </div>
 
       <v-spacer></v-spacer>
       <template v-slot:append>
-          <div>
+          <div class="d-none d-sm-flex">
             <v-btn
               v-if="!isAuthenticated"
               :to="{ name: 'Login' }"
@@ -55,7 +60,8 @@
             >Crear Nuevo Post</v-btn>
           </div>
           <v-menu
-            min-width="500px"
+            min-width="280px"
+            max-width="92vw"
             rounded
             location="bottom"
             transition="slide-x-transition"
@@ -140,6 +146,17 @@
         
         <ConfigMenu title="Configuracion"></ConfigMenu>
       </v-navigation-drawer>
+
+      <v-navigation-drawer v-model="navDrawer" temporary location="left" :width="260">
+        <v-list nav>
+          <v-list-item :to="{ name: 'Index' }" prepend-icon="mdi mdi-home" title="Inicio" @click="navDrawer = false" />
+          <v-list-item :to="{ name: 'UserPosts' }" prepend-icon="mdi mdi-account-edit" title="Mis Posts" @click="navDrawer = false" />
+          <v-list-item :to="{ name: 'Posts' }" prepend-icon="mdi mdi-newspaper" title="Ultimos Posts" @click="navDrawer = false" />
+          <v-divider class="my-2" />
+          <v-list-item v-if="!isAuthenticated" :to="{ name: 'Login' }" prepend-icon="mdi mdi-login" title="Login / Sign up" @click="navDrawer = false" />
+          <v-list-item v-else-if="canWrite" to="/admin/posts/create" prepend-icon="mdi mdi-plus" title="Crear Nuevo Post" @click="navDrawer = false" />
+        </v-list>
+      </v-navigation-drawer>
 </template>
 <script setup>
 import { useRadialThemeToggle } from '@/composables/Front/useRadialThemeToggle'
@@ -151,6 +168,7 @@ import { useTheme } from 'vuetify'
 const store = useStore();
 const theme = useTheme()
 const drawer = ref(null)
+const navDrawer = ref(false)
 const ex11 = ref(false)
 const { toggleRadialTheme } = useRadialThemeToggle()
 const router = useRouter()
