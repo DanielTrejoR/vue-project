@@ -1,92 +1,120 @@
 <template>
-  <div class="post-preview" :class="{ dark: isDark }">
-    <h2>{{ post.title || 'Sin título' }}</h2>
-    <p>{{ post.excerpt }}</p>
-    <div v-html="post.body" class="content"></div>
+  <article class="post-preview">
+    <header class="post-preview__header">
+      <h2 class="post-preview__title">{{ post.title || 'Sin título' }}</h2>
+      <div class="post-preview__meta">
+        <el-tag :type="post.status === 'published' ? 'success' : 'info'" size="small" disable-transitions>
+          {{ post.status === 'published' ? 'Publicado' : 'Borrador' }}
+        </el-tag>
+        <span v-if="post.category">· {{ post.category.name }}</span>
+        <!-- el backend ya manda las fechas formateadas ("01 Jun 2026, 11:06 PM") -->
+        <span>· {{ post.published_at ? `Publicado el ${post.published_at}` : 'Sin fecha de publicación' }}</span>
+        <span v-if="post.updated_at">· Actualizado el {{ post.updated_at }}</span>
+      </div>
+    </header>
 
-    <p v-if="post.iframe">Contenido embebido:</p>
-    <div v-html="post.iframe"></div>
+    <p v-if="post.excerpt" class="post-preview__excerpt">{{ post.excerpt }}</p>
 
-    <p>Publicado el: {{ formatDate(post.published_at) }}</p>
-    <div class="post-tags">
-      <el-tag v-for="tag in post.tags" :key="tag.id">{{ tag.name }}</el-tag>
-      {{ post.category.name }}
-    </div>
-    <div class="post-images">
+    <div v-if="post.photos?.length" class="post-preview__images">
       <el-image
-        v-for="photo in post.photos"
+        v-for="(photo, index) in post.photos"
         :key="photo.id"
         :src="photo.full_url"
-        style="width: 200px; margin-right: 10px"
+        :preview-src-list="post.photos.map((p: any) => p.full_url)"
+        :initial-index="Number(index)"
+        preview-teleported
+        fit="cover"
+        class="post-preview__image"
       />
     </div>
-  </div>
+
+    <!-- el cuerpo llega purificado por el backend (Purifier) -->
+    <div v-if="post.body" v-html="post.body" class="post-preview__body"></div>
+    <p v-else class="post-preview__empty">Este post todavía no tiene contenido.</p>
+
+    <p v-if="post.iframe" class="post-preview__embed">
+      Contenido embebido:
+      <a :href="post.iframe" target="_blank" rel="noopener noreferrer">{{ post.iframe }}</a>
+    </p>
+
+    <footer v-if="post.tags?.length" class="post-preview__tags">
+      <el-tag v-for="tag in post.tags" :key="tag.id" effect="plain" round>#{{ tag.name }}</el-tag>
+    </footer>
+  </article>
 </template>
 
 <script setup lang="ts">
 defineProps({
-  // el listado lo pasa en null hasta que se elige un post
-  post: { type: Object as () => Record<string, any>, default: () => ({}) }
+  // un post del listado del admin (/api/admin/posts): trae category, tags y photos
+  post: { type: Object as () => Record<string, any>, required: true }
 })
-
-import dayjs from 'dayjs'
-import { computed, ref } from 'vue'
-
-const formatDate = (date: string | null) =>
-  date ? dayjs(date).format('DD MMM YYYY HH:mm') : 'Sin fecha'
-const isDark = ref(false);
-const getPreview = (file: any) =>
-  file.url || file.response?.url || URL.createObjectURL(file.raw)
 </script>
+
 <style scoped>
-.preview-wrapper {
-  padding: 24px;
-  background-color: #f9f9f9;
-  color: #333;
-  border-radius: 8px;
-  max-width: 800px;
-  margin: auto;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.post-preview {
+  color: var(--ep-text-color-primary);
+  /* AppMain centra todo el texto del admin (#app); un artículo se lee mejor alineado a la izquierda */
+  text-align: left;
 }
-.preview-wrapper.dark {
-  background-color: #1e1e1e;
-  color: #eee;
+
+.post-preview__title {
+  margin: 0 0 8px;
+  font-size: 1.6rem;
+  overflow-wrap: anywhere;
 }
-.post-title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 16px;
+
+.post-preview__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--ep-text-color-secondary);
+  font-size: 13px;
 }
-.post-body {
-  font-size: 1rem;
-  line-height: 1.6;
+
+.post-preview__excerpt {
+  margin: 16px 0;
+  color: var(--ep-text-color-regular);
+  font-style: italic;
 }
-.post-tags {
-  margin-top: 24px;
-}
-.tag-chip {
-  display: inline-block;
-  background-color: #e0e0e0;
-  color: #333;
-  padding: 6px 12px;
-  border-radius: 16px;
-  margin-right: 8px;
-  font-size: 0.875rem;
-}
-.preview-wrapper.dark .tag-chip {
-  background-color: #333;
-  color: #eee;
-}
-.post-images {
-  margin-top: 24px;
+
+.post-preview__images {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  margin: 16px 0;
 }
-.post-image {
-  width: 100%;
-  max-width: 300px;
+
+.post-preview__image {
+  width: 160px;
+  height: 110px;
   border-radius: 6px;
-  object-fit: cover;
+}
+
+.post-preview__body {
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.post-preview__body :deep(img) {
+  max-width: 100%;
+  height: auto;
+}
+
+.post-preview__empty {
+  color: var(--ep-text-color-secondary);
+}
+
+.post-preview__embed {
+  margin-top: 16px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.post-preview__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
 }
 </style>
