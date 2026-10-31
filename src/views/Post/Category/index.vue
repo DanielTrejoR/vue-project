@@ -20,6 +20,7 @@
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Paginator from '~/components/Posts/components/Paginator.vue'
+import { setPageMeta } from '~/utils/seo'
 
 const route = useRoute()
 const category = ref(null)
@@ -28,7 +29,7 @@ const total = ref(null)
 const onLoaded = data => {
     category.value = data.category
     total.value = data.total
-    if (data.category) document.title = `${data.category.name} - Vue Project Daniel`
+    if (data.category) setPageMeta({ title: data.category.name, description: `Publicaciones de la categoría ${data.category.name}.` })
 }
 
 // al pasar de una categoría a otra se limpia el encabezado anterior

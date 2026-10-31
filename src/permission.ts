@@ -7,6 +7,7 @@ import { ElMessage } from 'element-plus'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import getPageTitle from '@/utils/get-page-title'
+import { setPageMeta } from '@/utils/seo'
 
 NProgress.configure({ showSpinner: false })
 
@@ -64,7 +65,9 @@ router.beforeEach(async(to, from, next) => {
     }
 })
 
-router.afterEach(() => {
+router.afterEach(to => {
   // finish progress bar
 NProgress.done()
+  // descripción y URL canónica por defecto; el post, la categoría y la etiqueta las cambian al cargar sus datos
+  setPageMeta({ title: to.meta.title as string | undefined })
 })

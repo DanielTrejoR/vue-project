@@ -19,6 +19,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import Paginator from '~/components/Posts/components/Paginator.vue'
+import { setPageMeta } from '~/utils/seo'
 
 const props = defineProps({
     tag: {
@@ -33,7 +34,7 @@ const total = ref(null)
 const onLoaded = data => {
     tagInfo.value = data.tag
     total.value = data.total
-    if (data.tag) document.title = `#${data.tag.name} - Vue Project Daniel`
+    if (data.tag) setPageMeta({ title: `#${data.tag.name}`, description: `Publicaciones con la etiqueta #${data.tag.name}.` })
 }
 
 // al pasar de una etiqueta a otra se limpia el encabezado anterior

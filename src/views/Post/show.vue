@@ -33,7 +33,7 @@
 
         <div class="d-flex flex-wrap align-center justify-space-between ga-4">
             <TagLink v-if="post.tags?.length" :tags="post.tags" />
-            <SocialLinks :title="post.title" :current-url="currentUrl" />
+            <SocialLinks :title="post.title" :current-url="currentUrl" :share-url="sharePostUrl(post.url)" />
         </div>
     </article>
 
@@ -168,6 +168,7 @@ import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
 import { usePostsStore } from '~/stores/posts'
 import SocialLinks from './components/social-links.vue'
+import { setPageMeta, sharePostUrl } from '~/utils/seo'
 import { openAuthDialog } from '@/composables/Front/useAuthDialog'
 const auth = useAuthStore()
 const postsStore = usePostsStore()
@@ -289,7 +290,12 @@ onMounted(async () => {
   const { data } = await postsStore.viewPost(route.params.url)
   post.value = data
   userRating.value = data.my_rating || 0
-  document.title = `${data.title} - Vue Project Daniel`
+  setPageMeta({
+    title: data.title,
+    description: data.excerpt || undefined,
+    image: data.photos?.[0]?.full_url,
+    type: 'article',
+  })
 })
 </script>
 <style scoped>

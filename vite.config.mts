@@ -1,6 +1,6 @@
 import path from 'path'
 import fs from 'fs'
-import { defineConfig, loadEnv  } from 'vite'
+import { defineConfig, loadEnv, type Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
 
@@ -38,6 +38,35 @@ const vuetifyComponents = fs.existsSync(vuetifyComponentsIndex)
   ? [...fs.readFileSync(vuetifyComponentsIndex, 'utf8').matchAll(/^export \* from "\.\/(V\w+)\/index\.js"/gm)]
       .map(([, name]) => `vuetify/components/${name}`)
   : []
+
+// robots.txt con la URL absoluta del sitemap, que sirve el backend (VITE_API_BASE_URL sin /api).
+// Se genera aquí porque los archivos de public/ no pueden leer variables de entorno
+const robotsTxt = (apiBaseUrl: string): Plugin => {
+  const content = () => [
+    'User-agent: *',
+    'Disallow: /admin',
+    'Disallow: /login',
+    'Disallow: /register',
+    'Disallow: /forgot-password',
+    'Disallow: /reset-password',
+    '',
+    `Sitemap: ${apiBaseUrl.replace(/\/api\/?$/, '')}/sitemap.xml`,
+    '',
+  ].join('\n')
+
+  return {
+    name: 'robots-txt',
+    configureServer(server) {
+      server.middlewares.use('/robots.txt', (_req, res) => {
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+        res.end(content())
+      })
+    },
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: content() })
+    },
+  }
+}
 
 // https://vitejs.dev/config/
 export default ({ mode }) => { 
@@ -84,6 +113,7 @@ export default ({ mode }) => {
     },
     plugins: [
       vue(),
+      robotsTxt(env.VITE_API_BASE_URL || ''),
       // importa solo los componentes y directivas de Vuetify que usa cada archivo
       vuetify({ autoImport: true }),
       AutoImport({
