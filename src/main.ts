@@ -12,6 +12,7 @@ import "uno.css";
 // Estilos de los servicios que se llaman desde código (ElMessage, ElNotification, v-loading...)
 import "element-plus/theme-chalk/src/message.scss";
 import "element-plus/theme-chalk/src/notification.scss";
+import "element-plus/theme-chalk/src/message-box.scss";
 import "element-plus/theme-chalk/src/loading.scss";
 import "element-plus/theme-chalk/src/switch.scss";
 import 'element-plus/theme-chalk/dark/css-vars.css'

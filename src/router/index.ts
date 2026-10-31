@@ -220,6 +220,16 @@ export const asyncRoutes = [
     },
     children: [
       {
+        path: 'users/index',
+        name: 'UsersIndex',
+        component: () => import('~/views/Admin/Users/index.vue'),
+        meta: {
+          title: "Usuarios",
+          roles: ['Admin'],
+          icon: "User"
+        }
+      },
+      {
         path: 'roles/index',
         name: 'RolesIndex',
         component: () => import('~/views/Admin/Roles/index.vue'),

@@ -215,50 +215,8 @@ const deletePost = async (post: Post) => {
 onMounted(getOwnerPosts)
 </script>
 
+<style src="../list-page.css"></style>
 <style>
-.posts-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.posts-header h2 {
-  margin: 0;
-}
-
-.posts-header__actions {
-  display: flex;
-  gap: 8px;
-}
-
-.posts-header__actions .ep-button + .ep-button {
-  margin-left: 0;
-}
-
-.posts-filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.posts-filters .ep-date-editor.ep-input {
-  width: 100%;
-}
-
-.posts-filters__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.posts-filters__actions .ep-button + .ep-button {
-  margin-left: 0;
-}
-
 .post-title-link {
   color: var(--ep-color-primary);
   font-weight: 600;
@@ -275,10 +233,5 @@ onMounted(getOwnerPosts)
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.posts-empty {
-  padding: 24px 0;
-  color: var(--ep-text-color-secondary);
 }
 </style>
