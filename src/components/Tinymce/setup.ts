@@ -1,0 +1,40 @@
+// TinyMCE 8 empaquetado con la app (antes se cargaba la 4.9.3 desde jsdelivr, sin soporte y con XSS conocidos).
+// Solo lo importa el componente del editor, así que queda en el chunk del editor de posts.
+import tinymce from 'tinymce'
+import 'tinymce/models/dom/model'
+import 'tinymce/themes/silver'
+import 'tinymce/icons/default'
+
+// skins como módulos JS: con skin_url/content_css 'default' TinyMCE no las pide por red
+import 'tinymce/skins/ui/oxide/skin.js'
+import 'tinymce/skins/ui/oxide/content.js'
+import 'tinymce/skins/ui/oxide-dark/skin.js'
+import 'tinymce/skins/ui/oxide-dark/content.js'
+import 'tinymce/skins/content/default/content.js'
+import 'tinymce/skins/content/dark/content.js'
+
+import 'tinymce/plugins/advlist'
+import 'tinymce/plugins/anchor'
+import 'tinymce/plugins/autolink'
+import 'tinymce/plugins/autosave'
+import 'tinymce/plugins/charmap'
+import 'tinymce/plugins/code'
+import 'tinymce/plugins/codesample'
+import 'tinymce/plugins/directionality'
+import 'tinymce/plugins/emoticons'
+import 'tinymce/plugins/emoticons/js/emojis'
+import 'tinymce/plugins/fullscreen'
+import 'tinymce/plugins/image'
+import 'tinymce/plugins/insertdatetime'
+import 'tinymce/plugins/link'
+import 'tinymce/plugins/lists'
+import 'tinymce/plugins/nonbreaking'
+import 'tinymce/plugins/pagebreak'
+import 'tinymce/plugins/preview'
+import 'tinymce/plugins/searchreplace'
+import 'tinymce/plugins/table'
+import 'tinymce/plugins/visualblocks'
+import 'tinymce/plugins/visualchars'
+import 'tinymce/plugins/wordcount'
+
+export default tinymce

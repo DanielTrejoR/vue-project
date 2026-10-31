@@ -10,9 +10,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import EditorImage, { type UploadedImage } from './components/EditorImage.vue'
+import type { Editor } from 'tinymce'
+import tinymce from './setup'
 import plugins from './plugins'
 import toolbar from './toolbar'
-import load from './dynamicLoadScript'
+import { isDark } from '~/composables/useRadialThemeToggle'
 
 // Props
 const props = defineProps<{
@@ -30,16 +32,7 @@ const emit = defineEmits<{ (e: 'update:modelValue', content: string): void }>()
 // Data refs
 const tinymceId = ref(props.id || `vue-tinymce-${Date.now()}`)
 const fullscreen = ref(false)
-const hasChange = ref(false)
 const hasInit = ref(false)
-const tinymceCDN = 'https://cdn.jsdelivr.net/npm/tinymce-all-in-one@4.9.3/tinymce.min.js'
-//
-const languageTypeList = {
-  en: 'en',
-  zh: 'zh_CN',
-  es: 'es_MX',
-  ja: 'ja'
-}
 
 // Computed style
 const containerWidth = computed(() => {
@@ -47,21 +40,26 @@ const containerWidth = computed(() => {
   return /^[\d]+(\.[\d]+)?$/.test(String(w)) ? `${w}px` : w
 })
 
-// Watch external value update
+// Valor que llega desde afuera (p. ej. el post al cargar la edición). Se compara con el contenido del
+// editor: si es el mismo, el cambio vino del propio editor y no hay que reescribirlo (perdería el cursor).
 watch(() => props.modelValue, val => {
-  if (!hasChange.value && hasInit.value) {
-    setTimeout(() => {
-      window.tinymce.get(tinymceId.value)?.setContent(val || '')
-    }, 0)
+  const editor = hasInit.value ? tinymce.get(tinymceId.value) : null
+  if (editor && (val || '') !== editor.getContent()) {
+    editor.setContent(val || '')
   }
 })
 
 // Lifecycle
 onMounted(() => {
-  load(tinymceCDN, (err: unknown) => {
-    if (err) return console.error('Tinymce load error', err)
-    initTinymce()
-  })
+  initTinymce()
+})
+
+// el editor no cambia de skin en caliente: se vuelve a crear con el contenido actual
+watch(isDark, () => {
+  if (!hasInit.value) return
+  destroyTinymce()
+  hasInit.value = false
+  initTinymce()
 })
 
 onBeforeUnmount(() => {
@@ -70,10 +68,16 @@ onBeforeUnmount(() => {
 
 // Tinymce init
 function initTinymce() {
-  const editor = window.tinymce
-  editor.init({
+  tinymce.init({
     selector: `#${tinymceId.value}`,
-    language: languageTypeList['en'],
+    // uso GPL autohospedado: no necesita cuenta ni API key de Tiny
+    license_key: 'gpl',
+    // skins empaquetadas en ./setup.ts (sin pedirlas a ningún CDN)
+    skin_url: 'default',
+    skin: isDark.value ? 'oxide-dark' : 'oxide',
+    content_css: isDark.value ? 'dark' : 'default',
+    promotion: false,
+    branding: false,
     height: props.height || 360,
     body_class: 'panel-body',
     object_resizing: false,
@@ -81,16 +85,17 @@ function initTinymce() {
     menubar: props.menubar || 'file edit insert view format table',
     plugins: plugins,
     convert_urls: false,
-    // TinyMCE llega como script global sin tipos
-    init_instance_callback: (instance: any) => {
+    init_instance_callback: (instance: Editor) => {
       if (props.modelValue) instance.setContent(props.modelValue)
       hasInit.value = true
       instance.on('NodeChange Change KeyUp SetContent', () => {
-        hasChange.value = true
-        emit('update:modelValue', instance.getContent())
+        const content = instance.getContent()
+        if (content !== (props.modelValue || '')) {
+          emit('update:modelValue', content)
+        }
       })
     },
-    setup(instance: any) {
+    setup(instance: Editor) {
       instance.on('FullscreenStateChanged', (e: { state: boolean }) => {
         fullscreen.value = e.state
       })
@@ -99,13 +104,13 @@ function initTinymce() {
 }
 
 function destroyTinymce() {
-  const editor = window.tinymce.get(tinymceId.value)
+  const editor = tinymce.get(tinymceId.value)
   if (fullscreen.value) editor?.execCommand('mceFullScreen')
   editor?.destroy()
 }
 
 function imageSuccessCBK(arr: UploadedImage[]) {
-  const editor = window.tinymce.get(tinymceId.value)
+  const editor = tinymce.get(tinymceId.value)
   arr.forEach(img => editor?.insertContent(`<img class="wscnph" src="${img.url}" />`))
 }
 </script>
