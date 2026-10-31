@@ -1,5 +1,7 @@
 <template>
+    <!-- más bajo en pantallas chicas: 500px fijos ocupaban casi todo el teléfono -->
     <v-carousel 
+        :height="$vuetify.display.smAndDown ? 280 : 460"
         :hide-delimiters="photos.length > 1 ? false : true" :show-arrows="photos.length > 1 ? 'hover' : false" 
         hide-delimiter-background
         transition-duration="700" 

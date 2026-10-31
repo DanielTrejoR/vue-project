@@ -1,233 +1,162 @@
 <template>
-    <v-app-bar
-      flat
-      class="px-2"
-      color="primary"
-    >
+    <v-app-bar flat color="primary" class="px-1 px-sm-2">
       <!-- móvil: los enlaces pasan a un menú lateral -->
       <v-app-bar-nav-icon class="d-md-none" aria-label="Abrir menú" @click="navDrawer = !navDrawer" />
 
-      <div class="d-none d-md-flex">
-      <RouterLink :to="{name: 'Index'}">
-        <v-btn
-          color="primary"
-          class="me-2"
-          height="40"
-          variant="flat"
-          width="80"
-        >
-          Inicio 
-        </v-btn>
+      <RouterLink :to="{ name: 'Index' }" class="brand">
+        <span class="brand__mark">{{ siteTitle.charAt(0) }}</span>
+        <span class="brand__title d-none d-sm-inline">{{ siteTitle }}</span>
       </RouterLink>
 
-      <RouterLink :to="{name: 'UserPosts'}">
+      <nav class="d-none d-md-flex ml-4">
         <v-btn
-          color="primary"
-          class="me-2"
-          height="40"
-          variant="flat"
-        >Mis Posts</v-btn>
-      </RouterLink>
-      <RouterLink :to="{name: 'Posts'}">
-        <v-btn
-          class="me-2"
-          height="40"
-          variant="flat"
-          color="primary"
-        >Ultimos Posts</v-btn>
-      </RouterLink>
-      </div>
+          v-for="link in links"
+          :key="link.name"
+          :to="{ name: link.name }"
+          :exact="link.exact"
+          :active="isActive(link)"
+          variant="text"
+          class="nav-link"
+        >{{ link.title }}</v-btn>
+      </nav>
 
-      <v-spacer></v-spacer>
-      <template v-slot:append>
-          <div class="d-none d-sm-flex">
-            <v-btn
-              v-if="!isAuthenticated"
-              :to="{ name: 'Login' }"
-              class="me-2"
-              color="primary"
-              height="40"
-              variant="flat"
-            >Login / Sign up</v-btn>
-            <!-- path y no name: la ruta solo existe si el usuario tiene rol de admin/escritor -->
-            <v-btn
-              v-else-if="canWrite"
-              to="/admin/posts/create"
-              class="me-2"
-              color="primary"
-              height="40"
-              variant="flat"
-            >Crear Nuevo Post</v-btn>
-          </div>
-          <v-menu
-            min-width="280px"
-            max-width="92vw"
-            rounded
-            location="bottom"
-            transition="slide-x-transition"
-          >
-            <template v-slot:activator="{ props }">
-              <v-btn
-                icon
-                class="pe-1"
-                v-bind="props"
-              >
-                <v-avatar v-if="user"
-                  color="brown"
-                  size="large"
-                  :image="user.avatar"
-                >
-                </v-avatar>
-                <v-avatar v-else
-                  color="brown"
-                  size="large"
-                >
-                Guest
-                </v-avatar>
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-text>
-                <div class="mx-auto text-center" v-if="user">
-                  <v-avatar
-                    color="brown"
-                    :image="user.avatar"
-                  >
-                  </v-avatar>
-                  <h3>{{ user.name }}</h3>
-                  <p class="text-caption mt-1">
-                    {{ user.email }}
-                  </p>
-                  <v-divider class="my-3"></v-divider>
-                  <v-btn
-                    rounded
-                    variant="text"
-                  >
-                    Edit Account
-                  </v-btn>
-                  <v-divider class="my-3"></v-divider>
-                  <v-btn
-                    rounded
-                    variant="text"
-                    @click="logout"
-                  >
-                    Disconnect
-                  </v-btn>
-                </div>
-                <div v-else>
-                    <v-btn
-                      rounded
-                      variant="text"
-                      :to="{ name: 'Login' }"
-                    >
-                      Login
-                    </v-btn>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-menu>
-          <v-btn
-            class=""
-            :icon="themeIcon"
-            id="mode-switcher"
-            @click="toggleRadialTheme($event)"
-          >
-          </v-btn>
-          <v-btn @click.stop="drawer = !drawer" icon="mdi mdi-cog"></v-btn>
-        </template>
+      <v-spacer />
+
+      <template #append>
+        <v-btn
+          v-if="!isAuthenticated"
+          :to="{ name: 'Login' }"
+          variant="outlined"
+          class="d-none d-sm-flex mr-2"
+          prepend-icon="mdi mdi-login"
+        >Entrar</v-btn>
+
+        <v-menu v-else min-width="260" max-width="92vw" location="bottom end" rounded>
+          <template #activator="{ props }">
+            <v-btn icon v-bind="props" aria-label="Menú de usuario">
+              <!-- sin contenido dentro: si v-avatar tiene slot, Vuetify ignora la imagen -->
+              <v-avatar size="36" color="surface" :image="user?.avatar" :text="user?.avatar ? undefined : user?.name?.charAt(0)" />
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-text class="text-center">
+              <v-avatar size="56" :image="user?.avatar" color="primary" class="mb-2" />
+              <div class="text-subtitle-1 font-weight-bold">{{ user?.name }}</div>
+              <div class="text-caption text-medium-emphasis">{{ user?.email }}</div>
+            </v-card-text>
+            <v-divider />
+            <v-list density="compact" nav>
+              <v-list-item :to="{ name: 'UserPosts' }" prepend-icon="mdi mdi-account-outline" title="Mi espacio" />
+              <template v-if="canWrite">
+                <v-list-item to="/admin/posts/create" prepend-icon="mdi mdi-plus" title="Nuevo post" />
+                <v-list-item to="/admin/dashboard" prepend-icon="mdi mdi-view-dashboard-outline" title="Panel de administración" />
+              </template>
+              <v-list-item prepend-icon="mdi mdi-logout" title="Cerrar sesión" @click="logout" />
+            </v-list>
+          </v-card>
+        </v-menu>
+
+        <v-btn
+          :icon="isDarkTheme ? 'mdi mdi-weather-night' : 'mdi mdi-weather-sunny'"
+          id="mode-switcher"
+          :aria-label="isDarkTheme ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+          @click="toggleRadialTheme($event)"
+        />
+        <v-btn icon="mdi mdi-palette-outline" aria-label="Elegir tema" @click.stop="drawer = !drawer" />
+      </template>
     </v-app-bar>
-    <v-navigation-drawer
-        v-model="drawer"
-        temporary
-        color="primary"
-        location="right"
-        :width="350"
-      >
-        
-        <ConfigMenu title="Configuracion"></ConfigMenu>
-      </v-navigation-drawer>
 
-      <v-navigation-drawer v-model="navDrawer" temporary location="left" :width="260">
-        <v-list nav>
-          <v-list-item :to="{ name: 'Index' }" prepend-icon="mdi mdi-home" title="Inicio" @click="navDrawer = false" />
-          <v-list-item :to="{ name: 'UserPosts' }" prepend-icon="mdi mdi-account-edit" title="Mis Posts" @click="navDrawer = false" />
-          <v-list-item :to="{ name: 'Posts' }" prepend-icon="mdi mdi-newspaper" title="Ultimos Posts" @click="navDrawer = false" />
-          <v-divider class="my-2" />
-          <v-list-item v-if="!isAuthenticated" :to="{ name: 'Login' }" prepend-icon="mdi mdi-login" title="Login / Sign up" @click="navDrawer = false" />
-          <v-list-item v-else-if="canWrite" to="/admin/posts/create" prepend-icon="mdi mdi-plus" title="Crear Nuevo Post" @click="navDrawer = false" />
-        </v-list>
-      </v-navigation-drawer>
+    <v-navigation-drawer v-model="drawer" temporary location="right" :width="350">
+      <ConfigMenu title="Configuracion" />
+    </v-navigation-drawer>
+
+    <v-navigation-drawer v-model="navDrawer" temporary location="left" :width="260">
+      <v-list nav>
+        <v-list-item
+          v-for="link in links"
+          :key="link.name"
+          :to="{ name: link.name }"
+          :exact="link.exact"
+          :active="isActive(link)"
+          :prepend-icon="link.icon"
+          :title="link.title"
+          @click="navDrawer = false"
+        />
+        <v-divider class="my-2" />
+        <v-list-item v-if="!isAuthenticated" :to="{ name: 'Login' }" prepend-icon="mdi mdi-login" title="Entrar" @click="navDrawer = false" />
+        <v-list-item v-if="!isAuthenticated" :to="{ name: 'Register' }" prepend-icon="mdi mdi-account-plus" title="Crear cuenta" @click="navDrawer = false" />
+        <v-list-item v-if="canWrite" to="/admin/posts/create" prepend-icon="mdi mdi-plus" title="Nuevo post" @click="navDrawer = false" />
+      </v-list>
+    </v-navigation-drawer>
 </template>
 <script setup>
 import { useRadialThemeToggle } from '@/composables/Front/useRadialThemeToggle'
 import { useAuthStore } from '~/stores/auth'
-import { useRouter } from 'vue-router'
-import { ref, watch, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
 import { useTheme } from 'vuetify'
+import defaultSettings from '~/settings'
 
+const siteTitle = defaultSettings.title
 const auth = useAuthStore()
 const theme = useTheme()
-const drawer = ref(null)
-const navDrawer = ref(false)
-const ex11 = ref(false)
-const { toggleRadialTheme } = useRadialThemeToggle()
 const router = useRouter()
+const route = useRoute()
+const drawer = ref(false)
+const navDrawer = ref(false)
+const { toggleRadialTheme } = useRadialThemeToggle()
+
+const links = [
+  { name: 'Index', title: 'Inicio', icon: 'mdi mdi-home-outline', exact: true },
+  { name: 'Posts', title: 'Blog', icon: 'mdi mdi-newspaper-variant-outline', exact: false },
+  { name: 'UserPosts', title: 'Mi espacio', icon: 'mdi mdi-account-outline', exact: true },
+]
+
+// categoría, etiqueta y post no cuelgan de /blog en el router, pero son parte del blog
+const blogRoutes = ['Posts', 'CategoryPosts', 'TagsPosts', 'ViewPost']
+const isActive = link => link.name === 'Posts' ? blogRoutes.includes(route.name) : route.name === link.name
+
 // computed para reflejar el login/logout sin recargar
 const user = computed(() => auth.user)
 const isAuthenticated = computed(() => auth.isAuthenticated)
 const canWrite = computed(() => auth.canWrite)
+// el ícono sigue al tema actual de Vuetify (los temas de colores también pueden ser oscuros)
+const isDarkTheme = computed(() => theme.global.current.value.dark)
 
 const logout = async () => {
   await auth.logout()
   router.push({ name: 'Index' })
 }
-
-const themeIcon = ref('mdi mdi-weather-sunny')
-// Guardamos el último tema claro y oscuro
-const lastLight = ref('light')
-const lastDark = ref('dark')
-
-
-// Función para calcular luminosidad
-const hexToRgb = (hex) => {
-  const bigint = parseInt(hex.replace('#', ''), 16)
-  return {
-    r: (bigint >> 16) & 255,
-    g: (bigint >> 8) & 255,
-    b: bigint & 255,
-  }
-}
-
-const getIconByBackground = (bg) => {
-  const { r, g, b } = hexToRgb(bg)
-  const luminance = (0.299*r + 0.587*g + 0.114*b) / 255
-  return luminance < 0.5 ? 'mdi mdi-weather-night' : 'mdi mdi-weather-sunny'
-}
-
-
-// Watcher: actualiza icono y guarda último tema claro/oscuro
-watch(
-  () => theme.global.name.value,
-  (newTheme) => {
-    const bg = theme.global.current.value.colors.background || '#FFFFFF'
-    themeIcon.value = getIconByBackground(bg)
-
-    if (themeIcon.value === 'mdi mdi-weather-sunny') {
-      lastLight.value = newTheme
-    } else {
-      lastDark.value = newTheme
-    }
-  },
-  { immediate: true }
-)
-
-// Acción del botón: alternar entre último claro ↔ último oscuro
-const toggleTheme = () => {
-  if (themeIcon.value === 'mdi mdi-weather-sunny') {
-    theme.global.name.value = lastDark.value
-  } else {
-    theme.global.name.value = lastLight.value
-  }
-}
-
 </script>
+
+<style scoped>
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.nav-link {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+}
+
+/* la sección actual queda marcada con un subrayado */
+.nav-link.v-btn--active {
+  box-shadow: inset 0 -2px 0 currentColor;
+}
+</style>

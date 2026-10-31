@@ -1,24 +1,28 @@
 <template>
-    <v-chip
-    v-for="tag in props.tags"
-    :key="tag.id"
-        class="ma-2"
-        color="pink"
-        label
-    >
-        <v-icon icon="mdi mdi-label" start></v-icon>
-        <RouterLink :to="{name: 'TagsPosts', params: {tag: tag.url }}" style="text-decoration:none">
-            {{ tag.name }}
-        </RouterLink>
-    </v-chip>
+    <div class="d-flex flex-wrap ga-2">
+        <!-- @click.stop: dentro de una tarjeta que ya es enlace, el chip lleva a la etiqueta y no al post -->
+        <v-chip
+            v-for="tag in tags"
+            :key="tag.id"
+            :to="{ name: 'TagsPosts', params: { tag: tag.url } }"
+            variant="outlined"
+            :size="size"
+            label
+            @click.stop
+        >
+            #{{ tag.name }}
+        </v-chip>
+    </div>
 </template>
 <script setup>
-
-// Definición de props con Composition API
-const props = defineProps({
+defineProps({
     tags: {
         type: Array,
         required: true
+    },
+    size: {
+        type: String,
+        default: 'small'
     }
 })
 </script>

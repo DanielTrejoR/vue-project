@@ -34,9 +34,20 @@ export const usePostsStore = defineStore('posts', {
         deletePost(post) {
             return axiosClient.delete(`/admin/posts/${post}`)
         },
-        // listados públicos paginados (blog, categoría, etiqueta)
-        getPosts({ url, page }) {
-            return axiosClient.get(url, { params: { page } })
+        // listados públicos paginados (blog, categoría, etiqueta); search solo aplica en /posts
+        getPosts({ url, page, search }) {
+            return axiosClient.get(url, { params: { page, search: search || undefined } })
+        },
+        // categorías y etiquetas con posts publicados (incluyen posts_count)
+        getCategories() {
+            return axiosClient.get('/categories')
+        },
+        getTags() {
+            return axiosClient.get('/tags')
+        },
+        // comentarios del usuario con sesión, con el post al que pertenecen
+        getMyComments(page = 1) {
+            return axiosClient.get('/user/comments', { params: { page } })
         },
         viewPost(url) {
             return axiosClient.get(`/posts/${url}`)

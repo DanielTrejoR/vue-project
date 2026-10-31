@@ -1,79 +1,96 @@
 <template>
-<v-container>
-    <v-card>
-        <v-card-subtitle><PostHeader :post="post" /></v-card-subtitle>
-        <v-card-text >
-            <div v-if="post.photos && post.photos.length > 0">
-                <img v-if="post.photos?.length < 2" :src="post.photos[0].full_url" class="mb-4" />
-                <CarouselComponent v-else-if="post.photos.length > 1" :photos="post.photos" />
+<v-container class="py-8 post-page">
+    <v-btn :to="{ name: 'Posts' }" variant="text" prepend-icon="mdi mdi-arrow-left" class="mb-4 px-0">Blog</v-btn>
+
+    <v-skeleton-loader v-if="!post.id" type="heading, paragraph, image, paragraph" />
+
+    <article v-else>
+        <header class="mb-6">
+            <div class="d-flex flex-wrap align-center ga-2 mb-3">
+                <CategoryLink v-if="post.category" :category="post.category" size="small" />
+                <span class="text-body-2 text-medium-emphasis">
+                    {{ post.published_at || 'Borrador' }}<template v-if="post.owner"> · por {{ post.owner.name }}</template>
+                </span>
             </div>
-            <div v-html="post.body"></div>
-            <!-- Iframe embebido -->
-             <div v-if="post.iframe" class="mt-4">
-                <div v-html="post.iframe"></div>
+            <h1 class="text-h4 text-md-h3 font-weight-bold post-title">{{ post.title }}</h1>
+            <p v-if="post.excerpt" class="text-h6 font-weight-regular text-medium-emphasis mt-3">{{ post.excerpt }}</p>
+        </header>
+
+        <div v-if="post.photos?.length" class="mb-6 rounded-lg overflow-hidden">
+            <v-img v-if="post.photos.length === 1" :src="post.photos[0].full_url" max-height="520" cover />
+            <CarouselComponent v-else :photos="post.photos" />
+        </div>
+
+        <!-- el cuerpo llega purificado por el backend (Purifier) -->
+        <div class="post-body" v-html="post.body"></div>
+
+        <p v-if="post.iframe" class="mt-4 text-body-2">
+            Contenido relacionado:
+            <a :href="post.iframe" target="_blank" rel="noopener noreferrer">{{ post.iframe }}</a>
+        </p>
+
+        <v-divider class="my-6" />
+
+        <div class="d-flex flex-wrap align-center justify-space-between ga-4">
+            <TagLink v-if="post.tags?.length" :tags="post.tags" />
+            <SocialLinks :title="post.title" :current-url="currentUrl" />
+        </div>
+    </article>
+
+    <v-card v-if="post.id" variant="tonal" class="my-8 pa-4 d-flex flex-wrap align-center justify-space-between ga-4">
+        <div>
+            <div class="text-subtitle-1 font-weight-bold">{{ userRating ? 'Tu puntuación' : '¿Qué te pareció?' }}</div>
+            <div class="text-caption" v-if="ratingsCount">
+                Promedio {{ ratingsAverage }} / 5 · {{ ratingsCount }} {{ ratingsCount === 1 ? 'voto' : 'votos' }}
             </div>
-            <div v-if="post.title">
-                <SocialLinks :title="post.title" :current-url="currentUrl" />
-            </div>
-            <v-card-actions class="">
-                <div class="float-end" v-if="post.tags && post.tags.length > 0">
-                    <TagLink :tags="post.tags" />
-                </div>
-            </v-card-actions>
-        </v-card-text>
-    </v-card>
-    <div class="d-flex align-end flex-column">
-        <span class="pb-2 mt-2">
-            {{ userRating ? 'Tu puntuación' : 'Puntua este post' }}
-        </span>
+            <div class="text-caption" v-else>Aún nadie lo ha puntuado</div>
+        </div>
         <!-- sin medias estrellas: el backend solo acepta enteros del 1 al 5 -->
         <v-rating
             v-model="userRating"
             hover
             :length="5"
             :size="32"
-            active-color="primary"
+            active-color="amber"
             @update:model-value="setRating"
         />
-        <span class="text-caption" v-if="ratingsCount">
-            Promedio {{ ratingsAverage }} / 5 · {{ ratingsCount }} {{ ratingsCount === 1 ? 'voto' : 'votos' }}
-        </span>
-        <span class="text-caption" v-else>Aún nadie lo ha puntuado</span>
-    </div>
-    <h2 class="pt-5 mt-5">Deja tu comentario</h2>
-    <v-card v-if="user">
-        <div v-if="user.is_active && isAuthenticated">
-            <v-card-title>Caja de comentarios</v-card-title>
-            <v-card-text>
-                <div class="d-flex flex-column">
-                    <v-textarea v-model="comment" bg-color="background" color="secondary" clearable label="Comentario"></v-textarea>
-                </div>
-            </v-card-text>
-            <v-card-actions class="float-end">
-                <v-btn append-icon="$vuetify" class="float-end" @click="postComment" :loading="loading">
-                    Enviar
-                </v-btn>
-            </v-card-actions>
+    </v-card>
+
+    <h2 v-if="post.id" class="text-h5 font-weight-bold mb-3">Deja tu comentario</h2>
+    <v-card v-if="post.id && isAuthenticated && user?.is_active" class="mb-6">
+        <v-card-text>
+            <v-textarea
+                v-model="comment"
+                label="Escribe tu comentario"
+                variant="outlined"
+                rows="3"
+                auto-grow
+                counter="500"
+                maxlength="500"
+                hide-details="auto"
+            />
+        </v-card-text>
+        <v-card-actions class="justify-end px-4 pb-4">
+            <v-btn color="primary" variant="flat" append-icon="mdi mdi-send" :disabled="!comment?.trim()" :loading="loading" @click="postComment">
+                Enviar
+            </v-btn>
+        </v-card-actions>
+    </v-card>
+    <v-alert v-else-if="post.id && isAuthenticated" type="info" variant="tonal" class="mb-6">
+        Tu cuenta está desactivada, así que no puedes comentar.
+    </v-alert>
+    <v-card v-else-if="post.id" variant="tonal" class="mb-6 pa-4">
+        <div class="mb-3">Inicia sesión o crea una cuenta para dejar un comentario.</div>
+        <div class="d-flex flex-wrap ga-2">
+            <v-btn :to="{ name: 'Login', query: { redirect: route.fullPath } }" prepend-icon="mdi mdi-login" color="primary" variant="flat">
+                Iniciar sesión
+            </v-btn>
+            <v-btn :to="{ name: 'Register', query: { redirect: route.fullPath } }" prepend-icon="mdi mdi-account-plus" variant="outlined">
+                Crear cuenta
+            </v-btn>
         </div>
     </v-card>
-    <v-card v-else>
-        <v-card-title>Inicia sesion/Registrate para dejar un comentario </v-card-title>
-        <v-card-text>
-            <div class="d-flex justify-space-evenly pt-3 mt-5">
-                <RouterLink :to="{name: 'Login'}">
-                    <v-btn prepend-icon="mdi mdi-login" color="secondary" variant="tonal">
-                        Iniciar sesion
-                    </v-btn>
-                </RouterLink>
-                <RouterLink :to="{name: 'Register'}">
-                    <v-btn prepend-icon="fa fa-plus" color="secondary" variant="tonal">
-                        Registrarse
-                    </v-btn>
-                </RouterLink>
-            </div>
-        </v-card-text>
-    </v-card>
-    <v-card class="pt-3 mt-5 mt-lg-5">
+    <v-card v-if="post.id" class="mt-2">
         <div v-if="post.comments?.length">
             <v-card-title>Comentarios ({{ post.comments.length }}):</v-card-title>
             <v-card
@@ -272,9 +289,76 @@ onMounted(async () => {
   const { data } = await postsStore.viewPost(route.params.url)
   post.value = data
   userRating.value = data.my_rating || 0
+  document.title = `${data.title} - Vue Project Daniel`
 })
 </script>
 <style scoped>
+.post-page {
+    max-width: 860px;
+}
+
+.post-title {
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+}
+
+/* tipografía del cuerpo (HTML del editor) */
+.post-body {
+    font-size: 1.1rem;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+}
+
+.post-body :deep(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.post-body :deep(h2),
+.post-body :deep(h3) {
+    margin: 1.5em 0 0.5em;
+    line-height: 1.3;
+}
+
+.post-body :deep(p),
+.post-body :deep(ul),
+.post-body :deep(ol),
+.post-body :deep(blockquote) {
+    margin-bottom: 1em;
+}
+
+.post-body :deep(ul),
+.post-body :deep(ol) {
+    padding-left: 1.5em;
+}
+
+.post-body :deep(blockquote) {
+    border-left: 4px solid rgb(var(--v-theme-primary));
+    padding-left: 1em;
+    opacity: 0.85;
+}
+
+.post-body :deep(pre) {
+    overflow-x: auto;
+    padding: 1em;
+    border-radius: 8px;
+    background: rgba(127, 127, 127, 0.12);
+}
+
+.post-body :deep(table) {
+    border-collapse: collapse;
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+}
+
+.post-body :deep(td),
+.post-body :deep(th) {
+    border: 1px solid rgba(127, 127, 127, 0.3);
+    padding: 6px 10px;
+}
+
 .comment-text {
     white-space: pre-line;
     overflow-wrap: anywhere;

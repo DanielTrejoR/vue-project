@@ -1,35 +1,34 @@
 <template>
-    <v-container class="posts container">
-        <PostListItem v-for="post in items"
-        :post="post"
-        :key="post.id"
-        />
-    
-        <article class="post" v-if="! items.length">
+    <v-row>
+        <!-- mientras carga: esqueletos con la forma de las tarjetas -->
+        <template v-if="loading && !items.length">
+            <v-col v-for="n in skeletons" :key="`skeleton-${n}`" cols="12" sm="6" lg="4">
+                <v-skeleton-loader type="image, article, actions" />
+            </v-col>
+        </template>
 
-            <v-card
-                class="mx-auto my-8"
-                max-width="344"
-                elevation="16"
-            >
-                <template v-slot:title>
-                    Ooops...
-                </template>
+        <v-col v-for="post in items" :key="post.id" cols="12" sm="6" lg="4">
+            <PostCard :post="post" />
+        </v-col>
 
-                <v-card-text>
-                    Todavia no hay publicaciones
-                </v-card-text>
-            </v-card>
-        </article>
-    </v-container><!-- fin del div.posts.container -->
+        <v-col v-if="!loading && !items.length" cols="12">
+            <v-empty-state
+                icon="mdi mdi-text-box-search-outline"
+                :title="emptyTitle"
+                :text="emptyText"
+            />
+        </v-col>
+    </v-row>
 </template>
 
-<script>
-export default {
-    props: ['items'],
-}
+<script setup>
+import PostCard from './PostCard.vue'
+
+defineProps({
+    items: { type: Array, default: () => [] },
+    loading: { type: Boolean, default: false },
+    skeletons: { type: Number, default: 3 },
+    emptyTitle: { type: String, default: 'Todavía no hay publicaciones' },
+    emptyText: { type: String, default: '' },
+})
 </script>
-
-<style lang="scss">
-
-</style>

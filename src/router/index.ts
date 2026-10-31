@@ -35,7 +35,7 @@ export const constantRoutes = [
         path: "/blog", 
         name: "Posts", 
         meta: {
-          title: "Listado de Posts"
+          title: "Blog"
         },
         component: () => import('../views/Post/index.vue')
       },
@@ -43,7 +43,7 @@ export const constantRoutes = [
         path: "/my-posts", 
         name: "UserPosts", 
         meta: {
-          title: "Mis Posts"
+          title: "Mi espacio"
         },
         component: () => import('../views/Post/User/index.vue')
       },
