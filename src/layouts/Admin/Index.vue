@@ -17,7 +17,10 @@
         <Sidebar />
       </el-drawer>
       <el-container class="admin-content">
-        <el-header class="app-wrapper admin-header" :class="{ 'is-fixed': fixedHeader }"><Navbar /></el-header>
+        <el-header class="app-wrapper admin-header" :class="{ 'is-fixed': fixedHeader }">
+          <Navbar />
+          <TagsView v-if="settingsStore.tagsView" />
+        </el-header>
         <el-main class="admin-main"><AppMain ></AppMain></el-main>
         <RightPanel v-if="showSettings">
           <Settings />
@@ -31,7 +34,7 @@ import { computed, watch, onBeforeUnmount } from 'vue';
 import { useSettingsStore } from '~/stores/settings'
 import { useAppStore } from '~/stores/app'
 import { useRoute } from 'vue-router'
-import {AppMain, Settings, Navbar} from "./components"
+import {AppMain, Settings, Navbar, TagsView} from "./components"
 const settingsStore = useSettingsStore()
 const appStore = useAppStore()
 const route = useRoute();

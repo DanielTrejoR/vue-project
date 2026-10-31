@@ -17,6 +17,8 @@
 
 </template>
 <script setup>
+// el nombre coincide con la ruta: KeepAlive lo usa para conservar la vista (pestañas del admin)
+defineOptions({ name: 'PermissionsIndex' })
 import { usePermissionStore } from '~/stores/permission'
 import { useRouter } from 'vue-router'
 import { ref, onMounted, toRaw } from 'vue';

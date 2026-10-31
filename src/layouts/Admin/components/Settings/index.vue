@@ -29,6 +29,11 @@
       </div>
 
       <div class="drawer-item">
+        <span>Pestañas de páginas</span>
+        <el-switch :model-value="settings.tagsView" class="drawer-switch" @change="value => change('tagsView', value)" />
+      </div>
+
+      <div class="drawer-item">
         <span>Logo en el menú</span>
         <el-switch :model-value="settings.sidebarLogo" class="drawer-switch" @change="value => change('sidebarLogo', value)" />
       </div>

@@ -119,7 +119,7 @@ export const asyncRoutes = [
         name: "Dashboard", 
         component: () => import('~/views/Admin/DashboardView.vue'), 
         meta: {
-          title: 'Dashboard'
+          title: 'Inicio'
           } 
       },
       { 
@@ -177,7 +177,9 @@ export const asyncRoutes = [
         component: () => import('../views/Admin/Post/create.vue'),
         meta: {
           title: "Crea un post",
-          icon: 'Edit'
+          icon: 'Edit',
+          // los formularios no abren pestaña en la barra del admin (TagsView)
+          noTag: true
         }
       },
       {
@@ -187,7 +189,8 @@ export const asyncRoutes = [
         props: true,
         hidden: true,
         meta: {
-          title: "Editando tu post"
+          title: "Editando tu post",
+          noTag: true
         }
       }
     ]

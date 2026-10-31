@@ -3,6 +3,7 @@ import axiosClient from '~/plugins/axios'
 import { resetRouter } from '@/router'
 import { useSettingsStore } from './settings'
 import { usePermissionStore } from './permission'
+import { useTagsViewStore } from './tagsView'
 
 // sessionStorage solo recuerda que esta pestaña tenía sesión, para revalidarla con /api/user al recargar
 const SESSION_KEY = 'isAuthenticated'
@@ -76,6 +77,7 @@ export const useAuthStore = defineStore('auth', {
         clearSession() {
             this.expire()
             usePermissionStore().reset()
+            useTagsViewStore().reset()
             resetRouter()
         },
         // aunque falle la petición, la sesión local se limpia

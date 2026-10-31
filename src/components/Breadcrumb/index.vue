@@ -42,22 +42,18 @@ watch(
 )
 
 function getBreadcrumb() {
-  let matched: Crumb[] = route.matched.filter(item => item.meta?.title)
-  const first = matched[0]
+  // el registro padre /admin también se titula "Inicio" y solo redirige: se omite para no repetirlo
+  let matched: Crumb[] = route.matched.filter(item => item.meta?.title && item.name !== 'Admin')
+  const onDashboard = matched[matched.length - 1]?.name === 'Dashboard'
 
-  if (!isDashboardRoute(first)) {
+  if (!onDashboard) {
     matched = [
-      { path: '/admin/dashboard', meta: { title: 'Dashboard' } },
+      { path: '/admin/dashboard', meta: { title: 'Inicio' } },
       ...matched,
     ]
   }
-  
-  levelList.value = matched.filter(item => item.meta?.title && item.meta?.breadcrumb !== false)
-}
 
-function isDashboardRoute(item?: Crumb | null) {
-  const name = item?.name?.toString().trim().toLowerCase()
-  return name === 'dashboard'
+  levelList.value = matched.filter(item => item.meta?.title && item.meta?.breadcrumb !== false)
 }
 
 function compilePath(path: string) {

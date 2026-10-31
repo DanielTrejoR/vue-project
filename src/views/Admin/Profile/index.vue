@@ -27,6 +27,8 @@
 </template>
 
 <script setup>
+// el nombre coincide con la ruta: KeepAlive lo usa para conservar la vista (pestañas del admin)
+defineOptions({ name: 'ProfileIndex' })
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'

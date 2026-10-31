@@ -26,6 +26,7 @@ const preferenceDefaults = () => ({
     sidebarCollapsed: false,
     fixedHeader: defaultSettings.fixedHeader,
     sidebarLogo: defaultSettings.sidebarLogo,
+    tagsView: defaultSettings.tagsView, // barra de pestañas del admin
 })
 
 export const PREFERENCE_KEYS = Object.keys(preferenceDefaults())
@@ -61,7 +62,6 @@ let saveTimer = null
 export const useSettingsStore = defineStore('settings', {
     state: () => ({
         showSettings: defaultSettings.showSettings,
-        tagsView: defaultSettings.tagsView,
         ...preferenceDefaults(),
         ...readLocal(),
         // estado del guardado en la cuenta: 'idle' | 'saving' | 'saved' | 'error'

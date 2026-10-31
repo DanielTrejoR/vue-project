@@ -130,6 +130,8 @@
 </template>
 
 <script setup lang="ts">
+// el nombre coincide con la ruta: KeepAlive lo usa para conservar la vista (pestañas del admin)
+defineOptions({ name: 'Dashboard' })
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {

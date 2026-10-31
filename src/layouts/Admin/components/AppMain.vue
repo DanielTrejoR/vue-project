@@ -4,7 +4,10 @@
         <RouterView v-slot="{ Component, route }" >
             <!-- salida corta y entrada algo más larga: la vista nueva aparece rápido sin un hueco en blanco -->
             <Transition name="page" mode="out-in" @after-leave="scrollToTop">
-                <component :is="Component" :key="route.path"></component>
+                <!-- las páginas con pestaña abierta conservan su estado (filtros, pestaña elegida...) -->
+                <KeepAlive :include="tagsView.cachedViews">
+                    <component :is="Component" :key="route.path"></component>
+                </KeepAlive>
             </Transition>
         </RouterView>
     </div>
@@ -12,6 +15,9 @@
 </template>
 <script setup>
 import { ref } from 'vue'
+import { useTagsViewStore } from '~/stores/tagsView'
+
+const tagsView = useTagsViewStore()
 
 const root = ref(null)
 // sube al inicio cuando la vista anterior ya salió, para que no se vea el salto;

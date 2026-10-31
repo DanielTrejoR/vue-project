@@ -105,6 +105,8 @@
 </div>
 </template>
 <script lang="ts" setup>
+// el nombre coincide con la ruta: KeepAlive lo usa para conservar la vista (pestañas del admin)
+defineOptions({ name: 'PostsIndex' })
 import { onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'

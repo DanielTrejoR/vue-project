@@ -47,6 +47,8 @@
 </div>
 </template>
 <script setup> 
+// el nombre coincide con la ruta: KeepAlive lo usa para conservar la vista (pestañas del admin)
+defineOptions({ name: 'RolesIndex' })
 //imports
 import { useAuthStore } from '~/stores/auth'
 import { useRolesStore } from '~/stores/roles'
