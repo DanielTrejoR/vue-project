@@ -1,5 +1,6 @@
 <template>
-  <v-chart ref="chartRadar" class="chart" :theme="darkMode ? 'dark' : 'light'" :option="option" autoresize style="height:500px;width:100%" />
+  <!-- :key recrea la gráfica al cambiar de tema; limpiar y reaplicar la opción a mano la dejaba vacía -->
+  <v-chart ref="chartRadar" :key="darkMode ? 'dark' : 'light'" class="chart" :theme="darkMode ? 'dark' : 'light'" :option="option" autoresize style="height:500px;width:100%" />
 </template>
 
 <script>
@@ -67,13 +68,11 @@ export default defineComponent({
         },
         series: [{
                 type: 'radar',
-                symbolSize: 0,
+                symbolSize: 4,
+                lineStyle: { width: 2 },
+                // áreas semitransparentes: opacas se tapaban entre sí y la última (gris oscuro) parecía negra
                 areaStyle: {
-                  shadowBlur: 13,
-                  shadowColor: 'rgba(0,0,0,.2)',
-                  shadowOffsetX: 0,
-                  shadowOffsetY: 10,
-                  opacity: 1
+                  opacity: 0.25
                 },
                 data: [
                   {
@@ -93,13 +92,6 @@ export default defineComponent({
         }]
       }
   }),
-  watch: {
-      // whenever question changes, this function will run
-    darkMode() {
-      this.$refs.chartRadar.clear(); // Clear the chart
-      this.$refs.chartRadar.setOption(this.option);
-    }
-  }
 })
 
 </script>

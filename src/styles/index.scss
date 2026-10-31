@@ -19,7 +19,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
-  background-color: var(--el-bg-color)
+  background-color: var(--ep-bg-color)
 }
 
 :root {
@@ -68,16 +68,16 @@ html:not(.dark) {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--el-bg-color-page);
+  background: var(--ep-bg-color-page);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--el-border-color);
+  background: var(--ep-border-color);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--el-border-color-dark);
+  background: var(--ep-border-color-dark);
 }
 
 /* Focus styles for better accessibility */
@@ -95,7 +95,7 @@ html:not(.dark) {
 
 .ep-switch.is-checked .ep-switch__core .ep-switch__action {
     left: calc(100% - 17px);
-    color: var(--el-switch-on-color);
+    color: var(--ep-switch-on-color);
 }
 
 .breadcrumb-enter-active,

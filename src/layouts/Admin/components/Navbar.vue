@@ -14,7 +14,7 @@
         </div>
         <el-switch class="ml-2 d-flex align-center pl-1 pr-3"
             :model-value="isDark"
-            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949; "
+            style="--ep-switch-on-color: #13ce66; --ep-switch-off-color: #ff4949; "
             @click="handleSwitchClick"
             :active-action-icon="IconMoon"
             :inactive-action-icon="IconSunny"
@@ -115,7 +115,7 @@ const goProfile = () => {
     gap: 8px;
     font-weight: bold;
     font-size: 18px;
-    color: var(--el-color-primary);
+    color: var(--ep-color-primary);
   }
 
   .navbar-menu {
@@ -141,7 +141,7 @@ const goProfile = () => {
       }
 
       &:hover {
-        color: var(--el-color-primary);
+        color: var(--ep-color-primary);
         transform: translateY(-1px);
       }
     }

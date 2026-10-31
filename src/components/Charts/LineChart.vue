@@ -1,5 +1,6 @@
 <template>
-  <v-chart ref="chartLine" class="chart" :option="option" autoresize :theme="darkMode ? 'dark' : 'light'" />
+  <!-- :key recrea la gráfica al cambiar de tema; limpiar y reaplicar la opción a mano la dejaba vacía -->
+  <v-chart ref="chartLine" :key="darkMode ? 'dark' : 'light'" class="chart" :option="option" autoresize :theme="darkMode ? 'dark' : 'light'" />
 </template>
 <script>
 import { use } from 'echarts/core';
@@ -110,13 +111,6 @@ export default defineComponent({
       },
       darkMode: isDark
   }),
-  watch: {
-      // whenever question changes, this function will run
-    darkMode() {
-      this.$refs.chartLine.clear(); // Clear the chart
-      this.$refs.chartLine.setOption(this.option);
-    }
-  },
 })
 </script>
 <style scoped>

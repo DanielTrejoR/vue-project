@@ -26,19 +26,19 @@ $--colors: (
   --orange: #e77614;
   --accent-color: var(--green);
   --border-color: var(--ep-border-color);
-  --text-color: var(--el-text-color-primary);
-  --text-color-light: var(--el-text-color-regular);
-  --text-color-lighter: var(--el-text-color-secondary);
-  --brand-color: var(--el-color-primary);
-  --brand-color-light: var(--el-color-primary-light-1);
-  --bg-brand-color: var(--el-color-primary-light-9);
-  --bg-color: var(--el-bg-color);
+  --text-color: var(--ep-text-color-primary);
+  --text-color-light: var(--ep-text-color-regular);
+  --text-color-lighter: var(--ep-text-color-secondary);
+  --brand-color: var(--ep-color-primary);
+  --brand-color-light: var(--ep-color-primary-light-1);
+  --bg-brand-color: var(--ep-color-primary-light-9);
+  --bg-color: var(--ep-bg-color);
   --bg-color-rgb: 255, 255, 255;
   --bg-color-soft: #fafafa;
   --bg-color-mute: #f2f2f2;
-  --border-color: var(--el-border-color);
-  --border-color-light: var(--el-border-color-lighter);
-  --font-family: var(--el-font-family);
+  --border-color: var(--ep-border-color);
+  --border-color-light: var(--ep-border-color-lighter);
+  --font-family: var(--ep-font-family);
 }
 
 //Modo dark mode colors

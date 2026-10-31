@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="es">
   <head>
     <meta charset="UTF-8">
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vite App</title>
+    <title>Vue Project Daniel</title>
+    <script>
+      // aplica el modo oscuro guardado antes de que cargue la app; sin esto la página arrancaba siempre
+      // en oscuro (class="dark" fijo) y parpadeaba al pasar al tema real
+      try {
+        var prefs = JSON.parse(localStorage.getItem('preferences') || '{}')
+        var dark = typeof prefs.dark === 'boolean'
+          ? prefs.dark
+          : window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (dark) document.documentElement.classList.add('dark')
+      } catch (e) {}
+    </script>
   </head>
   <body style="cursor: auto;">
     <div id="app"></div>

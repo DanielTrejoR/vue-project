@@ -146,7 +146,7 @@ const submitRegister = async () => {
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: var(--el-bg-color-page);
+  background: var(--ep-bg-color-page);
 }
 
 .auth-card {
@@ -166,7 +166,7 @@ const submitRegister = async () => {
 }
 
 .auth-footer a {
-  color: var(--el-color-primary);
+  color: var(--ep-color-primary);
   text-decoration: none;
 }
 </style>
