@@ -30,11 +30,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, watch, onBeforeUnmount } from 'vue';
+import { computed, watch, onBeforeUnmount, getCurrentInstance } from 'vue';
+import { registerElementIcons } from './element-icons'
 import { useSettingsStore } from '~/stores/settings'
 import { useAppStore } from '~/stores/app'
 import { useRoute } from 'vue-router'
 import {AppMain, Settings, Navbar, TagsView} from "./components"
+
+// se registran aquí y no en main.ts para que la parte pública no los descargue
+registerElementIcons(getCurrentInstance()!.appContext.app)
 const settingsStore = useSettingsStore()
 const appStore = useAppStore()
 const route = useRoute();

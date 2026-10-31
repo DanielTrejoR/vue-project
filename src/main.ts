@@ -16,16 +16,7 @@ import "element-plus/theme-chalk/src/message-box.scss";
 import "element-plus/theme-chalk/src/loading.scss";
 import "element-plus/theme-chalk/src/switch.scss";
 import 'element-plus/theme-chalk/dark/css-vars.css'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from "./App.vue";
-
-import { gsap } from "gsap";
-    
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { Draggable } from "gsap/Draggable";
-
-gsap.registerPlugin(ScrollToPlugin,Draggable);
-
 
 import { pinia } from './stores';
 
@@ -161,9 +152,6 @@ const app = createApp(App);
 
 app.config.globalProperties.emitter = emitter;
 
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-    app.component(key, component)
-}
 app.provide('emitter', emitter);
 app.use(router)
 app.use(pinia)

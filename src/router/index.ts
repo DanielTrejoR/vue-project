@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import AdminLayout from '@/layouts/Admin/Index.vue';
+// el panel (Element Plus, sus íconos, el menú) se descarga solo al entrar en /admin
+const AdminLayout = () => import('@/layouts/Admin/Index.vue')
 import FrontLayout from '@/layouts/Front/Index.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 

@@ -1,7 +1,7 @@
 <template>
   <span class="item-wrapper">
     <el-icon v-if="isElementIcon">
-      <component :is="props.icon" class="sub-el-icon" />
+      <component :is="elementIcons[props.icon!]" class="sub-el-icon" />
     </el-icon>
     <SvgIcon v-else :iconClass="props.icon || ''" class="sub-el-icon" />
     <span v-if="props.title" class="item-title">{{ props.title }}</span>
@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import SvgIcon from '~/components/SvgIcon/index.vue'
 import { computed } from 'vue'
-import * as ElementIcons from '@element-plus/icons-vue'
+import { elementIcons } from '~/layouts/Admin/element-icons'
 interface Props {
   icon?: string
   title?: string
@@ -21,7 +21,7 @@ const props = defineProps<Props>()
 
 // Detecta si el icono es un componente de Element Plus
 const isElementIcon = computed(() => {
-   return Boolean(ElementIcons[props.icon as keyof typeof ElementIcons])
+   return Boolean(props.icon && elementIcons[props.icon])
 })
 </script>
 
