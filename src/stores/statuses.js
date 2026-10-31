@@ -27,5 +27,21 @@ export const useStatusesStore = defineStore('statuses', {
             const { data } = await axiosClient.post(`/statuses/${id}/like`)
             return data
         },
+        // comentarios de una publicación, del más viejo al más nuevo
+        /** @param {number} statusId @param {string | null} [cursor] */
+        async listComments(statusId, cursor = null) {
+            const { data } = await axiosClient.get(`/statuses/${statusId}/comments`, { params: { cursor: cursor || undefined } })
+            return data
+        },
+        /** @param {number} statusId @param {string} body */
+        async addComment(statusId, body) {
+            const { data } = await axiosClient.post(`/statuses/${statusId}/comments`, { body })
+            return data
+        },
+        /** @param {number} statusId @param {number} commentId */
+        async removeComment(statusId, commentId) {
+            const { data } = await axiosClient.delete(`/statuses/${statusId}/comments/${commentId}`)
+            return data
+        },
     },
 })

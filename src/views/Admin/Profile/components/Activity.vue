@@ -93,7 +93,17 @@
           <span class="like-icon">{{ status.liked ? '♥' : '♡' }}</span>
           {{ status.likes_count }} me gusta
         </el-button>
+        <el-button text icon="ChatDotRound" :aria-expanded="openComments.has(status.id)" @click="toggleComments(status.id)">
+          {{ status.comments_count }} {{ status.comments_count === 1 ? 'comentario' : 'comentarios' }}
+        </el-button>
       </footer>
+
+      <StatusComments
+        v-if="openComments.has(status.id)"
+        :status-id="status.id"
+        :status-owner-id="status.user_id"
+        @count="value => (status.comments_count = value)"
+      />
     </el-card>
 
     <el-skeleton v-if="loading" :rows="4" animated />
@@ -117,6 +127,7 @@ import { useAuthStore } from '~/stores/auth'
 import { useStatusesStore } from '~/stores/statuses'
 import { useInfiniteList } from '~/composables/useInfiniteList'
 import { fromNow, fullDate } from '~/utils/dates'
+import StatusComments from './StatusComments.vue'
 
 interface Status {
   id: number
@@ -124,6 +135,7 @@ interface Status {
   body: string | null
   image_urls: string[]
   likes_count: number
+  comments_count: number
   liked: boolean
   created_at: string
   user?: { id: number, name: string, avatar: string }
@@ -204,6 +216,15 @@ const toggleLike = async (status: Status) => {
     Object.assign(status, before)
     ElMessage.error('No se pudo registrar el me gusta')
   }
+}
+
+// ---- comentarios: se cargan al abrirlos
+const openComments = ref(new Set<number>())
+const toggleComments = (id: number) => {
+  const open = new Set(openComments.value)
+  if (open.has(id)) open.delete(id)
+  else open.add(id)
+  openComments.value = open
 }
 
 // ---- borrar
@@ -327,7 +348,13 @@ const removeStatus = async (status: Status) => {
 }
 
 .status__actions {
+  display: flex;
+  flex-wrap: wrap;
   margin-top: 8px;
+}
+
+.status__actions .ep-button + .ep-button {
+  margin-left: 0;
 }
 
 .like-icon {
