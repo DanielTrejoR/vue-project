@@ -36,10 +36,13 @@ const props = defineProps({
         required: true
     }
 })
+// MDI no tiene el logo nuevo de X: va como trazo SVG (simple-icons, dominio público)
+const X_LOGO = 'svg:M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z'
+
 const items = computed(() => [
-  { icon: 'fa:fab fa-facebook', id: 1, name: 'Facebook', link: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(props.currentUrl)}` },
-  { icon: 'fa:fab fa-x-twitter', id: 2, name: 'X (Twitter)', link: `https://twitter.com/intent/tweet?url=${encodeURIComponent(props.currentUrl)}&text=${encodeURIComponent(props.title)}` },
-  { icon: 'fa:fab fa-pinterest', id: 3, name: 'Pinterest', link: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(props.currentUrl)}&description=${encodeURIComponent(props.title)}` }, // Instagram no tiene sharer directo
+  { icon: 'mdi mdi-facebook', id: 1, name: 'Facebook', link: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(props.currentUrl)}` },
+  { icon: X_LOGO, id: 2, name: 'X (Twitter)', link: `https://twitter.com/intent/tweet?url=${encodeURIComponent(props.currentUrl)}&text=${encodeURIComponent(props.title)}` },
+  { icon: 'mdi mdi-pinterest', id: 3, name: 'Pinterest', link: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(props.currentUrl)}&description=${encodeURIComponent(props.title)}` }, // Instagram no tiene sharer directo
 ])
 
 const copied = ref(false)

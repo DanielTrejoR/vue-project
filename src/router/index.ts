@@ -65,8 +65,6 @@ export const constantRoutes = [
         component: () => import('../views/Post/Tag/index.vue'),
         props: true
       }
-      // { path: "/surveys/create", name: "SurveyCreate", component: SurveyView },
-      // { path: "/surveys/:id", name: "SurveyView", component: SurveyView },
     ],
   },
   {
@@ -133,14 +131,6 @@ export const asyncRoutes = [
           title: 'Inicio'
           } 
       },
-      { 
-        path: "about", 
-        name: "about", 
-        component: () => import('~/views/AboutView.vue'), 
-        meta: {title: 'Acerca de nosotros'} 
-      },
-      // { path: "/surveys/create", name: "SurveyCreate", component: SurveyView },
-      // { path: "/surveys/:id", name: "SurveyView", component: SurveyView },
     ],
   },
   {

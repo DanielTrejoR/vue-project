@@ -27,28 +27,24 @@ import { Draggable } from "gsap/Draggable";
 gsap.registerPlugin(ScrollToPlugin,Draggable);
 
 
-import 'animate.css';
-
 import { pinia } from './stores';
 
 // Vuetify
-import '@fortawesome/fontawesome-free/css/all.css'
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 // componentes y directivas: los importa vite-plugin-vuetify por archivo (vite.config.mts)
 
-import { aliases, fa } from 'vuetify/iconsets/fa'
-import { mdi } from 'vuetify/iconsets/mdi'
+// íconos de Material Design (la fuente de @mdi/font); los de Font Awesome cargaban 100 kB por 3 logos
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
 //themes array
 
 //end themes array
 const vuetify = createVuetify({
     icons: {
-        defaultSet: 'fa',
+        defaultSet: 'mdi',
         aliases,
         sets: {
-            fa,
             mdi,
         },
     },

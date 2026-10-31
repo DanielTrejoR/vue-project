@@ -1,15 +1,20 @@
 <template>
-    <RouterView v-slot="{ Component, route }" >
-        <Transition 
-            enter-active-class="animate__animated animate__fadeIn"
-            leave-active-class="animate__animated animate__fadeOut"
-            >
+    <RouterView v-slot="{ Component, route }">
+        <Transition name="auth-fade">
             <component :is="Component" :key="route.path"></component>
         </Transition>
     </RouterView>
 </template>
-<script>
-export default {
-    
+
+<style>
+/* fundido entre login, registro y recuperar contraseña (antes con animate.css, 95 kB para esto) */
+.auth-fade-enter-active,
+.auth-fade-leave-active {
+    transition: opacity 0.4s ease;
 }
-</script>
+
+.auth-fade-enter-from,
+.auth-fade-leave-to {
+    opacity: 0;
+}
+</style>
