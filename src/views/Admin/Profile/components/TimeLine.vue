@@ -21,10 +21,11 @@
 </template>
 <script setup>
 import { useStore } from 'vuex'
-import { ref,onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import dayjs from 'dayjs';
 const store = useStore()
-const user = store.getters['user'].user
+// el getter 'user' ya es el usuario (store auth), no tiene una propiedad .user
+const user = computed(() => store.getters['user'] || {})
 const activities = ref({ data: [] });
 
 function formatDate(date) {

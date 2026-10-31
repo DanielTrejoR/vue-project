@@ -23,11 +23,11 @@
           <el-dropdown trigger="click">
             <span class="el-dropdown-link user-dropdown">
               <el-avatar
-                :src="store.getters['user'].avatar || ''"
+                :src="user.avatar || ''"
                 size="small"
                 style="margin-right: 8px"
               />
-              <span class="user-name">{{ store.getters['user'].name }}</span> 
+              <span class="user-name">{{ user.name }}</span> 
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <template #dropdown>
@@ -82,9 +82,7 @@ const router = useRouter()
 const { isDark, toggleRadialTheme } = useRadialThemeToggle()
 const drawerVisible = ref(false)
 const store = useStore();
-const userName = computed(() => store.getters['user'].user.name);
-const userEmail = computed(() => store.getters['user'].user.email);
-const userRoles = computed(() => store.getters['user'].roles);
+const user = computed(() => store.getters['user'] || {});
 function handleSwitchClick(event: MouseEvent) {
   if (!(event instanceof MouseEvent)) return
 

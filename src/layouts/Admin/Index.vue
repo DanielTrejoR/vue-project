@@ -40,14 +40,6 @@ const classObj = computed(() => ({
   mobile: device.value === 'mobile'
 }));
 
-onMounted(() => {
-  const el = document.querySelector('#navbar-root')
-  if (el) el.style.border = '2px solid red'
-})
-
-onUnmounted(() => {
-  console.log('Admin unmounted')
-})
 </script>
 <style lang="scss" scoped>
 @use "@/styles/mixin.scss"  as *;

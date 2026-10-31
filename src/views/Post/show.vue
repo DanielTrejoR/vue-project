@@ -26,14 +26,14 @@
         <span class="pb-2 mt-2">    
             Puntua este post
         </span>
+        <!-- sin medias estrellas: el backend solo acepta enteros del 1 al 5 -->
         <v-rating
             v-model="userRating"
-            half-increments
             hover
             :length="5"
             :size="32"
             active-color="primary"
-            @click="setRating"
+            @update:model-value="setRating"
         />
     </div>
     <h2 class="pt-5 mt-5">Deja tu comentario</h2>
@@ -95,6 +95,9 @@
             <v-card-title>Esta publicacion no tiene comentarios...</v-card-title>
         </div>
     </v-card>
+    <v-snackbar v-model="feedback.show" :color="feedback.color" timeout="3000">
+        {{ feedback.text }}
+    </v-snackbar>
 </v-container>
 </template>
 
@@ -116,35 +119,46 @@ const loading = ref(false);
 const currentUrl = window.location.origin + route.fullPath
 const comment = ref('');
 
+const feedback = ref({ show: false, text: '', color: 'success' })
+const notify = (text, color = 'success') => {
+    feedback.value = { show: true, text, color }
+}
+const errorText = (err, fallback) =>
+    err?.response?.data?.message || fallback
+
 const postComment = () => {
     loading.value = true
     store.dispatch('posts/storeComment', {comment: comment.value, postId: post.value.url})
     .then((res) => {
         post.value.comments.push(res.data)
-        loading.value = false
         comment.value = ''
-
+        notify('Comentario publicado')
     }).catch((err) => {
+        if (err?.response?.status === 401) {
+            openAuthDialog()
+        } else {
+            notify(errorText(err, 'No se pudo publicar el comentario'), 'error')
+        }
+    }).finally(() => {
         loading.value = false
-        
     });
-    
 }
 
 const userRating = ref(0)
 
-const setRating = async () => {
-  store.dispatch('posts/storeRating', {rating: userRating.value, postId: post.value.url})
-  .then((res) => {
-    
+const setRating = (rating) => {
+  if (!rating) return
+  store.dispatch('posts/storeRating', {rating, postId: post.value.url})
+  .then(() => {
+    notify('¡Gracias por puntuar!')
   }).catch((err) => {
-    console.log(err.status)
-    if(err.status === 401){
-        openAuthDialog();
-        userRating.value = 0;
+    userRating.value = 0
+    if (err?.response?.status === 401) {
+        openAuthDialog()
+    } else {
+        notify(errorText(err, 'No se pudo guardar tu puntuación'), 'error')
     }
   });
-//   loadRatings()
 }
 
 

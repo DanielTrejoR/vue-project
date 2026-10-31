@@ -10,7 +10,7 @@
             <ShowAuthDialog v-model="showAuthDialog" />
             <!-- Footer -->
             <v-footer app color="primary" dark>
-                <v-col class="text-center">© 2026 Mi Blog {{savedTheme }}</v-col>
+                <v-col class="text-center">© 2026 Mi Blog</v-col>
             </v-footer>
         </v-app>
     </div>
@@ -24,22 +24,21 @@ import { useTheme } from 'vuetify'
 
 
 const theme = useTheme()
-const savedTheme = sessionStorage.getItem('dark_theme')
+// 'app_theme' lo guardan el selector de temas (ConfigMenu) y el botón claro/oscuro
 const loadInitTheme = () => {
-    if (savedTheme) {
+  const savedTheme = sessionStorage.getItem('app_theme')
+  if (savedTheme && savedTheme in theme.themes.value) {
     theme.global.name.value = savedTheme
   } else {
     // fallback al sistema
     theme.global.name.value = window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'light'
-      : 'dark'
+      ? 'dark'
+      : 'light'
   }
 }
 
 onMounted(() => {
-  const el = document.querySelector('#navbar-root')
-  if (el) el.style.border = '2px solid red';
-  loadInitTheme
+  loadInitTheme()
 })
 
 </script>

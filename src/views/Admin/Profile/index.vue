@@ -43,7 +43,7 @@ const editProfile = () => {
 }
 
 const logout = async () => {
-  await store.dispatch('auth/logout')
+  await store.dispatch('user/logout')
   router.push('/login')
 }
 </script>

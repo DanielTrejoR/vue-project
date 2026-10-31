@@ -11,9 +11,9 @@ export function useRadialThemeToggle() {
   const toggleRadialTheme = async (event?: MouseEvent) => {
     const isDark = theme.global.current.value.dark
     const nextTheme = isDark ? 'light' : 'dark';
-    sessionStorage.setItem('dark_theme', nextTheme)
-    store.dispatch('user/toggleDarkMode', isDark)
-    console.log(nextTheme);
+    // misma clave que ConfigMenu (useThemeSwitcher); 'dark_theme' es del store y guarda un booleano
+    sessionStorage.setItem('app_theme', nextTheme)
+    store.dispatch('user/toggleDarkMode', !isDark)
     if (!document.startViewTransition || !event) {
       theme.global.name.value = nextTheme
       return
