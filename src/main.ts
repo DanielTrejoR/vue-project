@@ -2,17 +2,14 @@ import { createApp } from "vue";
 import router from './router'
 // import "~/styles/element/index.scss";
 
-import ElementPlus from "element-plus";
-// import all element css, uncommented next line
-// import "element-plus/dist/index.css";
-// or use cdn, uncomment cdn link in `index.html`
+// Element Plus no se registra completo: unplugin-vue-components importa cada componente
+// (y su estilo con el namespace "ep") donde se usa; ver vite.config.mts
 
 import "~/styles/index.scss";
 import "uno.css";
 
 
-// If you want to use ElMessage, import it.
-import 'element-plus/dist/index.css'
+// Estilos de los servicios que se llaman desde código (ElMessage, ElNotification, v-loading...)
 import "element-plus/theme-chalk/src/message.scss";
 import "element-plus/theme-chalk/src/notification.scss";
 import "element-plus/theme-chalk/src/loading.scss";
@@ -28,7 +25,6 @@ import { Draggable } from "gsap/Draggable";
 
 gsap.registerPlugin(ScrollToPlugin,Draggable);
 
-import VueApexCharts from "vue3-apexcharts";
 
 import 'animate.css';
 
@@ -37,30 +33,23 @@ import store from './store';
 // Vuetify
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@mdi/font/css/materialdesignicons.css'
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
-
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
+// componentes y directivas: los importa vite-plugin-vuetify por archivo (vite.config.mts)
 
 import { aliases, fa } from 'vuetify/iconsets/fa'
 import { mdi } from 'vuetify/iconsets/mdi'
-import { md } from 'vuetify/iconsets/md'
 //themes array
 
 //end themes array
 const savedDark = sessionStorage.getItem('dark_theme') === 'true'
 const vuetify = createVuetify({
-    components,
-    directives,
     icons: {
         defaultSet: 'fa',
         aliases,
         sets: {
             fa,
             mdi,
-            md,
         },
     },
     theme: {
@@ -178,8 +167,6 @@ const app = createApp(App);
 
 app.config.globalProperties.emitter = emitter;
 
-app.use(ElementPlus);
-app.use(VueApexCharts);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }

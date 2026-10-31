@@ -12,7 +12,6 @@
 	</RouterLink>
 </template>
 <script setup>
-import { defineProps } from 'vue'
 
 // Definición de props con Composition API
 const props = defineProps({

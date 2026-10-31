@@ -1,4 +1,4 @@
-import { DirectiveBinding } from 'vue';
+import type { DirectiveBinding } from 'vue';
 import store from '~/store'; // o usa useStore()
 
 export default {

@@ -74,7 +74,7 @@
     </div>
     <div>
         <el-dialog v-model="showPreview" title="Vista previa del post" :width="isMobile ? '95%' : '80%'">
-            <PostPreview :post="postForm" />
+            <PostPreview :post="postForm ?? undefined" />
         </el-dialog>
     </div>
 </div>
@@ -84,11 +84,9 @@ import { onMounted, ref, inject, computed } from 'vue';
 import store  from '~/store';
 import BaseModal from '~/components/Admin/BaseModal.vue';
 import type { ComponentSize } from 'element-plus'
-import { number } from 'echarts';
 import router from "~/router";
 import { ElMessage } from 'element-plus'
 import { InfoFilled } from '@element-plus/icons-vue'
-import { url } from 'inspector';
 const size = ref<ComponentSize>('default')
 const isMobile = computed(() => store.state.app.device === 'mobile')
 const tableData = ref([]);
@@ -97,7 +95,8 @@ const showModal = ref(false);
 const showPreview = ref(false);
 const emitter = inject('emitter');
 const loading = ref(false)
-const paginator = ref({
+// respuesta paginada de Laravel (/api/admin/posts)
+const paginator = ref<Record<string, any>>({
     data: []
 })
 const perPage = ref(20)
@@ -121,13 +120,14 @@ const editPost = (postId: string) => {
     
 }
 
-const getOwnerPosts = async (page: number, size: number) => {
+// la página y el tamaño salen de perPage/sizePage; los argumentos se ignoran (también llega el evento del botón)
+const getOwnerPosts = async (_page?: unknown, _size?: unknown) => {
+    let page: number, size: number
     loading.value = true;
     try {
         page = perPage.value;
         size = sizePage.value;
         const filtersPage = cleanFilters(filters.value);
-        console.log(filtersPage)
         const posts = await store.dispatch('posts/fetchPosts', {
             page: page,
             size: size,
@@ -136,7 +136,7 @@ const getOwnerPosts = async (page: number, size: number) => {
         tableData.value = posts.data;
         paginator.value = posts;
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }finally {
         loading.value = false
     }
@@ -162,7 +162,7 @@ const handlePageChange = async (page: number) => {
     perPage.value = page
     getOwnerPosts(perPage.value, sizePage.value);
   } catch (error) {
-    console.error(error.status)
+    console.error((error as any)?.status)
   } finally {
     loading.value = false
   }
@@ -179,7 +179,7 @@ const deletePost = async (urlKey: string) => {
     loading.value = false;
     // refrescar lista
   } catch (error) {
-    console.log(error)
+    console.error(error)
     loading.value = false;
 
   }

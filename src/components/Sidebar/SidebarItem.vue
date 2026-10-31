@@ -25,14 +25,15 @@
     </div>
 </template>
 <script setup lang="ts">
-import { defineProps, onMounted, onUnmounted, ref } from "vue"
+import { ref } from "vue"
 import { isExternal } from '~/utils/validate'
 import Item from "./Item.vue"
-const onlyOneChild = ref(null);
+// rutas de vue-router con campos propios (hidden, alwaysShow, meta.icon...)
+const onlyOneChild = ref<any>(null);
 const props = defineProps({
     item: {
-        type: Object,
-        required: false
+        type: Object as () => Record<string, any>,
+        required: true
     },
     isNest: {
         type: Boolean,
@@ -40,11 +41,11 @@ const props = defineProps({
     },
     basePath: {
         type: String,
-        required: false
+        default: ''
     }
 })
 
-function hasOneShowingChild(children = [], parent) {
+function hasOneShowingChild(children: any[] = [], parent: any) {
         const showingChildren = children.filter(item => {
             if (props.item?.hidden) {
             return false
@@ -79,10 +80,4 @@ function resolvePath(routePath: string): string {
 
     return `${base}/${route}`
 }
-onMounted(() => {
-  console.log('sidebar mounted')
-})
-onUnmounted(() => {
-  console.log('sidebar unmounted')
-})
 </script>

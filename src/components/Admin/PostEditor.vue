@@ -221,7 +221,8 @@
 </template>
 <script lang="ts" setup>
 import { ref, reactive, computed, onMounted, watch } from "vue";
-import { ElImageViewer, ElMessage, ElNotification, FormInstance, FormRules, UploadFile, UploadFiles, UploadInstance } from "element-plus";
+import { ElImageViewer, ElMessage, ElNotification } from "element-plus";
+import type { FormInstance, FormRules, UploadFile, UploadFiles, UploadInstance } from "element-plus";
 import { useStore } from "vuex";
 import Cookies from "js-cookie";
 import draggable from 'vuedraggable'
@@ -374,7 +375,7 @@ const handleSubmit = async (formEl: FormInstance | undefined) => {
           })
         }
     } else {
-      console.log("error submit!", fields);
+      console.error("error submit!", fields);
       loading.value = false;
     }
   });
@@ -417,7 +418,7 @@ const handleChange = (file: UploadFile, files: UploadFile[]) => {
 }
 
 const handleError = (error: Error,uploadFile: UploadFile, uploadFiles: UploadFiles) => {
-  console.log(error, uploadFile, uploadFiles);
+  console.error(error, uploadFile, uploadFiles);
 }
 
 const handleProgress = (event: { percent: number }, file: UploadFile, fileListRef: UploadFile[]) => {

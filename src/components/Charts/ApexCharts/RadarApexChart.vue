@@ -5,8 +5,11 @@
 </template>
 <script>
 import { isDark } from "~/composables";
+// solo esta gráfica usa ApexCharts: se importa aquí para que quede en el chunk del dashboard
+import VueApexCharts from "vue3-apexcharts";
 
 export default {
+    components: { apexchart: VueApexCharts },
     data: () => ({
         darkMode: isDark,
         series: [{

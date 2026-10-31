@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, defineProps, defineEmits } from 'vue'
+import { ref, reactive } from 'vue'
 import type { UploadFile } from 'element-plus'
 import { ElMessage } from 'element-plus'
 // Props

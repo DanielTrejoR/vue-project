@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, watch, defineProps, defineEmits } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import EditorImage from './components/EditorImage.vue'
 import plugins from './plugins'
 import toolbar from './toolbar'

@@ -25,7 +25,8 @@
 
 <script setup lang="ts">
 defineProps({
-  post: Object
+  // el listado lo pasa en null hasta que se elige un post
+  post: { type: Object as () => Record<string, any>, default: () => ({}) }
 })
 
 import dayjs from 'dayjs'

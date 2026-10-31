@@ -12,7 +12,7 @@
   </el-form>
 </template>
 <script setup>
-import { ref, defineProps, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useTheme } from '@/composables/useTheme'
 const { theme } = useTheme()
 const props = defineProps({

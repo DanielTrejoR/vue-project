@@ -2,6 +2,7 @@ import path from 'path'
 import fs from 'fs'
 import { defineConfig, loadEnv  } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vuetify from 'vite-plugin-vuetify'
 
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
@@ -30,6 +31,14 @@ const elementPlusStyles = fs.existsSync(elementPlusComponents)
     )
   : []
 
+// vite-plugin-vuetify (autoImport) agrega imports 'vuetify/components/VBtn'... al transformar: mismo problema.
+// Se toman los que Vuetify exporta en su índice (hay carpetas internas, como VOverflowBtn, que no compilan)
+const vuetifyComponentsIndex = path.resolve(__dirname, 'node_modules/vuetify/lib/components/index.js')
+const vuetifyComponents = fs.existsSync(vuetifyComponentsIndex)
+  ? [...fs.readFileSync(vuetifyComponentsIndex, 'utf8').matchAll(/^export \* from "\.\/(V\w+)\/index\.js"/gm)]
+      .map(([, name]) => `vuetify/components/${name}`)
+  : []
+
 // https://vitejs.dev/config/
 export default ({ mode }) => { 
   const env = loadEnv(mode, process.cwd(), '');
@@ -43,7 +52,7 @@ export default ({ mode }) => {
     optimizeDeps: {
       // escanear todas las vistas y componentes, también los que se registran solos o cargan de forma diferida
       entries: ['index.html', 'src/**/*.vue'],
-      include: ['element-plus/es', ...elementPlusStyles],
+      include: ['element-plus/es', ...elementPlusStyles, 'vuetify', 'vuetify/directives', ...vuetifyComponents],
     },
     server: {
       proxy: {
@@ -75,6 +84,8 @@ export default ({ mode }) => {
     },
     plugins: [
       vue(),
+      // importa solo los componentes y directivas de Vuetify que usa cada archivo
+      vuetify({ autoImport: true }),
       AutoImport({
         resolvers: [ElementPlusResolver()],
       }),

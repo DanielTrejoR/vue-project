@@ -8,10 +8,7 @@
             <el-menu
                 :default-active="activeMenu"
                 :collapse="isCollapse"
-                :background-color="variables.menuBg"
-                :text-color="variables.menuText"
                 :unique-opened="false"
-                :active-text-color="variables.menuActiveText"
                 :collapse-transition="false"
                 mode="vertical"
             >
@@ -24,7 +21,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue"
 import { mapState, useStore, mapGetters } from 'vuex'
-import * as vars from '~/styles/variables.scss'
 import defaultSettings from '~/settings'
 import { useRoute, useRouter } from 'vue-router'
 const routeClass = useRoute();
@@ -33,7 +29,6 @@ const store = useStore();
 
 const permissionRoutes = computed(() => store.getters.permission_routes)
 const showLogo = computed(() => store.state.settings.sidebarLogo);
-const variables = computed(() => vars);
 const title = defaultSettings.title
 // colapsado es una preferencia del usuario; en móvil el menú va en un drawer y siempre se muestra completo
 const isCollapse = computed(() => store.state.settings.sidebarCollapsed && store.state.app.device !== 'mobile')
@@ -42,7 +37,7 @@ const activeMenu = computed(() => {
     const { meta, path } = route
     // if set path, the sidebar will highlight the path you set
     if (meta.activeMenu) {
-        return meta.activeMenu
+        return meta.activeMenu as string
     }
     return path
 });

@@ -36,7 +36,6 @@ const mutations = {
       state.avatar = user.avatar
     },
     SET_ROLES: (state, roles) => {
-      console.log(roles)
         state.roles = roles
     },
     SET_PERMISSIONS: (state, permissions) => {
@@ -91,7 +90,6 @@ const actions = {
       return axiosClient.get(`/admin/user/activities`)
     },
     setUser({commit}, data){
-      console.log(data.roles)
         commit('setUser', data);
         commit('SET_NAME', data)
         commit('SET_AVATAR', data)

@@ -16,7 +16,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, defineProps, computed } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useStore } from 'vuex';
 import { addClass, removeClass } from '~/utils'
 import { useClickOutsideAdvanced } from '~/composables/useClickOutsideAdvanced';

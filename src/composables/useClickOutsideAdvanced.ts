@@ -1,4 +1,5 @@
-import { watch, onBeforeUnmount, Ref } from 'vue';
+import { onBeforeUnmount } from 'vue';
+import type { Ref } from 'vue';
 
 export function useClickOutsideAdvanced(
   targetRef: Ref<HTMLElement | null>,

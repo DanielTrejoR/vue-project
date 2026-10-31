@@ -19,7 +19,7 @@
   </el-form>
 </template>
 <script setup>
-import { ref, defineEmits, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import { useStore } from 'vuex'
 
 const store = useStore()
@@ -34,7 +34,6 @@ const currentRole = ref([]);
 const selectedPermissions = ref([])
 const getPermissionsList = async () => {
     const res = await store.dispatch('permission/getPermissions');
-    console.log(res)
 }
 // Emit: evento para enviar el rol editado
 const emit = defineEmits(['mountedForm', 'updateRole'])

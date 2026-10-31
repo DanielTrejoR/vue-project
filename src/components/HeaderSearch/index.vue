@@ -27,7 +27,6 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import Fuse from 'fuse.js'
-import path from 'path'
 import {
   Search, Close
 } from '@element-plus/icons-vue'
@@ -37,8 +36,9 @@ const router = useRouter()
 
 // 🔁 Refs
 const search = ref('')
-const options = ref([])
-const searchPool = ref([])
+interface SearchItem { path: string; title: string[] }
+const options = ref<SearchItem[]>([])
+const searchPool = ref<SearchItem[]>([])
 const show = ref(false)
 const fuse = ref()
 const headerSearchSelect = ref()
@@ -46,8 +46,8 @@ const headerSearchSelect = ref()
 // 🧠 Computed
 const routes = computed(() => store.getters.permission_routes)
 
-const generateRoutes = (routes, basePath = '/', prefixTitle = []) => {
-  let res = []
+const generateRoutes = (routes: any[], basePath = '/', prefixTitle: string[] = []): SearchItem[] => {
+  let res: SearchItem[] = []
 
   for (const router of routes) {
     // skip hidden router
@@ -74,13 +74,12 @@ const generateRoutes = (routes, basePath = '/', prefixTitle = []) => {
   return res
 }
 
-function initFuse(list) {
+function initFuse(list: SearchItem[]) {
   fuse.value = new Fuse(list, {
     shouldSort: true,
     threshold: 0.4,
     location: 0,
     distance: 100,
-    maxPatternLength: 32,
     minMatchCharLength: 1,
     keys: [
       { name: 'title', weight: 0.7 },
@@ -89,12 +88,12 @@ function initFuse(list) {
   })
 }
 
-function querySearch(query) {
+function querySearch(query: string) {
   if (query !== '') {
     const results = fuse.value?.search(query) ?? []
     options.value = results
-    .map(r => r.item)
-    .filter(item => Array.isArray(item.title) && item.path)
+    .map((r: { item: SearchItem }) => r.item)
+    .filter((item: SearchItem) => Array.isArray(item.title) && item.path)
   } else {
     options.value = []
   }
@@ -113,7 +112,7 @@ function close() {
   show.value = false
 }
 
-function change(val) {
+function change(val: SearchItem) {
   router.push(val.path)
   search.value = ''
   options.value = []
@@ -122,7 +121,7 @@ function change(val) {
   })
 }
 
-function resolvePath(basePath, routePath) {
+function resolvePath(basePath: string, routePath: string) {
   if (routePath.startsWith('/')) return routePath
   return `${basePath.replace(/\/$/, '')}/${routePath.replace(/^\//, '')}`
 }

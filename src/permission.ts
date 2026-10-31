@@ -1,4 +1,5 @@
 import router from './router'
+import type { RouteRecordRaw } from 'vue-router'
 import store from '@/store'
 import { ElMessage } from 'element-plus'
 import NProgress from 'nprogress' // progress bar
@@ -49,11 +50,11 @@ router.beforeEach(async(to, from, next) => {
             return next('/');
         }
         const accessRoutes = await store.dispatch('permission/generateRoutes', {roles, permissions})
-        accessRoutes.forEach(route => router.addRoute(route));
+        accessRoutes.forEach((route: RouteRecordRaw) => router.addRoute(route));
         return next({ ...to, replace: true });
 
     } catch (error: any) {
-        console.log('Error en fetchUser', error);
+        console.error('Error en fetchUser', error);
         ElMessage.error(error?.message || 'Error al verificar la sesión')
         NProgress.done()
         return next(`/login?redirect=${to.path}`);

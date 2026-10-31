@@ -10,7 +10,6 @@ for (const [path, mod] of Object.entries(files)) {
   const name = path.replace(/^\.\/modules\/(.*)\.js$/, '$1');
   modules[name] = mod.default;
 }
-console.log('Módulos cargados:', Object.keys(modules));
 
 
 const store = createStore({

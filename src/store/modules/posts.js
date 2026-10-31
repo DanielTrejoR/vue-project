@@ -10,7 +10,6 @@ const mutations = {}
 const actions = {
     async fetchPosts({ commit }, { page = 1, size = 10, filters }){
         try {
-            console.log(filters, page, size);
             
             const res = await axiosClient.get(`/admin/posts`, {
                         params: {
@@ -91,7 +90,7 @@ const actions = {
     //comments 
     async storeComment({commit}, {comment, postId}){
         try {
-            return await axiosClient.post(`/post/${postId}/comments`, {
+            return await axiosClient.post(`/posts/${postId}/comments`, {
                 comment: comment
             });
         } catch (error) {

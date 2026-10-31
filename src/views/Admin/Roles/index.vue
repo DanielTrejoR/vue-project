@@ -98,7 +98,6 @@ async function saveRole(updatedRole) {
 }
 
 const onFormMounted = () => {
-  console.log('El formulario ya está listo')
 }
 
 

@@ -56,7 +56,6 @@ export default {
                 if (valid) {
                     store.dispatch('base/createPost', this.createPostForm)
                     .then((result) => {
-                        console.log(result.data.url);
                         ElMessage({
                             message: 'Se a creado correctamente la publicacion',
                             type: 'success',
@@ -64,7 +63,7 @@ export default {
 
                             this.closeModal();
                     }).catch((err) => {
-                        console.log(err);
+                        console.error(err);
                     });
                 } else {
                     ElNotification({
