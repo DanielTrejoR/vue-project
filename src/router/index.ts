@@ -87,6 +87,17 @@ export const constantRoutes = [
         name: "Register",
         component: () => import('../views/Auth/AuthView.vue'),
       },
+      {
+        path: "/forgot-password",
+        name: "ForgotPassword",
+        component: () => import('../views/Auth/ForgotPasswordView.vue'),
+      },
+      {
+        // llega desde el enlace del correo: ?token=...&email=...
+        path: "/reset-password",
+        name: "ResetPassword",
+        component: () => import('../views/Auth/ResetPasswordView.vue'),
+      },
     ],
   },
   {

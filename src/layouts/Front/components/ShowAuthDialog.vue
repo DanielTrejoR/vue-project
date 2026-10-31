@@ -78,7 +78,16 @@ const submitForm = async () => {
                 autocomplete="current-password"
                 @click:append-inner="showPassword = !showPassword"
               />
-              <v-checkbox v-model="loginForm.remember" label="Recordar sesión" density="compact" hide-details />
+              <div class="d-flex flex-wrap align-center justify-space-between">
+                <v-checkbox v-model="loginForm.remember" label="Recordar sesión" density="compact" hide-details />
+                <RouterLink
+                  :to="{ name: 'ForgotPassword', query: loginForm.email ? { email: loginForm.email } : {} }"
+                  class="text-primary text-body-2 text-decoration-none"
+                  @click="isOpen = false"
+                >
+                  ¿Olvidaste tu contraseña?
+                </RouterLink>
+              </div>
               <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="my-2">
                 {{ errorMessage }}
               </v-alert>

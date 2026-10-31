@@ -69,6 +69,16 @@ export const useAuthStore = defineStore('auth', {
             this.startSession(data.user)
             return data.user
         },
+        // "olvidé mi contraseña": el backend responde lo mismo exista o no la cuenta
+        async forgotPassword(email) {
+            const { data } = await axiosClient.post('/forgot-password', { email })
+            return data.message
+        },
+        // con el token del correo; no inicia sesión, la persona entra después con su contraseña nueva
+        async resetPassword(form) {
+            const { data } = await axiosClient.post('/reset-password', form)
+            return data.message
+        },
         // sesión vencida (401): se olvida el usuario; las rutas del panel se rehacen al volver a entrar
         expire() {
             this.user = null

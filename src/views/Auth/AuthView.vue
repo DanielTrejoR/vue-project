@@ -22,7 +22,12 @@
             </el-form-item>
 
             <el-form-item>
-              <el-checkbox v-model="loginForm.remember">Recordar sesión</el-checkbox>
+              <div class="login-options">
+                <el-checkbox v-model="loginForm.remember">Recordar sesión</el-checkbox>
+                <RouterLink :to="{ name: 'ForgotPassword', query: loginForm.email ? { email: loginForm.email } : {} }">
+                  ¿Olvidaste tu contraseña?
+                </RouterLink>
+              </div>
             </el-form-item>
 
             <el-alert v-if="errorMessage" :title="errorMessage" type="error" show-icon :closable="false" class="mb-4" />
@@ -95,6 +100,11 @@ const onTabChange = (name: string | number) => {
   router.replace({ name: name === 'register' ? 'Register' : 'Login', query: route.query })
 }
 
+// al volver de restablecer la contraseña, el correo ya viene escrito
+if (typeof route.query.email === 'string') {
+  loginForm.email = route.query.email
+}
+
 const redirect = computed(() => (typeof route.query.redirect === 'string' ? route.query.redirect : undefined))
 
 const loginRules: FormRules = {
@@ -139,33 +149,19 @@ const submitRegister = async () => {
 }
 </script>
 
+<style scoped src="./auth-page.css"></style>
 <style scoped>
-.auth-page {
-  min-height: 100vh;
+.login-options {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: var(--ep-bg-color-page);
-}
-
-.auth-card {
+  justify-content: space-between;
+  gap: 4px 12px;
   width: 100%;
-  max-width: 420px;
-}
-
-.auth-title {
-  margin: 0 0 8px;
-  text-align: center;
-}
-
-.auth-footer {
-  margin-top: 16px;
-  text-align: center;
   font-size: 14px;
 }
 
-.auth-footer a {
+.login-options a {
   color: var(--ep-color-primary);
   text-decoration: none;
 }

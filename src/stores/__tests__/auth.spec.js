@@ -67,4 +67,18 @@ describe('auth store', () => {
         expect(auth.isAuthenticated).toBe(false)
         expect(usePermissionStore().routesReady).toBe(true)
     })
+
+    it('olvidé mi contraseña y restablecerla no inician sesión', async () => {
+        const auth = useAuthStore()
+        api.post.mockResolvedValueOnce({ data: { message: 'Si el correo está registrado, te enviamos un enlace…' } })
+        expect(await auth.forgotPassword('ana@email.com')).toMatch('te enviamos un enlace')
+        expect(api.post).toHaveBeenLastCalledWith('/forgot-password', { email: 'ana@email.com' })
+
+        const form = { token: 't', email: 'ana@email.com', password: 'nueva-123', password_confirmation: 'nueva-123' }
+        api.post.mockResolvedValueOnce({ data: { message: 'Tu contraseña se cambió.' } })
+        expect(await auth.resetPassword(form)).toBe('Tu contraseña se cambió.')
+        expect(api.post).toHaveBeenLastCalledWith('/reset-password', form)
+
+        expect(auth.isAuthenticated).toBe(false)
+    })
 })

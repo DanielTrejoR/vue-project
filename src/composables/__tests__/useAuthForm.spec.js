@@ -5,7 +5,7 @@ import { api, routerMock } from '~/stores/__tests__/mocks'
 vi.mock('~/plugins/axios', () => ({ default: api }))
 vi.mock('@/router', () => routerMock)
 
-const { useAuthForm, homeFor } = await import('../useAuthForm')
+const { useAuthForm, homeFor, readApiError } = await import('../useAuthForm')
 
 const httpError = (status, data) => Object.assign(new Error(String(status)), { response: { status, data } })
 
@@ -67,5 +67,14 @@ describe('homeFor', () => {
         expect(homeFor({ roles: ['Admin'] })).toBe('/admin')
         expect(homeFor({ roles: [] })).toBe('/')
         expect(homeFor(null)).toBe('/')
+    })
+})
+
+describe('readApiError', () => {
+    it('separa errores por campo, el límite de intentos y los demás', () => {
+        expect(readApiError(httpError(422, { errors: { email: ['El enlace no es válido o ya venció. Pide uno nuevo.'] } })))
+            .toEqual({ fields: { email: 'El enlace no es válido o ya venció. Pide uno nuevo.' }, message: '' })
+        expect(readApiError(httpError(429, {})).message).toBe('Demasiados intentos, espera un minuto antes de volver a intentarlo.')
+        expect(readApiError(new Error('Network Error'))).toEqual({ fields: {}, message: 'No se pudo conectar con el servidor.' })
     })
 })
