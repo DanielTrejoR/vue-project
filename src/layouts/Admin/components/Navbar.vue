@@ -12,6 +12,7 @@
         <div class="pl-1 pr-1 navbar-search" >
           <HeaderSearch />
         </div>
+        <NotificationsBell class="ml-1" />
         <el-switch class="ml-2 d-flex align-center pl-1 pr-3"
             :model-value="isDark"
             style="--ep-switch-on-color: #13ce66; --ep-switch-off-color: #ff4949; "
@@ -58,6 +59,7 @@ import { useAuthStore } from '~/stores/auth'
 import { useSettingsStore } from '~/stores/settings'
 import { useAppStore } from '~/stores/app'
 import { useRouter } from 'vue-router'
+import NotificationsBell from './NotificationsBell.vue'
 const router = useRouter()
 const { isDark, toggleRadialTheme } = useRadialThemeToggle()
 // ícono del botón de menú: abierto si el drawer móvil está abierto o el menú de escritorio expandido
