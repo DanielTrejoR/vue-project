@@ -6,6 +6,7 @@
                 <AppMain />
             </v-main>
             <ShowAuthDialog v-model="showAuthDialog" />
+            <LiveNotifications />
             <!-- footer al final de la página (antes era fijo y tapaba el contenido al hacer scroll) -->
             <v-footer color="primary" class="flex-grow-0">
                 <v-container class="d-flex flex-wrap align-center justify-space-between ga-3 py-4">
@@ -23,6 +24,7 @@
 <script setup>
 import { AppMain, Navbar } from "./components"
 import ShowAuthDialog from "./components/ShowAuthDialog.vue"
+import LiveNotifications from "./components/LiveNotifications.vue"
 import { showAuthDialog } from '@/composables/Front/useAuthDialog'
 import { useAuthStore } from '~/stores/auth'
 import defaultSettings from '~/settings'

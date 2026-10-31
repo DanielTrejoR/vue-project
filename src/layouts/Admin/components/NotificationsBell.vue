@@ -52,26 +52,18 @@
 
 <script setup lang="ts">
 import UserAvatar from '~/components/UserAvatar/UserAvatar.vue'
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { useRouter, type RouteLocationRaw } from 'vue-router'
+import LiveNotificationToast from './LiveNotificationToast.vue'
+import { computed, h, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElNotification } from 'element-plus'
 import { Bell } from '@element-plus/icons-vue'
 import { useNotificationsStore } from '~/stores/notifications'
 import { useInfiniteList } from '~/composables/useInfiniteList'
+import { useLiveNotifications, type LiveNotification, type NotificationItem } from '~/composables/useLiveNotifications'
 import { fromNow, fullDate } from '~/utils/dates'
 
-interface NotificationItem {
-  id: string
-  kind: string
-  text: string
-  excerpt: string | null
-  actor?: { id: number, name: string, avatar: string }
-  link: RouteLocationRaw
-  read: boolean
-  created_at: string
-}
-
-// cada cuánto se revisa si llegó algo nuevo (solo con la pestaña visible)
-const POLL_MS = 60_000
+// los avisos llegan al momento por WebSocket; la consulta queda de respaldo por si el socket no está
+const POLL_MS = 5 * 60_000
 
 const router = useRouter()
 const store = useNotificationsStore()
@@ -100,6 +92,39 @@ const markAllRead = async () => {
 const refresh = () => {
   if (document.visibilityState === 'visible') store.refreshCount().catch(() => {})
 }
+
+// aviso nuevo por WebSocket: el contador viene ya calculado y, si la lista está cargada, va arriba.
+// Un like repetido reemplaza al anterior en el servidor, así que se quita el que tenga el mismo origen
+const receive = ({ unread_count, ...payload }: LiveNotification) => {
+  store.unreadCount = unread_count
+  // reactivo: si se abre desde el aviso flotante, también queda leído en la lista
+  const item = reactive(payload)
+  if (items.value.length || open.value) {
+    items.value = [item, ...items.value.filter(old => old.id !== item.id && !sameLike(old, item))]
+  }
+  // con la campana abierta el aviso ya se ve en la lista
+  if (!open.value) showToast(item)
+}
+const sameLike = (a: NotificationItem, b: NotificationItem) =>
+  a.kind === 'status_liked' && b.kind === 'status_liked'
+  && a.status_id === b.status_id && a.actor?.id === b.actor?.id
+
+const showToast = (item: NotificationItem) => {
+  const toast = ElNotification({
+    message: h(LiveNotificationToast, { item }),
+    customClass: 'live-notification',
+    position: 'top-right',
+    duration: 6000,
+    offset: 56,
+    onClick: () => {
+      toast.close()
+      openItem(item)
+    },
+  })
+}
+
+useLiveNotifications(receive, refresh)
+
 let timer: ReturnType<typeof setInterval> | undefined
 onMounted(() => {
   refresh()
@@ -213,5 +238,22 @@ onBeforeUnmount(() => {
 .notifications__more {
   display: flex;
   margin: 4px auto 0;
+}
+</style>
+
+<style>
+/* el ElNotification del aviso en vivo: sin título, todo el contenido es clicable */
+.live-notification {
+  cursor: pointer;
+}
+
+.live-notification .ep-notification__group {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.live-notification .ep-notification__content {
+  margin: 0;
 }
 </style>

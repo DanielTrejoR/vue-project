@@ -11,6 +11,25 @@ import { setPageMeta } from '@/utils/seo'
 
 NProgress.configure({ showSpinner: false })
 
+/**
+ * Agrega las rutas del panel que permiten los roles del usuario (una vez por sesión).
+ * El guard lo hace al entrar a una ruta privada; desde el blog, que no pasa por ahí,
+ * hace falta antes de ir a una ruta del panel por su nombre (p. ej. desde un aviso en vivo).
+ * Devuelve false si la cuenta no tiene roles.
+ */
+export async function ensureAccessRoutes() {
+    const auth = useAuthStore(pinia)
+    const permissionStore = usePermissionStore(pinia)
+    if (permissionStore.routesReady) return true
+
+    const { roles, permissions } = await auth.fetchUser()
+    if (!roles || roles.length === 0) return false
+
+    permissionStore.generateRoutes({ roles, permissions })
+        .forEach((route: RouteRecordRaw) => router.addRoute(route))
+    return true
+}
+
 const whiteList = ['/login', '/register', '/forgot-password', '/reset-password', '/404', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
@@ -47,14 +66,11 @@ router.beforeEach(async(to, from, next) => {
     }
 
     try {
-        const { roles, permissions } = await auth.fetchUser();
-        if (!roles || roles.length === 0) {
+        if (!(await ensureAccessRoutes())) {
             ElMessage.warning('Tu cuenta no tiene permisos asignados');
             NProgress.done()
             return next('/');
         }
-        const accessRoutes = permissionStore.generateRoutes({roles, permissions})
-        accessRoutes.forEach((route: RouteRecordRaw) => router.addRoute(route));
         return next({ ...to, replace: true });
 
     } catch (error: any) {
