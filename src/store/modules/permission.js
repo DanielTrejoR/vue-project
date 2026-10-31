@@ -73,15 +73,8 @@ const actions = {
       resolve(accessedRoutes)
     })
   },
-  getPermissions({commit}){
-    return new Promise((resolve, reject) => {
-      axiosClient.get('/admin/permissions').then((res) => {
-        resolve(res);
-        return res;
-      }).catch((err) => {
-        return err
-      });
-    })
+  getPermissions() {
+    return axiosClient.get('/admin/permissions')
   }
 }
 

@@ -87,13 +87,8 @@ const actions = {
           return error;
         });
     },
-    async getActivities({commit}){
-      return await axiosClient.get(`/admin/user/activities`)
-      .then((res) => {
-        return res;
-      }).catch((err) => {
-        reject(err)
-      });
+    getActivities() {
+      return axiosClient.get(`/admin/user/activities`)
     },
     setUser({commit}, data){
       console.log(data.roles)
@@ -111,21 +106,11 @@ const actions = {
     toggleDarkMode({commit}, isDark) {
       commit('setDarkMode', isDark)
     },
-    async getPosts({commit}, data) {
-      return await axiosClient.get(`${data.url}?page=${data.page}`)
-      .then((result) => {
-        return result 
-      }).catch((err) => {
-        return err;
-      });
+    getPosts({commit}, data) {
+      return axiosClient.get(data.url, { params: { page: data.page } })
     },
-    async createPost({commit}, title){
-      return await axiosClient.post('/admin/posts', title)
-      .then((result) => {
-        return result 
-      }).catch((err) => {
-        return err;
-      });
+    createPost({commit}, title) {
+      return axiosClient.post('/admin/posts', title)
     },
     async changeRoles({ commit, dispatch }, role) {
         const { roles, permissions } = await dispatch('auth/fetchUser', null, { root: true })

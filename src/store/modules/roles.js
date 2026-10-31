@@ -6,38 +6,17 @@ const state = {}
 const mutations = {}
 
 const actions = {
-    async getRoles({commit}) {
-        return new Promise((resolve, reject) => {
-            axiosClient.get('/admin/roles').then((res) => {
-                resolve(res)
-                return res
-            }).catch((err) => {
-                reject(err)
-            });
-        })
+    getRoles() {
+        return axiosClient.get('/admin/roles')
     },
-    async editRole({commit}, role) {
-        return new Promise((resolve, reject) => {
-            axiosClient.get(`/admin/roles/${role}/edit`).then((res) => {
-                resolve(res)
-                return res
-            }).catch((err) => {
-                reject(err)
-            });
-        })
+    editRole({commit}, role) {
+        return axiosClient.get(`/admin/roles/${role}/edit`)
     },
-    async updateRoles({commit}, payload){
+    updateRoles({commit}, payload) {
         payload.name = payload.role.name;
         payload.display_name = payload.role.display_name;
-        
-        return new Promise((resolve, reject) => {
-            axiosClient.patch(`/admin/roles/${payload.role.id}`, payload).then((res) => {
-                resolve(res)
-                return res
-            }).catch((err) => {
-                reject(err)
-            });
-        })
+
+        return axiosClient.patch(`/admin/roles/${payload.role.id}`, payload)
     }
 }
 

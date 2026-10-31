@@ -23,11 +23,12 @@ const axiosClient = axios.create({
 
 axiosClient.defaults.withCredentials = true;
 axiosClient.defaults.withXSRFToken = true;
+// Sanctum solo necesita pedir la cookie CSRF cuando aún no existe (o expiró, ver el 419 abajo)
 axiosClient.interceptors.request.use(async (config) => {
-    console.log('➡️ Request URL:', import.meta.env.VITE_API_BASE_URL);
-
     if ((config.method || '').toLowerCase() !== 'get') {
-        await axiosClient.get('/csrf-cookie').then()
+        if (!Cookies.get('XSRF-TOKEN')) {
+            await axiosClient.get('/csrf-cookie')
+        }
 
         config.headers['X-XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN')
     }
@@ -35,8 +36,15 @@ axiosClient.interceptors.request.use(async (config) => {
 })
 axiosClient.interceptors.response.use(
   response => response,
-  error => {
+  async error => {
     if (error.response) {
+      const { config } = error
+      if (error.response.status === 419 && !config._csrfRetried) {
+        // token CSRF vencido: se renueva y se reintenta una sola vez
+        config._csrfRetried = true
+        await axiosClient.get('/csrf-cookie')
+        return axiosClient(config)
+      }
       if (error.response.status === 401) {
         // Limpia el store si lo usas
         store.commit('user/setAuthenticated', false)
@@ -45,7 +53,8 @@ axiosClient.interceptors.response.use(
         
         // Redirige al login
         // router.push({ name: 'Login' })
-      } else if (error.response.status === 404) {
+      } else if (error.response.status === 404 && (config.method || '').toLowerCase() === 'get') {
+        // solo cuando falta lo que se intenta ver; un 404 al borrar/editar lo maneja quien llama
         router.push({ name: 'NotFound' })
       }
     }

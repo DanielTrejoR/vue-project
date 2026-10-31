@@ -35,17 +35,19 @@
 
       <v-spacer></v-spacer>
       <template v-slot:append>
-          <div v-if="user">
-
+          <div>
             <v-btn
-              v-if="user.authenticated"
+              v-if="!isAuthenticated"
+              :to="{ name: 'Login' }"
               class="me-2"
               color="primary"
               height="40"
               variant="flat"
             >Login / Sign up</v-btn>
+            <!-- path y no name: la ruta solo existe si el usuario tiene rol de admin/escritor -->
             <v-btn
-              v-if="!user.authenticated"
+              v-else-if="canWrite"
+              to="/admin/posts/create"
               class="me-2"
               color="primary"
               height="40"
@@ -101,6 +103,7 @@
                   <v-btn
                     rounded
                     variant="text"
+                    @click="logout"
                   >
                     Disconnect
                   </v-btn>
@@ -109,6 +112,7 @@
                     <v-btn
                       rounded
                       variant="text"
+                      :to="{ name: 'Login' }"
                     >
                       Login
                     </v-btn>
@@ -139,8 +143,9 @@
 </template>
 <script setup>
 import { useRadialThemeToggle } from '@/composables/Front/useRadialThemeToggle'
-import { mapState, useStore } from 'vuex'
-import { ref, watch } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { ref, watch, computed } from 'vue'
 import { useTheme } from 'vuetify'
 
 const store = useStore();
@@ -148,7 +153,16 @@ const theme = useTheme()
 const drawer = ref(null)
 const ex11 = ref(false)
 const { toggleRadialTheme } = useRadialThemeToggle()
-const user = store.getters['user'] 
+const router = useRouter()
+// computed para reflejar el login/logout sin recargar
+const user = computed(() => store.getters['user'])
+const isAuthenticated = computed(() => store.getters['isAuthenticated'])
+const canWrite = computed(() => store.getters.roles.some(role => ['Admin', 'Writer'].includes(role)))
+
+const logout = async () => {
+  await store.dispatch('user/logout')
+  router.push({ name: 'Index' })
+}
 
 const themeIcon = ref('mdi mdi-weather-sunny')
 // Guardamos el último tema claro y oscuro
