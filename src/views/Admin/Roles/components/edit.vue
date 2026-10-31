@@ -20,9 +20,12 @@
 </template>
 <script setup>
 import { ref, onMounted, reactive } from 'vue';
-import { useStore } from 'vuex'
+import { useRolesStore } from '~/stores/roles'
+import { usePermissionStore } from '~/stores/permission'
 
-const store = useStore()
+const rolesStore = useRolesStore()
+
+const permissionStore = usePermissionStore()
 const props = defineProps({
   role: {
     type: Object,
@@ -33,7 +36,7 @@ const permissions = ref([]);
 const currentRole = ref([]);
 const selectedPermissions = ref([])
 const getPermissionsList = async () => {
-    const res = await store.dispatch('permission/getPermissions');
+    const res = await permissionStore.getPermissions();
 }
 // Emit: evento para enviar el rol editado
 const emit = defineEmits(['mountedForm', 'updateRole'])
@@ -46,7 +49,7 @@ const submitForm = () => {
 
 onMounted(() => {
     emit('mountedForm');
-    store.dispatch('roles/editRole', props.role.id).then((res) => {
+    rolesStore.editRole(props.role.id).then((res) => {
         currentRole.value = res.data.role;
         permissions.value = res.data.permissions
 

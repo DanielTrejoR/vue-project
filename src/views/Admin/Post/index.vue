@@ -81,14 +81,19 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, inject, computed } from 'vue';
-import store  from '~/store';
+import { useSettingsStore } from '~/stores/settings'
+import { useAppStore } from '~/stores/app'
+import { usePostsStore } from '~/stores/posts'
+const settingsStore = useSettingsStore()
+const appStore = useAppStore()
+const postsStore = usePostsStore()
 import BaseModal from '~/components/Admin/BaseModal.vue';
 import type { ComponentSize } from 'element-plus'
 import router from "~/router";
 import { ElMessage } from 'element-plus'
 import { InfoFilled } from '@element-plus/icons-vue'
 const size = ref<ComponentSize>('default')
-const isMobile = computed(() => store.state.app.device === 'mobile')
+const isMobile = computed(() => appStore.isMobile)
 const tableData = ref([]);
 const postForm = ref(null);
 const showModal = ref(false);
@@ -101,7 +106,7 @@ const paginator = ref<Record<string, any>>({
 })
 const perPage = ref(20)
 const sizePage = ref(20)
-const theme = computed(() => store.state.settings?.theme || '#1890ff');
+const theme = computed(() => settingsStore.theme);
 
 const handleClick = (post: any) => {
     postForm.value = post;
@@ -128,7 +133,7 @@ const getOwnerPosts = async (_page?: unknown, _size?: unknown) => {
         page = perPage.value;
         size = sizePage.value;
         const filtersPage = cleanFilters(filters.value);
-        const posts = await store.dispatch('posts/fetchPosts', {
+        const posts = await postsStore.fetchPosts({
             page: page,
             size: size,
             filters: filtersPage
@@ -172,7 +177,7 @@ const deletePost = async (urlKey: string) => {
   try {
     loading.value = true;
     ElMessage.success('Post eliminado correctamente');
-    const deletePostByKey = await store.dispatch('posts/deletePost', urlKey);
+    const deletePostByKey = await postsStore.deletePost(urlKey);
     if (deletePostByKey){
         getOwnerPosts(1, 10);
     }

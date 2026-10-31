@@ -1,10 +1,10 @@
 // Aplica las preferencias del store (settings) a la página: modo oscuro y color del admin,
 // tema de Vuetify del blog, y las mantiene sincronizadas con otras pestañas.
 import { watch, onMounted, onBeforeUnmount } from 'vue'
-import { useStore } from 'vuex'
+import { useSettingsStore } from '~/stores/settings'
 import { useTheme } from 'vuetify'
 import { isDark } from './useRadialThemeToggle'
-import { STORAGE_KEY } from '~/store/modules/settings'
+import { STORAGE_KEY } from '~/stores/settings'
 
 const mix = (hex: string, base: string, weight: number) => {
   const channel = (color: string, i: number) => parseInt(color.slice(1 + i * 2, 3 + i * 2), 16)
@@ -26,11 +26,11 @@ function applyPrimaryColor(color: string, dark: boolean) {
 }
 
 export function useApplyPreferences() {
-  const store = useStore()
+  const settingsStore = useSettingsStore()
   const vuetifyTheme = useTheme()
 
   watch(
-    () => store.state.settings.dark,
+    () => settingsStore.dark,
     dark => {
       isDark.value = dark
       document.documentElement.classList.toggle('dark', dark)
@@ -39,13 +39,13 @@ export function useApplyPreferences() {
   )
 
   watch(
-    () => [store.state.settings.theme, store.state.settings.dark] as const,
+    () => [settingsStore.theme, settingsStore.dark] as const,
     ([color, dark]) => applyPrimaryColor(color, dark),
     { immediate: true }
   )
 
   watch(
-    () => store.state.settings.blogTheme,
+    () => settingsStore.blogTheme,
     name => {
       if (name in vuetifyTheme.themes.value) {
         vuetifyTheme.global.name.value = name
@@ -56,7 +56,7 @@ export function useApplyPreferences() {
 
   const onStorage = (event: StorageEvent) => {
     if (event.key === STORAGE_KEY && event.newValue) {
-      store.dispatch('settings/syncFromStorage', event.newValue)
+      settingsStore.syncFromStorage(event.newValue)
     }
   }
   onMounted(() => window.addEventListener('storage', onStorage))

@@ -1,9 +1,10 @@
 import type { DirectiveBinding } from 'vue';
-import store from '~/store'; // o usa useStore()
+import { pinia } from '~/stores';
+import { useAuthStore } from '~/stores/auth';
 
 export default {
   mounted(el: HTMLElement, binding: DirectiveBinding) {
-    const userPerms = store.getters && store.getters.permissions;
+    const userPerms = useAuthStore(pinia).permissions;
     const requiredPerms = binding.value;
 
     const allowed = Array.isArray(requiredPerms)

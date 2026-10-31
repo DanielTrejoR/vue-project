@@ -160,12 +160,12 @@
 </template>
 <script setup>
 import { useRadialThemeToggle } from '@/composables/Front/useRadialThemeToggle'
-import { useStore } from 'vuex'
+import { useAuthStore } from '~/stores/auth'
 import { useRouter } from 'vue-router'
 import { ref, watch, computed } from 'vue'
 import { useTheme } from 'vuetify'
 
-const store = useStore();
+const auth = useAuthStore()
 const theme = useTheme()
 const drawer = ref(null)
 const navDrawer = ref(false)
@@ -173,12 +173,12 @@ const ex11 = ref(false)
 const { toggleRadialTheme } = useRadialThemeToggle()
 const router = useRouter()
 // computed para reflejar el login/logout sin recargar
-const user = computed(() => store.getters['user'])
-const isAuthenticated = computed(() => store.getters['isAuthenticated'])
-const canWrite = computed(() => store.getters.roles.some(role => ['Admin', 'Writer'].includes(role)))
+const user = computed(() => auth.user)
+const isAuthenticated = computed(() => auth.isAuthenticated)
+const canWrite = computed(() => auth.canWrite)
 
 const logout = async () => {
-  await store.dispatch('user/logout')
+  await auth.logout()
   router.push({ name: 'Index' })
 }
 

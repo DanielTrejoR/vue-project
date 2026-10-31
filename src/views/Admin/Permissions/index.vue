@@ -17,18 +17,18 @@
 
 </template>
 <script setup>
-import { useStore } from 'vuex'
+import { usePermissionStore } from '~/stores/permission'
 import { useRouter } from 'vue-router'
 import { ref, onMounted, toRaw } from 'vue';
 import { useTheme } from '@/composables/useTheme'
 const { theme } = useTheme()
-const store = useStore()
+const permissionStore = usePermissionStore()
 const router = useRouter()
 const permissions = ref([])
 const loading = ref(false)
 const getRoles = () => {
     loading.value = true
-    store.dispatch('permission/getPermissions').then((res) => {
+    permissionStore.getPermissions().then((res) => {
         if(res.data){
             permissions.value = res.data.permissions
         }

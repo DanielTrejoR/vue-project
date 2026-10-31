@@ -28,7 +28,7 @@ gsap.registerPlugin(ScrollToPlugin,Draggable);
 
 import 'animate.css';
 
-import store from './store';
+import { pinia } from './stores';
 
 // Vuetify
 import '@fortawesome/fontawesome-free/css/all.css'
@@ -42,7 +42,6 @@ import { mdi } from 'vuetify/iconsets/mdi'
 //themes array
 
 //end themes array
-const savedDark = sessionStorage.getItem('dark_theme') === 'true'
 const vuetify = createVuetify({
     icons: {
         defaultSet: 'fa',
@@ -154,7 +153,6 @@ const vuetify = createVuetify({
         }
     }
 })
-store.commit('user/setDarkMode', savedDark)
 
 import './permission' // permission control
 import SvgIcon from '~/components/SvgIcon/index.vue' 
@@ -172,7 +170,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 app.provide('emitter', emitter);
 app.use(router)
-app.use(store)
+app.use(pinia)
 app.use(vuetify)
 app.component('SvgIcon',SvgIcon)
 app.mount("#app");

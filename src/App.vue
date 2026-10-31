@@ -7,15 +7,15 @@
 </template>
 <script lang="ts" setup>
 import { onMounted } from 'vue'
-import { useStore } from 'vuex';
+import { useAuthStore } from '~/stores/auth'
 import { useApplyPreferences } from '~/composables/useApplyPreferences'
 
-const store = useStore();
+const auth = useAuthStore()
 useApplyPreferences()
-const isClientAuth = sessionStorage.getItem('isAuthenticated') === 'true'
 onMounted(() => {
-  if (isClientAuth) {
-    store.dispatch('auth/fetchUser') // revalida con Sanctum
+  if (auth.isAuthenticated) {
+    // revalida con Sanctum; si la sesión venció, el interceptor de axios la marca como cerrada
+    auth.fetchUser().catch(() => {})
   }
 })
 </script>

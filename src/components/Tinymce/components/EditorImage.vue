@@ -11,14 +11,17 @@
     </el-button>
 
     <el-dialog v-model="dialogVisible">
+      <!-- sube al backend (POST /api/admin/editor-images) con axios para llevar sesión y CSRF -->
       <el-upload
         multiple
         class="editor-slide-upload"
         list-type="picture-card"
-        action="https://httpbin.org/post"
+        accept="image/jpeg,image/png,image/gif,image/webp"
         :file-list="fileList"
+        :http-request="uploadToServer"
         :on-remove="handleRemove"
         :on-success="handleSuccess"
+        :on-error="handleError"
         :before-upload="beforeUpload"
         :show-file-list="true"
       >
@@ -33,36 +36,48 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import type { UploadFile } from 'element-plus'
+import type { UploadFile, UploadRawFile, UploadRequestOptions } from 'element-plus'
 import { ElMessage } from 'element-plus'
-// Props
-const props = defineProps<{
-  color?: string
-}>()
-props.color ??= '#1890ff'
+import axiosClient from '~/plugins/axios'
 
-// Emits
-const emit = defineEmits<{
-  (e: 'successCBK', files: UploadedImage[]): void
-}>()
+// Props
+const props = withDefaults(defineProps<{
+  color?: string
+}>(), {
+  color: '#1890ff',
+})
 
 // Types
-interface UploadedImage {
-  uid: string
+export interface UploadedImage {
+  uid: number
   width: number
   height: number
   url?: string
   hasSuccess: boolean
 }
 
+// Emits
+const emit = defineEmits<{
+  (e: 'successCBK', files: UploadedImage[]): void
+}>()
+
 // Refs & reactive
 const dialogVisible = ref(false)
 const fileList = ref<UploadFile[]>([])
-const listObj = reactive<Record<string, UploadedImage>>({})
+const listObj = reactive<Record<number, UploadedImage>>({})
+
+const MAX_SIZE_MB = 2
 
 // Methods
 const checkAllSuccess = () => {
-  return Object.keys(listObj).every(key => listObj[key].hasSuccess)
+  return Object.values(listObj).every(item => item.hasSuccess)
+}
+
+const uploadToServer = async (options: UploadRequestOptions) => {
+  const data = new FormData()
+  data.append('file', options.file)
+  const res = await axiosClient.post('/admin/editor-images', data)
+  return res.data
 }
 
 const handleSubmit = () => {
@@ -74,44 +89,47 @@ const handleSubmit = () => {
   }
 
   emit('successCBK', Object.values(listObj))
-  Object.keys(listObj).forEach(k => delete listObj[k])
+  Object.keys(listObj).forEach(k => delete listObj[Number(k)])
   fileList.value = []
   dialogVisible.value = false
 }
 
-const handleSuccess = (response: any, file: UploadFile) => {
-  const uid = file.uid
-  const entry = Object.values(listObj).find(item => item.uid === uid)
+const handleSuccess = (response: { url?: string }, file: UploadFile) => {
+  const entry = listObj[file.uid]
   if (entry) {
-    entry.url = response?.files?.file || ''
+    entry.url = response?.url || ''
     entry.hasSuccess = true
   }
 }
 
-const handleRemove = (file: UploadFile) => {
-  const uid = file.uid
-  for (const key in listObj) {
-    if (listObj[key].uid === uid) {
-      delete listObj[key]
-    }
-  }
+const handleError = (error: any, file: UploadFile) => {
+  delete listObj[file.uid]
+  ElMessage.error(error?.response?.data?.message || 'No se pudo subir la imagen')
 }
 
-const beforeUpload = (file: File) => {
-  const uid = (file as UploadFile).uid
+const handleRemove = (file: UploadFile) => {
+  delete listObj[file.uid]
+}
+
+const beforeUpload = (file: UploadRawFile) => {
+  if (file.size / 1024 / 1024 > MAX_SIZE_MB) {
+    ElMessage.error(`La imagen debe pesar menos de ${MAX_SIZE_MB} MB`)
+    return false
+  }
   const urlCreator = window.URL || window.webkitURL
-  return new Promise((resolve) => {
+  return new Promise<boolean>((resolve) => {
     const img = new Image()
     img.src = urlCreator.createObjectURL(file)
     img.onload = function () {
-      listObj[uid] = {
-        uid,
+      listObj[file.uid] = {
+        uid: file.uid,
         width: img.width,
         height: img.height,
         hasSuccess: false
       }
       resolve(true)
     }
+    img.onerror = () => resolve(false)
   })
 }
 </script>

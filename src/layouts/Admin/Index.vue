@@ -28,27 +28,29 @@
 </template>
 <script setup lang="ts">
 import { computed, watch, onBeforeUnmount } from 'vue';
-import { useStore } from 'vuex'
+import { useSettingsStore } from '~/stores/settings'
+import { useAppStore } from '~/stores/app'
 import { useRoute } from 'vue-router'
 import {AppMain, Settings, Navbar} from "./components"
-const store = useStore();
+const settingsStore = useSettingsStore()
+const appStore = useAppStore()
 const route = useRoute();
 
 // por debajo de 992px el menú pasa a drawer
 const desktopQuery = window.matchMedia('(min-width: 992px)')
-const updateDevice = () => store.dispatch('app/toggleDevice', desktopQuery.matches ? 'desktop' : 'mobile')
+const updateDevice = () => appStore.toggleDevice(desktopQuery.matches ? 'desktop' : 'mobile')
 updateDevice()
 desktopQuery.addEventListener('change', updateDevice)
 onBeforeUnmount(() => desktopQuery.removeEventListener('change', updateDevice))
 
-const isMobile = computed(() => store.state.app.device === 'mobile');
-const collapsed = computed(() => store.state.settings.sidebarCollapsed);
-const showSettings = computed(() => store.state.settings.showSettings);
-const fixedHeader = computed(() => store.state.settings.fixedHeader);
+const isMobile = computed(() => appStore.isMobile);
+const collapsed = computed(() => settingsStore.sidebarCollapsed);
+const showSettings = computed(() => settingsStore.showSettings);
+const fixedHeader = computed(() => settingsStore.fixedHeader);
 
 const mobileSidebar = computed({
-  get: () => store.state.app.mobileSidebar,
-  set: open => store.dispatch('app/setMobileSidebar', open),
+  get: () => appStore.mobileSidebar,
+  set: open => appStore.setMobileSidebar(open),
 });
 
 // al elegir una sección desde el drawer, se cierra

@@ -24,14 +24,14 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
-import { useStore } from 'vuex'
+import { usePermissionStore } from '~/stores/permission'
 import { useRouter } from 'vue-router'
 import Fuse from 'fuse.js'
 import {
   Search, Close
 } from '@element-plus/icons-vue'
 // 🔧 Store y Router
-const store = useStore()
+const permissionStore = usePermissionStore()
 const router = useRouter()
 
 // 🔁 Refs
@@ -44,7 +44,7 @@ const fuse = ref()
 const headerSearchSelect = ref()
 
 // 🧠 Computed
-const routes = computed(() => store.getters.permission_routes)
+const routes = computed(() => permissionStore.routes)
 
 const generateRoutes = (routes: any[], basePath = '/', prefixTitle: string[] = []): SearchItem[] => {
   let res: SearchItem[] = []

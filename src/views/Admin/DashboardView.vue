@@ -37,7 +37,7 @@ const images = [
     <el-row :gutter="32">
       <el-col :xs="24" :sm="24" :lg="8">
           <div class="chart-wrapper">
-            <RadarApexChart></RadarApexChart>
+            <RadarChart></RadarChart>
           </div>
         </el-col>
         <el-col :xs="24" :sm="24" :lg="8">
@@ -50,11 +50,6 @@ const images = [
             <BarChart></BarChart>
           </div>
         </el-col>
-    </el-row>
-    <el-row :gutter="32">
-      <el-col :lg="8">
-          <RadarChart></RadarChart>
-      </el-col>
     </el-row>
     <!-- example components -->
     <div class="mb-4">

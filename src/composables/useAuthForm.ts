@@ -1,6 +1,6 @@
 // Lógica compartida de login/registro: la usan la página /login (Element Plus) y el diálogo del blog (Vuetify)
 import { reactive, ref } from 'vue'
-import { useStore } from 'vuex'
+import { useAuthStore } from '~/stores/auth'
 
 export type AuthMode = 'login' | 'register'
 
@@ -10,7 +10,7 @@ export interface AuthUser {
 }
 
 export function useAuthForm() {
-  const store = useStore()
+  const auth = useAuthStore()
 
   const loginForm = reactive({
     email: '',
@@ -56,8 +56,8 @@ export function useAuthForm() {
     loading.value = true
     try {
       return mode === 'login'
-        ? await store.dispatch('user/login', loginForm)
-        : await store.dispatch('user/register', registerForm)
+        ? await auth.login(loginForm)
+        : await auth.register(registerForm)
     } catch (err) {
       handleError(err)
       return null

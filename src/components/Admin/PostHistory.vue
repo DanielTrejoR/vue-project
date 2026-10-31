@@ -23,12 +23,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import { useStore } from "vuex";
+import { usePostsStore } from '~/stores/posts'
 
-const store = useStore();
+const postsStore = usePostsStore()
 
 const props = defineProps({
-  postId: Number
+  // el editor pasa la url del post (clave de ruta en el backend)
+  postId: [String, Number]
 })
 
 const activities = ref([])
@@ -36,7 +37,7 @@ const activities = ref([])
 const formatDate = date => new Date(date).toLocaleString()
 
 onMounted(async () => {
-  const { data } = await store.dispatch("posts/getHistory", props.postId);
+  const { data } = await postsStore.getHistory(props.postId);
   activities.value = data
 })
 </script>

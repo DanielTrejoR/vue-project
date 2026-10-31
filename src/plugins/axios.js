@@ -1,7 +1,8 @@
 import axios from "axios";
 import router from "../router";
 import Cookies from 'js-cookie';
-import store from '@/store'
+import { pinia } from '~/stores'
+import { useAuthStore } from '~/stores/auth'
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 if (!baseURL) {
@@ -46,10 +47,8 @@ axiosClient.interceptors.response.use(
         return axiosClient(config)
       }
       if (error.response.status === 401) {
-        // Limpia el store si lo usas
-        store.commit('user/setAuthenticated', false)
-        store.commit('auth/setAuthenticated', false)
-        store.commit('user/setUser', {})
+        // sesión vencida o inexistente: se olvida el usuario
+        useAuthStore(pinia).expire()
         
         // Redirige al login
         // router.push({ name: 'Login' })

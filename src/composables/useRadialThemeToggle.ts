@@ -1,11 +1,12 @@
 import { ref, nextTick } from 'vue'
-import store from '~/store'
+import { pinia } from '~/stores'
+import { useSettingsStore } from '~/stores/settings'
 
-// Lo mantiene al día useApplyPreferences a partir de store.state.settings.dark (lo leen las gráficas)
+// Lo mantiene al día useApplyPreferences a partir de settings.dark (lo leen las gráficas)
 export const isDark = ref(false)
 
 async function setDark(value: boolean) {
-  await store.dispatch('settings/changeSetting', { key: 'dark', value })
+  useSettingsStore(pinia).changeSetting('dark', value)
   // espera a que useApplyPreferences cambie la clase "dark" antes de capturar la vista nueva
   await nextTick()
 }

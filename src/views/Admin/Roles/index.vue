@@ -48,16 +48,18 @@
 </template>
 <script setup> 
 //imports
-import { useStore } from 'vuex'
+import { useAuthStore } from '~/stores/auth'
+import { useRolesStore } from '~/stores/roles'
 import { useRouter } from 'vue-router'
 import { ref, onMounted, toRaw } from 'vue';
 import { useTheme } from '@/composables/useTheme'
 import EditRoles from './components/edit.vue'
 //Variables
 const { theme } = useTheme()
-const store = useStore()
+const auth = useAuthStore()
+const rolesStore = useRolesStore()
 const router = useRouter()
-const user = store.getters['user']
+const user = auth.user
 const roles = ref([]);
 const loading = ref(false)
 const activeName = ref('first')
@@ -66,7 +68,7 @@ const selectedRole = ref(null)
 
 const getRoles = async() => {
     loading.value = true
-    const res = await store.dispatch('roles/getRoles')
+    const res = await rolesStore.getRoles()
     roles.value = res.data.roles
     loading.value = false
 }
@@ -84,7 +86,7 @@ async function saveRole(updatedRole) {
             role: toRaw(updatedRole[0]),
             permissions: toRaw(updatedRole[1])
         }
-    store.dispatch('roles/updateRoles', payload).then((res) => {
+    rolesStore.updateRoles(payload).then((res) => {
         ElMessage(res.data);
         showDialog.value =false
         getRoles();

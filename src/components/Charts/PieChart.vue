@@ -3,7 +3,12 @@
 </template>
 
 <script>
-import * as echarts from 'echarts';
+// solo las piezas de ECharts que usa esta gráfica (importar 'echarts' entero mete toda la librería)
+import * as echarts from 'echarts/core';
+import { PieChart } from 'echarts/charts';
+import { TooltipComponent, LegendComponent } from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
+echarts.use([PieChart, TooltipComponent, LegendComponent, CanvasRenderer]);
 
 import 'echarts/theme/macarons' // echarts theme
 

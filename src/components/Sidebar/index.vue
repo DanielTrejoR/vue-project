@@ -15,23 +15,26 @@
                 <SidebarItem v-for="route in permissionRoutes" :key="route.path" :item="route" :base-path="route.path"/>
             </el-menu>
         </el-scrollbar>
-        <CreateModalPost></CreateModalPost>
     </div>
 </template>
 <script setup lang="ts">
 import { computed, onMounted } from "vue"
-import { mapState, useStore, mapGetters } from 'vuex'
+import { useSettingsStore } from '~/stores/settings'
+import { useAppStore } from '~/stores/app'
+import { usePermissionStore } from '~/stores/permission'
 import defaultSettings from '~/settings'
 import { useRoute, useRouter } from 'vue-router'
 const routeClass = useRoute();
 const router = useRouter();
-const store = useStore();
+const settingsStore = useSettingsStore()
+const appStore = useAppStore()
+const permissionStore = usePermissionStore()
 
-const permissionRoutes = computed(() => store.getters.permission_routes)
-const showLogo = computed(() => store.state.settings.sidebarLogo);
+const permissionRoutes = computed(() => permissionStore.routes)
+const showLogo = computed(() => settingsStore.sidebarLogo);
 const title = defaultSettings.title
 // colapsado es una preferencia del usuario; en móvil el menú va en un drawer y siempre se muestra completo
-const isCollapse = computed(() => store.state.settings.sidebarCollapsed && store.state.app.device !== 'mobile')
+const isCollapse = computed(() => settingsStore.sidebarCollapsed && !appStore.isMobile)
 const activeMenu = computed(() => {
     const route = routeClass
     const { meta, path } = route

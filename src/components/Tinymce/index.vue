@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
-import EditorImage from './components/EditorImage.vue'
+import EditorImage, { type UploadedImage } from './components/EditorImage.vue'
 import plugins from './plugins'
 import toolbar from './toolbar'
 import load from './dynamicLoadScript'
@@ -58,7 +58,7 @@ watch(() => props.modelValue, val => {
 
 // Lifecycle
 onMounted(() => {
-  load(tinymceCDN, err => {
+  load(tinymceCDN, (err: unknown) => {
     if (err) return console.error('Tinymce load error', err)
     initTinymce()
   })
@@ -81,7 +81,8 @@ function initTinymce() {
     menubar: props.menubar || 'file edit insert view format table',
     plugins: plugins,
     convert_urls: false,
-    init_instance_callback: instance => {
+    // TinyMCE llega como script global sin tipos
+    init_instance_callback: (instance: any) => {
       if (props.modelValue) instance.setContent(props.modelValue)
       hasInit.value = true
       instance.on('NodeChange Change KeyUp SetContent', () => {
@@ -89,8 +90,8 @@ function initTinymce() {
         emit('update:modelValue', instance.getContent())
       })
     },
-    setup(instance) {
-      instance.on('FullscreenStateChanged', e => {
+    setup(instance: any) {
+      instance.on('FullscreenStateChanged', (e: { state: boolean }) => {
         fullscreen.value = e.state
       })
     }
@@ -103,7 +104,7 @@ function destroyTinymce() {
   editor?.destroy()
 }
 
-function imageSuccessCBK(arr: Array<{ url: string }>) {
+function imageSuccessCBK(arr: UploadedImage[]) {
   const editor = window.tinymce.get(tinymceId.value)
   arr.forEach(img => editor?.insertContent(`<img class="wscnph" src="${img.url}" />`))
 }

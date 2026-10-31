@@ -20,12 +20,12 @@
     </div>
 </template>
 <script setup>
-import { useStore } from 'vuex'
+import { useAuthStore } from '~/stores/auth'
 import { ref, onMounted, computed } from 'vue';
 import dayjs from 'dayjs';
-const store = useStore()
+const auth = useAuthStore()
 // el getter 'user' ya es el usuario (store auth), no tiene una propiedad .user
-const user = computed(() => store.getters['user'] || {})
+const user = computed(() => auth.user || {})
 const activities = ref({ data: [] });
 
 function formatDate(date) {
@@ -33,7 +33,7 @@ function formatDate(date) {
 }
 
 const getActivities = async () => {
-    store.dispatch('user/getActivities').then((res) => {
+    auth.getActivities().then((res) => {
         activities.value = res.data
     }).catch((err) => {
         

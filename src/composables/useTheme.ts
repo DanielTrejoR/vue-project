@@ -1,8 +1,8 @@
 import { computed } from 'vue'
-import { useStore } from 'vuex'
+import { useSettingsStore } from '~/stores/settings'
 
 export function useTheme() {
-  const store = useStore()
-  const theme = computed(() => store.state.settings?.theme || '#1890ff')
+  const settingsStore = useSettingsStore()
+  const theme = computed(() => settingsStore.theme)
   return { theme }
 }

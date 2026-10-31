@@ -1,6 +1,8 @@
 import router from './router'
 import type { RouteRecordRaw } from 'vue-router'
-import store from '@/store'
+import { pinia } from '~/stores'
+import { useAuthStore } from '~/stores/auth'
+import { usePermissionStore } from '~/stores/permission'
 import { ElMessage } from 'element-plus'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
@@ -14,7 +16,10 @@ router.beforeEach(async(to, from, next) => {
     NProgress.start();
     
     document.title = getPageTitle(to.meta.title)
-    const isAuth = store.getters.isAuthenticated;
+    // el guard corre fuera de componentes: los stores se piden con la instancia de pinia
+    const auth = useAuthStore(pinia)
+    const permissionStore = usePermissionStore(pinia)
+    const isAuth = auth.isAuthenticated;
 
     if (to.meta.requiresAuth === false) {
         NProgress.done()
@@ -32,24 +37,22 @@ router.beforeEach(async(to, from, next) => {
     if (to.path === '/login') {
         // si ya inició sesión, no tiene sentido mostrar el login
         NProgress.done()
-        return next(store.getters.roles.includes('Admin') ? { path: '/admin' } : { path: '/' })
+        return next(auth.isAdmin ? { path: '/admin' } : { path: '/' })
     }
 
     // las rutas dinámicas se generan una sola vez por sesión (resetRouter las quita al cerrar sesión)
-    const routesReady = store.state.permission.addRoutes.length > 0;
-    if (routesReady) {
+    if (permissionStore.routesReady) {
         return next()
     }
 
     try {
-        await store.dispatch('auth/fetchUser')
-        const { roles, permissions } = store.getters.user || {};
+        const { roles, permissions } = await auth.fetchUser();
         if (!roles || roles.length === 0) {
             ElMessage.warning('Tu cuenta no tiene permisos asignados');
             NProgress.done()
             return next('/');
         }
-        const accessRoutes = await store.dispatch('permission/generateRoutes', {roles, permissions})
+        const accessRoutes = permissionStore.generateRoutes({roles, permissions})
         accessRoutes.forEach((route: RouteRecordRaw) => router.addRoute(route));
         return next({ ...to, replace: true });
 

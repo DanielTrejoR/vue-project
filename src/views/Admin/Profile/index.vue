@@ -26,24 +26,24 @@
 </template>
 
 <script setup>
-import { useStore } from 'vuex'
+import { useAuthStore } from '~/stores/auth'
 import { useRouter } from 'vue-router'
 import UserCard from './components/UserCard.vue'
 import TimeLine from './components/TimeLine.vue'
 import Account from './components/Account.vue'
 import Activity from './components/Activity.vue'
 import {ref} from 'vue';
-const store = useStore()
+const auth = useAuthStore()
 const router = useRouter()
 
-const user = store.getters['user']
+const user = auth.user
 const activeTab = ref('activity')
 const editProfile = () => {
   router.push('/settings') // o tu ruta de edición
 }
 
 const logout = async () => {
-  await store.dispatch('user/logout')
+  await auth.logout()
   router.push('/login')
 }
 </script>

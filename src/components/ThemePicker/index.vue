@@ -10,16 +10,16 @@
 // El color se aplica con variables CSS de Element Plus (useApplyPreferences); antes se descargaba
 // el CSS de Element Plus desde unpkg y se reescribía, lo que no funcionaba con el namespace "ep".
 import { computed } from 'vue';
-import { useStore } from 'vuex'
+import { useSettingsStore } from '~/stores/settings'
 
-const store = useStore();
+const settingsStore = useSettingsStore()
 
 const emit = defineEmits<{
     (e: 'change', val: string): void;
 }>();
 
 const theme = computed({
-    get: () => store.state.settings.theme,
+    get: () => settingsStore.theme,
     set: (val: string | null) => {
         if (!val) return
         emit('change', val)

@@ -17,20 +17,22 @@
 </template>
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
-import { useStore } from 'vuex';
+import { useSettingsStore } from '~/stores/settings'
+import { useAppStore } from '~/stores/app'
 import { addClass, removeClass } from '~/utils'
 import { useClickOutsideAdvanced } from '~/composables/useClickOutsideAdvanced';
 import { Setting, Close } from '@element-plus/icons-vue';
 const iconComponent = computed(() => show.value ? Close : Setting);
-const store = useStore();
+const settingsStore = useSettingsStore()
+const appStore = useAppStore()
 const show = computed({
-  get: () => store.state.app.settingsPanel,
-  set: (open: boolean) => store.dispatch('app/setSettingsPanel', open),
+  get: () => appStore.settingsPanel,
+  set: (open: boolean) => appStore.setSettingsPanel(open),
 })
 const rightPanel = ref<HTMLElement | null>(null);
 const panelRef = ref<HTMLElement | null>(null);
 
-const theme = computed(() => store.state.settings?.theme || '#1890ff');
+const theme = computed(() => settingsStore.theme);
 
 const props = withDefaults(defineProps<{
   clickNotClose?: boolean;

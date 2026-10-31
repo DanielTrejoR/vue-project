@@ -13,7 +13,7 @@
 </template>
 <script>
 import { defineAsyncComponent } from 'vue'
-import store from '~/store/index.js'
+import { usePostsStore } from '~/stores/posts'
 
 export default {
     props: ['url', 'componentName'],
@@ -33,7 +33,7 @@ export default {
     },
     methods: {
         async getPost(page = 1) {
-            store.dispatch('user/getPosts', {
+            usePostsStore().getPosts({
             url: this.url,
             page: page
             })

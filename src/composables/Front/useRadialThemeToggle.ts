@@ -1,15 +1,15 @@
 // composables/useThemeTransition.ts
 import { useTheme } from 'vuetify'
 import { nextTick } from 'vue'
-import { useStore } from 'vuex'
+import { useSettingsStore } from '~/stores/settings'
 
 export function useRadialThemeToggle() {
   const theme = useTheme()
-  const store = useStore();
+  const settingsStore = useSettingsStore()
 
   // el tema del blog es una preferencia más: useApplyPreferences lo aplica a Vuetify
   const setBlogTheme = async (name: string) => {
-    await store.dispatch('settings/changeSetting', { key: 'blogTheme', value: name })
+    await settingsStore.changeSetting('blogTheme', name)
     await nextTick()
   }
 

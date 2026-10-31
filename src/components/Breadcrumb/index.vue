@@ -19,15 +19,17 @@
 </template>
 
 <script setup lang="ts">
-import pathToRegexp from 'path-to-regexp'
-import { ref, watch, onMounted } from 'vue'
-import type { RouteRecordNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
+import { compile } from 'path-to-regexp'
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import type { RouteRecordNormalized, RouteLocationRaw } from 'vue-router'
 import { useRoute, useRouter } from 'vue-router'
 import emitter from '~/utils/emitter'
 
 const route = useRoute()
 const router = useRouter()
-const levelList = ref<RouteRecordNormalized[]>([])
+// lo que necesita cada miga: una ruta del router o la del dashboard que se agrega al inicio
+type Crumb = Pick<RouteRecordNormalized, 'path' | 'meta'> & Partial<Pick<RouteRecordNormalized, 'name' | 'redirect'>>
+const levelList = ref<Crumb[]>([])
 
 onMounted(getBreadcrumb)
 
@@ -40,12 +42,12 @@ watch(
 )
 
 function getBreadcrumb() {
-  let matched = route.matched.filter(item => item.meta?.title)
+  let matched: Crumb[] = route.matched.filter(item => item.meta?.title)
   const first = matched[0]
 
   if (!isDashboardRoute(first)) {
     matched = [
-      { path: '/dashboard', meta: { title: 'Dashboard' } } as RouteRecordNormalized,
+      { path: '/admin/dashboard', meta: { title: 'Dashboard' } },
       ...matched,
     ]
   }
@@ -53,34 +55,36 @@ function getBreadcrumb() {
   levelList.value = matched.filter(item => item.meta?.title && item.meta?.breadcrumb !== false)
 }
 
-function isDashboardRoute(item?: RouteRecordNormalized | null) {
+function isDashboardRoute(item?: Crumb | null) {
   const name = item?.name?.toString().trim().toLowerCase()
   return name === 'dashboard'
 }
 
 function compilePath(path: string) {
   const { params } = route
-  return pathToRegexp.compile(path)(params)
+  return compile(path)(params as Record<string, string>)
 }
 
-function handleLink(item: RouteRecordNormalized) {
+function handleLink(item: Crumb) {
   if (item.redirect && item.redirect !== 'noRedirect') {
-    router.push(item.redirect)
+    router.push(item.redirect as RouteLocationRaw)
   } else {
     router.push(compilePath(item.path))
   }
 }
 
-onMounted( () => {
-  emitter.on('updateBreadcrumbTitle', (newTitle: string) => {
-    const last = route.matched[route.matched.length - 1]
-    if (last?.meta) {
-      last.meta.title = newTitle
-    }
-    route.meta.title = newTitle
-    getBreadcrumb();
-  })
-})
+// el editor de posts cambia el título de la última miga ("Editando: ...")
+const onTitleUpdate = (newTitle: unknown) => {
+  const last = route.matched[route.matched.length - 1]
+  if (last?.meta) {
+    last.meta.title = newTitle as string
+  }
+  route.meta.title = newTitle as string
+  getBreadcrumb();
+}
+onMounted(() => emitter.on('updateBreadcrumbTitle', onTitleUpdate))
+// sin esto cada montaje del header sumaba otro listener
+onBeforeUnmount(() => emitter.off('updateBreadcrumbTitle', onTitleUpdate))
 
 </script>
 

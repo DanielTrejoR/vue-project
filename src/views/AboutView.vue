@@ -6,9 +6,9 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useStore } from 'vuex';
+import { useAuthStore } from '~/stores/auth'
 
-const store = useStore();
-const userName = computed(() => store.getters['user/name']);
+const auth = useAuthStore()
+const userName = computed(() => auth.user?.name);
 
 </script>

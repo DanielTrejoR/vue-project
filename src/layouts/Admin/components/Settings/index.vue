@@ -43,19 +43,23 @@ defineOptions({
 });
 
 import { computed } from 'vue';
-import { useStore } from 'vuex'
-const store = useStore();
+import { useAuthStore } from '~/stores/auth'
+import { useSettingsStore } from '~/stores/settings'
+import { useAppStore } from '~/stores/app'
+const auth = useAuthStore()
+const settingsStore = useSettingsStore()
+const appStore = useAppStore()
 
-const settings = computed(() => store.state.settings)
-const isMobile = computed(() => store.state.app.device === 'mobile')
+const settings = computed(() => settingsStore)
+const isMobile = computed(() => appStore.isMobile)
 
 // cada cambio se aplica al momento y se guarda en el navegador y, con sesión, en la cuenta
 const change = (key: string, value: unknown) => {
-  store.dispatch('settings/changeSetting', { key, value })
+  settingsStore.changeSetting(key, value)
 }
 
 const syncText = computed(() => {
-  if (!store.getters.isAuthenticated) return 'Guardado en este navegador.'
+  if (!auth.isAuthenticated) return 'Guardado en este navegador.'
   return {
     saving: 'Guardando en tu cuenta…',
     error: 'No se pudo guardar en tu cuenta; se mantiene en este navegador.',

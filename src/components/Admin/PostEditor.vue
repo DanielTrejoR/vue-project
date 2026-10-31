@@ -223,7 +223,8 @@
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import { ElImageViewer, ElMessage, ElNotification } from "element-plus";
 import type { FormInstance, FormRules, UploadFile, UploadFiles, UploadInstance } from "element-plus";
-import { useStore } from "vuex";
+import { useSettingsStore } from '~/stores/settings'
+import { usePostsStore } from '~/stores/posts'
 import Cookies from "js-cookie";
 import draggable from 'vuedraggable'
 import router from "~/router";
@@ -238,7 +239,9 @@ const props = defineProps<{
     postId?: string
 }>()
 
-const store = useStore();
+const settingsStore = useSettingsStore()
+
+const postsStore = usePostsStore()
 const uploadRef = ref<UploadInstance>()
 const uploadUrl = import.meta.env.VITE_API_BASE_URL
 const uploadHeaders = ref({
@@ -246,7 +249,7 @@ const uploadHeaders = ref({
       "X-XSRF-TOKEN": Cookies.get('XSRF-TOKEN')
   }
 })
-const theme = computed(() => store.state.settings?.theme || '#1890ff');
+const theme = computed(() => settingsStore.theme);
 const postPhotoUrl = ref('');
 interface PostForm {
   title: string;
@@ -283,8 +286,9 @@ const shortcuts = [
 ];
 
 const loading = ref(false);
-const categoryOptions = ref([]);
-const tagOptions = ref([]);
+interface Option { id: number; name: string }
+const categoryOptions = ref<Option[]>([]);
+const tagOptions = ref<Option[]>([]);
 
 const postFromRef = ref<FormInstance>();
 const postForm = reactive<PostForm>({
@@ -338,7 +342,7 @@ const handleSubmit = async (formEl: FormInstance | undefined) => {
     if (valid) {
         if(props.mode === 'edit' && props.postId) {
           
-          store.dispatch("posts/updatePost", {postData: postForm, postId: props.postId})
+          postsStore.updatePost({postData: postForm, postId: props.postId})
           .then((res) => {
             if(fileList){
               ElMessage("Subiendo fotos... No salgas de esta pagina")
@@ -353,8 +357,7 @@ const handleSubmit = async (formEl: FormInstance | undefined) => {
             router.push({ name: 'PostsIndex'})
           })
         }else{
-          store
-          .dispatch("posts/storePost", postForm)
+          postsStore.storePost(postForm)
           .then((res) => {
             ElMessage("Post guardado correctamente");
             if(res.data.id){
@@ -386,9 +389,7 @@ const resetForm = () => {
 };
 
 const getCategoriesAndTags = async () => {
-  const { categories, tags } = await store.dispatch(
-    "posts/fetchCategoriesAndTags"
-  );
+  const { categories, tags } = await postsStore.fetchCategoriesAndTags();
   categoryOptions.value = categories;
   tagOptions.value = tags;
 };
@@ -398,19 +399,26 @@ const contentShortLength = computed(() => {
 });
 
 //El upload 
-const fileList = ref([])
+// las fotos ya guardadas traen el id del backend; las nuevas todavía no
+type EditorFile = UploadFile & { id?: number }
+const fileList = ref<EditorFile[]>([])
 
 const handlePreview = (file: UploadFile) => {
   ElImageViewer.open({ urlList: [file.url || file.raw], initialIndex: 0 })
 }
 
-const handleRemove = (file: UploadFile) => {
+const handleRemove = (file: EditorFile) => {
   const index = fileList.value.findIndex(f => f.uid === file.uid)
-  if (index !== -1) {
-    fileList.value.splice(index, 1)
-    store.dispatch("posts/deletePhoto", file.id);
-    ElMessage.success('Foto eliminada');
-  }
+  if (index === -1) return
+  fileList.value.splice(index, 1)
+  // una foto que aún no se subió solo se quita de la lista
+  if (!file.id) return
+  postsStore.deletePhoto(file.id)
+    .then(() => ElMessage.success('Foto eliminada'))
+    .catch(() => {
+      fileList.value.splice(index, 0, file)
+      ElMessage.error('No se pudo eliminar la foto')
+    })
 }
 
 const handleChange = (file: UploadFile, files: UploadFile[]) => {
@@ -440,7 +448,7 @@ const beforeUpload = (file: File) => {
 }
 
 const getPreviewUrl = (file: UploadFile): string => {
-  return file.url || URL.createObjectURL(file.raw)
+  return file.url || (file.raw ? URL.createObjectURL(file.raw) : '')
 }
 
 const dialogImageUrl = ref('')
@@ -465,13 +473,15 @@ const submitPhotos = async () => {
 onMounted(async () => {
   getCategoriesAndTags();
   if (props.mode === 'edit' && props.postId) {
-    const {data} = await store.dispatch("posts/editPost", props.postId)
+    const {data} = await postsStore.editPost(props.postId)
     Object.assign(postForm, data);
-    postForm.tags = data.tags.map(tag => tag.id)
+    postForm.tags = data.tags.map((tag: Option) => tag.id)
     emitter.emit('updateBreadcrumbTitle', `Editando: "${data.title}"`)
     r.meta.title = `Editando: "${postForm.title}"`;
-    fileList.value = data.photos.map(p => ({
-          uid: `pre-${p.id}`,
+    fileList.value = data.photos.map((p: { id: number; full_url: string }) => ({
+          // uid negativo: no choca con los que genera el upload (positivos) y sigue siendo numérico
+          uid: -p.id,
+          name: p.full_url,
           id: p.id,
           url: p.full_url,
           status: 'success'

@@ -6,10 +6,10 @@
 
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { mapState, useStore } from 'vuex'
+import { useAppStore } from '~/stores/app'
 import PostsLists from './Post/index.vue'
-const store = useStore();
-const device = computed(() => store.state.app.device);
+const appStore = useAppStore()
+const device = computed(() => appStore.device);
 
 const drawer = ref(false)
 </script>

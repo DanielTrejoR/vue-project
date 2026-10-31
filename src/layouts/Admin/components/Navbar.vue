@@ -3,7 +3,7 @@
     <el-row align="middle" justify="space-between" class="navbar-inner d-flex align-center">
       <!-- Branding -->
       <div class="d-flex align-center navbar-left">
-        <Hamburger :is-active="menuOpen" @toggle="store.dispatch('app/toggleMenu')" />
+        <Hamburger :is-active="menuOpen" @toggle="appStore.toggleMenu()" />
         <Breadcrumb class="navbar-breadcrumb" />
       </div>
       <!-- Navegación -->
@@ -35,7 +35,7 @@
                 <el-dropdown-item @click="goProfile">
                   Mi Perfil
                 </el-dropdown-item>
-                <el-dropdown-item @click="store.dispatch('app/setSettingsPanel', true)">
+                <el-dropdown-item @click="appStore.setSettingsPanel(true)">
                   Configuración
                 </el-dropdown-item>
                 <el-dropdown-item divided @click="logout">
@@ -54,23 +54,27 @@ import IconMoon from '~/components/icons/IconMoon.vue';
 import IconSunny from '~/components/icons/IconSunny.vue';
 import {onMounted, onUnmounted, ref, computed} from 'vue';
 import { useRadialThemeToggle } from '~/composables/useRadialThemeToggle'
-import { useStore } from 'vuex';
+import { useAuthStore } from '~/stores/auth'
+import { useSettingsStore } from '~/stores/settings'
+import { useAppStore } from '~/stores/app'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const { isDark, toggleRadialTheme } = useRadialThemeToggle()
 // ícono del botón de menú: abierto si el drawer móvil está abierto o el menú de escritorio expandido
-const menuOpen = computed(() => store.state.app.device === 'mobile'
-  ? store.state.app.mobileSidebar
-  : !store.state.settings.sidebarCollapsed)
-const store = useStore();
-const user = computed(() => store.getters['user'] || {});
+const menuOpen = computed(() => appStore.isMobile
+  ? appStore.mobileSidebar
+  : !settingsStore.sidebarCollapsed)
+const auth = useAuthStore()
+const settingsStore = useSettingsStore()
+const appStore = useAppStore()
+const user = computed(() => auth.user || {});
 function handleSwitchClick(event: MouseEvent) {
   if (!(event instanceof MouseEvent)) return
 
   toggleRadialTheme(event)
 }
 const logout = async () => {
-  await store.dispatch('user/logout')
+  await auth.logout()
   router.push('/login')
 }
 
