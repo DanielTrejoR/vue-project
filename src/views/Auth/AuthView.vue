@@ -1,124 +1,172 @@
 <template>
-<div>
-  <el-row>
-    <el-col :span="24"><h2>Bienvenido</h2></el-col>
-  </el-row>
-  <el-row class="pt-50">
-    <el-col :span="11" :offset="1">
-      <el-card shadow="hover">
-        <div style="padding: 14px">
-          <span>Inicia sesión</span>
-          <div class="mt-10">
-            <el-form
-              ref="loginFormRef"
-              :model="loginForm"
-              :rules="loginRules"
-              label-width="120px"
-              status-icon
-              label-position="top"
-            >
-              <el-form-item label="Correo electrónico" prop="email">
-                <el-input v-model="loginForm.email" clearable />
-              </el-form-item>
+  <div class="auth-page">
+    <el-card class="auth-card" shadow="always">
+      <h2 class="auth-title">Bienvenido</h2>
 
-              <el-form-item label="Contraseña" prop="password">
-                <el-input v-model="loginForm.password" type="password" show-password />
-              </el-form-item>
+      <el-tabs v-model="mode" stretch @tab-change="onTabChange">
+        <el-tab-pane label="Iniciar sesión" name="login">
+          <el-form
+            ref="loginFormRef"
+            :model="loginForm"
+            :rules="loginRules"
+            label-position="top"
+            status-icon
+            @submit.prevent="submitLogin"
+          >
+            <el-form-item label="Correo electrónico" prop="email" :error="fieldErrors.email">
+              <el-input v-model="loginForm.email" type="email" autocomplete="email" clearable />
+            </el-form-item>
 
-              <el-form-item label="Recuérdame" prop="remember">
-                <el-checkbox v-model="loginForm.remember">Recordar sesión</el-checkbox>
-              </el-form-item>
+            <el-form-item label="Contraseña" prop="password" :error="fieldErrors.password">
+              <el-input v-model="loginForm.password" type="password" autocomplete="current-password" show-password />
+            </el-form-item>
 
-              <el-form-item>
-                <el-button type="primary" @click="submitForm">Submit</el-button>
-                <el-button @click="resetForm">Reset</el-button>
-              </el-form-item>
-            </el-form>
+            <el-form-item>
+              <el-checkbox v-model="loginForm.remember">Recordar sesión</el-checkbox>
+            </el-form-item>
 
-            <p class="text-red mt-2" v-if="errorMessage">{{ errorMessage }}</p>
-          </div>
-        </div>
-      </el-card>
-    </el-col>
+            <el-alert v-if="errorMessage" :title="errorMessage" type="error" show-icon :closable="false" class="mb-4" />
 
-    <el-col :span="11">
-      <el-card shadow="hover">
-        <div style="padding: 14px">
-          <!-- espacio para otra sección o diseño -->
-        </div>
-      </el-card>
-    </el-col>
-  </el-row>
-</div>
+            <el-button type="primary" native-type="submit" :loading="loading" class="w-full">
+              Iniciar sesión
+            </el-button>
+          </el-form>
+        </el-tab-pane>
+
+        <el-tab-pane label="Crear cuenta" name="register">
+          <el-form
+            ref="registerFormRef"
+            :model="registerForm"
+            :rules="registerRules"
+            label-position="top"
+            status-icon
+            @submit.prevent="submitRegister"
+          >
+            <el-form-item label="Nombre" prop="name" :error="fieldErrors.name">
+              <el-input v-model="registerForm.name" autocomplete="name" clearable />
+            </el-form-item>
+
+            <el-form-item label="Correo electrónico" prop="email" :error="fieldErrors.email">
+              <el-input v-model="registerForm.email" type="email" autocomplete="email" clearable />
+            </el-form-item>
+
+            <el-form-item label="Contraseña" prop="password" :error="fieldErrors.password">
+              <el-input v-model="registerForm.password" type="password" autocomplete="new-password" show-password />
+            </el-form-item>
+
+            <el-form-item label="Confirmar contraseña" prop="password_confirmation">
+              <el-input v-model="registerForm.password_confirmation" type="password" autocomplete="new-password" show-password />
+            </el-form-item>
+
+            <el-alert v-if="errorMessage" :title="errorMessage" type="error" show-icon :closable="false" class="mb-4" />
+
+            <el-button type="primary" native-type="submit" :loading="loading" class="w-full">
+              Crear cuenta
+            </el-button>
+          </el-form>
+        </el-tab-pane>
+      </el-tabs>
+
+      <div class="auth-footer">
+        <RouterLink :to="{ name: 'Index' }">← Volver al blog</RouterLink>
+      </div>
+    </el-card>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import store from '~/store'
 import type { FormInstance, FormRules } from 'element-plus'
-
-interface LoginForm {
-  email: string
-  password: string
-  remember: boolean
-}
+import { useAuthForm, homeFor, type AuthMode } from '~/composables/useAuthForm'
 
 const route = useRoute()
 const router = useRouter()
 
-const loginFormRef = ref<FormInstance>()
+const { loginForm, registerForm, loading, errorMessage, fieldErrors, clearErrors, submit } = useAuthForm()
 
-const loginForm = reactive<LoginForm>({
-  email: '',
-  password: '',
-  remember: false,
-})
+const loginFormRef = ref<FormInstance>()
+const registerFormRef = ref<FormInstance>()
+
+// la pestaña sigue a la ruta (/login o /register) para que los enlaces "Registrarse" abran la correcta
+const mode = ref<AuthMode>(route.name === 'Register' ? 'register' : 'login')
+const onTabChange = (name: string | number) => {
+  clearErrors()
+  router.replace({ name: name === 'register' ? 'Register' : 'Login', query: route.query })
+}
+
+const redirect = computed(() => (typeof route.query.redirect === 'string' ? route.query.redirect : undefined))
 
 const loginRules: FormRules = {
   email: [
-    { required: true, message: 'Correo electrónico es requerido', trigger: 'blur' },
+    { required: true, message: 'El correo es obligatorio', trigger: 'blur' },
     { type: 'email', message: 'Correo inválido', trigger: ['blur', 'change'] },
   ],
+  password: [{ required: true, message: 'Ingresa tu contraseña', trigger: 'blur' }],
+}
+
+const registerRules: FormRules = {
+  name: [{ required: true, message: 'El nombre es obligatorio', trigger: 'blur' }],
+  email: loginRules.email,
   password: [
-    { required: true, message: 'Ingresa tu contraseña', trigger: 'blur' },
-    { min: 3, message: 'Debe contener al menos 3 caracteres', trigger: 'blur' },
+    { required: true, message: 'Ingresa una contraseña', trigger: 'blur' },
+    { min: 8, message: 'Debe tener al menos 8 caracteres', trigger: 'blur' },
+  ],
+  password_confirmation: [
+    { required: true, message: 'Confirma la contraseña', trigger: 'blur' },
+    {
+      validator: (_rule, value, callback) =>
+        value === registerForm.password ? callback() : callback(new Error('Las contraseñas no coinciden')),
+      trigger: ['blur', 'change'],
+    },
   ],
 }
 
-const errorMessage = ref('')
-const redirect = ref<string | undefined>(undefined)
-
-watch(
-  () => route.query,
-  (query) => {
-    redirect.value = typeof query.redirect === 'string' ? query.redirect : undefined
-  },
-  { immediate: true }
-)
-
-const submitForm = () => {
-  if (!loginFormRef.value) return
-
-  loginFormRef.value.validate((valid) => {
-    if (valid) {
-      store
-        .dispatch('user/login', loginForm)
-        .then(() => {
-          const target = redirect.value || '/admin/dashboard'
-          router.push(target)
-        })
-        .catch((err) => {
-          errorMessage.value = err?.response?.data?.error || 'Error al iniciar sesión'
-        })
-    } else {
-      console.log('Error en el formulario')
-    }
-  })
+const finish = (user: Awaited<ReturnType<typeof submit>>) => {
+  if (user) {
+    router.push(homeFor(user, redirect.value))
+  }
 }
 
-const resetForm = () => {
-  loginFormRef.value?.resetFields()
-  errorMessage.value = ''
+const submitLogin = async () => {
+  if (!(await loginFormRef.value?.validate().catch(() => false))) return
+  finish(await submit('login'))
+}
+
+const submitRegister = async () => {
+  if (!(await registerFormRef.value?.validate().catch(() => false))) return
+  finish(await submit('register'))
 }
 </script>
+
+<style scoped>
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: var(--el-bg-color-page);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-title {
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.auth-footer {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.auth-footer a {
+  color: var(--el-color-primary);
+  text-decoration: none;
+}
+</style>

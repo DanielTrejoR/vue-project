@@ -50,23 +50,22 @@ const mutations = {
 }
 
 const actions = {
-    async login({commit}, user) {
-      return new Promise((resolve, reject) => {
-        axiosClient.post('/login', user)
-          .then(({data}) => {
-            console.log(data.user)
-            if (data.user) {
-              commit('setUser', data.user);
-              commit('SET_NAME', data.user)
-              commit('SET_AVATAR', data.user)
-              commit('SET_PERMISSIONS', data.user)
-              commit('setAuthenticated', true);
-            }
-            resolve(data)
-          }).catch(err => {
-            reject(err)
-          })
-      })
+    async login({ dispatch }, credentials) {
+      const { data } = await axiosClient.post('/login', credentials)
+      dispatch('startSession', data.user)
+      return data.user
+    },
+    async register({ dispatch }, form) {
+      const { data } = await axiosClient.post('/register', form)
+      dispatch('startSession', data.user)
+      return data.user
+    },
+    // login y registro devuelven el mismo usuario que /api/user: se guarda en ambos stores
+    startSession({ commit, dispatch }, user) {
+      dispatch('setUser', user)
+      commit('auth/setUser', user, { root: true })
+      commit('auth/setRoles', user.roles || [], { root: true })
+      commit('auth/setPermissions', user.permissions || [], { root: true })
     },
     async logout({commit}) {
       const clearSession = () => {

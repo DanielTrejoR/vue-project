@@ -16,6 +16,7 @@ declare module 'vue' {
     ConfigMenu: typeof import('./components/Config/ConfigMenu.vue')['default']
     CreateModalPost: typeof import('./components/Admin/CreateModalPost.vue')['default']
     EditorImage: typeof import('./components/Tinymce/components/EditorImage.vue')['default']
+    ElAlert: typeof import('element-plus/es')['ElAlert']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']

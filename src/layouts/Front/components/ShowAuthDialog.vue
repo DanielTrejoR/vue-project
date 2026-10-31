@@ -1,72 +1,140 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useAuthForm } from '@/composables/useAuthForm'
 
 const props = defineProps({
   modelValue: Boolean
 })
 
 const emit = defineEmits(['update:modelValue'])
-const router = useRouter()
 
-const closeDialog = () => {
-  emit('update:modelValue', false)
+// v-model del diálogo sin mutar la prop
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: value => emit('update:modelValue', value),
+})
+
+const { loginForm, registerForm, loading, errorMessage, fieldErrors, clearErrors, submit } = useAuthForm()
+
+const tab = ref('login')
+const showPassword = ref(false)
+const loginFormRef = ref(null)
+const registerFormRef = ref(null)
+
+const rules = {
+  required: value => !!value || 'Campo obligatorio',
+  email: value => /.+@.+\..+/.test(value) || 'Correo inválido',
+  min: value => (value || '').length >= 8 || 'Mínimo 8 caracteres',
+  matches: value => value === registerForm.password || 'Las contraseñas no coinciden',
 }
 
-const firstName = ref('')
-const password = ref('')
-const show1 = ref(false)
-const rules = {
-    required: value => !!value || 'Required.',
-    min: v => v.length >= 8 || 'Min 8 characters',
+const changeTab = () => {
+  clearErrors()
+}
+
+// el usuario se queda en la página donde estaba (p. ej. el post que quería comentar)
+const submitForm = async () => {
+  const formRef = tab.value === 'login' ? loginFormRef : registerFormRef
+  const { valid } = await formRef.value.validate()
+  if (!valid) return
+
+  if (await submit(tab.value)) {
+    isOpen.value = false
   }
+}
 </script>
 
 <template>
-  <v-dialog v-model="props.modelValue" max-width="950">
+  <v-dialog v-model="isOpen" max-width="440">
     <v-card>
-      <v-card-title class="text-h6">Necesitas iniciar sesión</v-card-title>
+      <v-card-title class="text-h6 pt-4">Necesitas iniciar sesión</v-card-title>
+      <v-card-subtitle>Para comentar y puntuar publicaciones</v-card-subtitle>
+
+      <v-tabs v-model="tab" grow class="mt-2" @update:model-value="changeTab">
+        <v-tab value="login">Iniciar sesión</v-tab>
+        <v-tab value="register">Crear cuenta</v-tab>
+      </v-tabs>
+
       <v-card-text>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-sheet class="mx-auto" width="300">
-              <v-responsive>
-                <v-form @submit.prevent>
-                  <v-text-field
-                    clearable
-                    v-model="firstName"
-                    :rules="[rules.required]"
-                    label="Correo"
-                    hide-details="auto"
-                    placeholder="johndoe@gmail.com"
-                  ></v-text-field>
-                  <v-text-field
-                    class="pt-3"
-                    v-model="password"
-                    :append-icon="show1 ? 'mdi mdi-eye' : 'mdi mdi-eye-off'"
-                    :type="show1 ? 'text' : 'password'"
-                    hint="At least 8 characters"
-                    label="Contrasena"
-                    :rules="[rules.required]"
-                    name="input-10-1"
-                    counter
-                    @click:append="show1 = !show1"
-                  ></v-text-field>
-                  <v-btn color="primary" class="mt-2" type="submit" block>Iniciar Sesion</v-btn>
-                </v-form>
-              </v-responsive>
-            </v-sheet>
-          </v-col>
-          <v-col cols="12" md="6">
-            asdas
-          </v-col>
-        </v-row>
+        <v-window v-model="tab">
+          <v-window-item value="login">
+            <v-form ref="loginFormRef" @submit.prevent="submitForm">
+              <v-text-field
+                v-model="loginForm.email"
+                :rules="[rules.required, rules.email]"
+                :error-messages="fieldErrors.email"
+                label="Correo"
+                type="email"
+                autocomplete="email"
+                class="mb-2"
+              />
+              <v-text-field
+                v-model="loginForm.password"
+                :rules="[rules.required]"
+                :error-messages="fieldErrors.password"
+                :type="showPassword ? 'text' : 'password'"
+                :append-inner-icon="showPassword ? 'mdi mdi-eye' : 'mdi mdi-eye-off'"
+                label="Contraseña"
+                autocomplete="current-password"
+                @click:append-inner="showPassword = !showPassword"
+              />
+              <v-checkbox v-model="loginForm.remember" label="Recordar sesión" density="compact" hide-details />
+              <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="my-2">
+                {{ errorMessage }}
+              </v-alert>
+              <v-btn type="submit" color="primary" block :loading="loading" class="mt-2">Iniciar sesión</v-btn>
+            </v-form>
+          </v-window-item>
+
+          <v-window-item value="register">
+            <v-form ref="registerFormRef" @submit.prevent="submitForm">
+              <v-text-field
+                v-model="registerForm.name"
+                :rules="[rules.required]"
+                :error-messages="fieldErrors.name"
+                label="Nombre"
+                autocomplete="name"
+                class="mb-2"
+              />
+              <v-text-field
+                v-model="registerForm.email"
+                :rules="[rules.required, rules.email]"
+                :error-messages="fieldErrors.email"
+                label="Correo"
+                type="email"
+                autocomplete="email"
+                class="mb-2"
+              />
+              <v-text-field
+                v-model="registerForm.password"
+                :rules="[rules.required, rules.min]"
+                :error-messages="fieldErrors.password"
+                :type="showPassword ? 'text' : 'password'"
+                :append-inner-icon="showPassword ? 'mdi mdi-eye' : 'mdi mdi-eye-off'"
+                label="Contraseña"
+                autocomplete="new-password"
+                class="mb-2"
+                @click:append-inner="showPassword = !showPassword"
+              />
+              <v-text-field
+                v-model="registerForm.password_confirmation"
+                :rules="[rules.required, rules.matches]"
+                :type="showPassword ? 'text' : 'password'"
+                label="Confirmar contraseña"
+                autocomplete="new-password"
+              />
+              <v-alert v-if="errorMessage" type="error" variant="tonal" density="compact" class="my-2">
+                {{ errorMessage }}
+              </v-alert>
+              <v-btn type="submit" color="primary" block :loading="loading" class="mt-2">Crear cuenta</v-btn>
+            </v-form>
+          </v-window-item>
+        </v-window>
       </v-card-text>
+
       <v-card-actions>
-        <v-btn color="primary" >Iniciar sesión</v-btn>
-        <v-btn color="secondary" >Registrarse</v-btn>
         <v-spacer />
-        <v-btn text @click="closeDialog">Cancelar</v-btn>
+        <v-btn variant="text" @click="isOpen = false">Cancelar</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
