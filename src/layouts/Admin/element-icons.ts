@@ -8,6 +8,7 @@ import {
   Document,
   Edit,
   EditPen,
+  Headset,
   House,
   Link,
   Lock,
@@ -18,6 +19,8 @@ import {
   Upload,
   UploadFilled,
   User,
+  VideoPause,
+  VideoPlay,
   View,
 } from '@element-plus/icons-vue'
 
@@ -32,6 +35,7 @@ export const elementIcons: Record<string, Component> = {
   Document,
   Edit,
   EditPen,
+  Headset,
   House,
   Link,
   Lock,
@@ -42,6 +46,8 @@ export const elementIcons: Record<string, Component> = {
   Upload,
   UploadFilled,
   User,
+  VideoPause,
+  VideoPlay,
   View,
 }
 

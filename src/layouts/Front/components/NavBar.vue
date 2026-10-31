@@ -23,6 +23,8 @@
       <v-spacer />
 
       <template #append>
+        <PlayerIndicator />
+
         <v-btn
           v-if="!isAuthenticated"
           :to="{ name: 'Login' }"
@@ -89,6 +91,7 @@
     </v-navigation-drawer>
 </template>
 <script setup>
+import PlayerIndicator from './PlayerIndicator.vue'
 import FrontUserAvatar from '~/components/UserAvatar/FrontUserAvatar.vue'
 import { useRadialThemeToggle } from '@/composables/Front/useRadialThemeToggle'
 import { useAuthStore } from '~/stores/auth'

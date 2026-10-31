@@ -12,6 +12,7 @@
         <div class="pl-1 pr-1 navbar-search" >
           <HeaderSearch />
         </div>
+        <PlayerIndicator class="ml-1" />
         <NotificationsBell class="ml-1" />
         <el-switch class="ml-2 d-flex align-center pl-1 pr-3"
             :model-value="isDark"
@@ -62,6 +63,7 @@ import { useSettingsStore } from '~/stores/settings'
 import { useAppStore } from '~/stores/app'
 import { useRouter } from 'vue-router'
 import NotificationsBell from './NotificationsBell.vue'
+import PlayerIndicator from './PlayerIndicator.vue'
 const router = useRouter()
 const { isDark, toggleRadialTheme } = useRadialThemeToggle()
 // ícono del botón de menú: abierto si el drawer móvil está abierto o el menú de escritorio expandido

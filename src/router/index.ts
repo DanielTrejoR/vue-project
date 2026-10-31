@@ -231,6 +231,16 @@ export const asyncRoutes = [
         }
       },
       {
+        path: 'music/index',
+        name: 'MusicIndex',
+        component: () => import('~/views/Admin/Music/index.vue'),
+        meta: {
+          title: "Música",
+          roles: ['Admin'],
+          icon: "Headset"
+        }
+      },
+      {
         path: 'roles/index',
         name: 'RolesIndex',
         component: () => import('~/views/Admin/Roles/index.vue'),
