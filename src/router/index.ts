@@ -230,6 +230,16 @@ export const asyncRoutes = [
         }
       },
       {
+        path: 'taxonomies/index',
+        name: 'TaxonomiesIndex',
+        component: () => import('~/views/Admin/Taxonomies/index.vue'),
+        meta: {
+          title: "Categorías y etiquetas",
+          roles: ['Admin'],
+          icon: "CollectionTag"
+        }
+      },
+      {
         path: 'roles/index',
         name: 'RolesIndex',
         component: () => import('~/views/Admin/Roles/index.vue'),
