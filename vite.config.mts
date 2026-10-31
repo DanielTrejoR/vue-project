@@ -1,4 +1,5 @@
 import path from 'path'
+import fs from 'fs'
 import { defineConfig, loadEnv  } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
@@ -16,6 +17,19 @@ import {
 
 const pathSrc = path.resolve(__dirname, 'src')
 
+// unplugin-vue-components y unplugin-auto-import agregan estos imports de Element Plus al transformar
+// cada archivo, así que el escaneo inicial de Vite no los ve: sin esta lista, la primera visita a una
+// vista con un componente nuevo hace que Vite los optimice y recargue la página entera.
+// Components usa los estilos 'index' (sass) y AutoImport los 'css'.
+const elementPlusComponents = path.resolve(__dirname, 'node_modules/element-plus/es/components')
+const elementPlusStyles = fs.existsSync(elementPlusComponents)
+  ? fs.readdirSync(elementPlusComponents).flatMap(name =>
+      ['index', 'css']
+        .filter(style => fs.existsSync(path.join(elementPlusComponents, name, `style/${style}.mjs`)))
+        .map(style => `element-plus/es/components/${name}/style/${style}`)
+    )
+  : []
+
 // https://vitejs.dev/config/
 export default ({ mode }) => { 
   const env = loadEnv(mode, process.cwd(), '');
@@ -25,6 +39,11 @@ export default ({ mode }) => {
         '@/': `${pathSrc}/`,
         '~/': `${pathSrc}/`,
       },
+    },
+    optimizeDeps: {
+      // escanear todas las vistas y componentes, también los que se registran solos o cargan de forma diferida
+      entries: ['index.html', 'src/**/*.vue'],
+      include: ['element-plus/es', ...elementPlusStyles],
     },
     server: {
       proxy: {
