@@ -26,7 +26,13 @@ export function toggleRadialTheme(event: MouseEvent) {
     Math.max(y, window.innerHeight - y)
   )
 
+  // a claro: la vista nueva crece desde el botón. A oscuro, a la inversa: la vista clara se encoge
+  // hasta el botón; para eso tiene que quedar encima de la nueva (ver theme-transition-shrink en index.scss)
+  const root = document.documentElement
+  root.classList.toggle('theme-transition-shrink', next)
+
   const transition = document.startViewTransition(() => setDark(next))
+  let animation: Animation | undefined
   //Maiga de la transicion
   transition.ready.then(() => {
     const clipPath = [
@@ -34,16 +40,25 @@ export function toggleRadialTheme(event: MouseEvent) {
       `circle(${r}px at ${x}px ${y}px)`
     ]
 
-    document.documentElement.animate(
+    animation = root.animate(
       {
         clipPath: next ? clipPath.reverse() : clipPath
       },
       {
-        duration: 500,
-        easing: 'ease-in-out',
+        // mismos valores que element-plus.org
+        duration: 400,
+        easing: 'ease-in',
+        // sin forwards, al terminar el recorte volvía a "none" un cuadro antes de cerrar la transición
+        // y la vista clara reaparecía completa encima: era el parpadeo al pasar a oscuro
+        fill: 'forwards',
         pseudoElement: next ? '::view-transition-old(root)' : '::view-transition-new(root)'
       }
     )
+  })
+  transition.finished.finally(() => {
+    // con fill: 'forwards' la animación seguiría aplicándose a la siguiente transición
+    animation?.cancel()
+    root.classList.remove('theme-transition-shrink')
   })
 }
 

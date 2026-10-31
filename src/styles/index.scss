@@ -47,6 +47,7 @@ html:not(.dark) {
   mix-blend-mode: normal;
 }
 
+/* por defecto la vista nueva va encima: el círculo que crece la descubre (pasar a claro, temas del blog) */
 ::view-transition-old(root) {
   z-index: -1;
 }
@@ -55,11 +56,13 @@ html:not(.dark) {
   z-index: 1;
 }
 
-.dark::view-transition-old(root) {
-  z-index: -1;
+/* pasar a oscuro en el admin: la vista vieja (clara) va encima y se encoge hacia el botón.
+   Antes quedaba debajo de la nueva y el cambio se veía de golpe, sin animación */
+html.theme-transition-shrink::view-transition-old(root) {
+  z-index: 9999;
 }
 
-.dark::view-transition-new(root) {
+html.theme-transition-shrink::view-transition-new(root) {
   z-index: 1;
 }
 
