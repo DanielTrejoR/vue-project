@@ -83,6 +83,12 @@ function initTinymce() {
     object_resizing: false,
     toolbar: props.toolbar?.length ? props.toolbar : toolbar,
     menubar: props.menubar || 'file edit insert view format table',
+    // los botones que no caben se despliegan con "más" en vez de una barra con scroll horizontal
+    toolbar_mode: 'sliding',
+    mobile: {
+      menubar: false,
+      toolbar_mode: 'sliding',
+    },
     plugins: plugins,
     convert_urls: false,
     init_instance_callback: (instance: Editor) => {

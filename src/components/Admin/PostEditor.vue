@@ -9,31 +9,29 @@
           :rules="rules"
           class="form-container"
         >
-          <div class="">
+          <!-- barra de acciones: estado y guardar; en móvil se apilan -->
+          <div class="editor-actions">
+            <el-form-item label="Estado de la publicación" prop="status" class="editor-actions__status">
+              <el-radio-group v-model="postForm.status" :fill="theme">
+                <el-radio-button value="draft">Borrador</el-radio-button>
+                <el-radio-button value="published">Publicado</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
             <el-button
               :style="{backgroundColor: theme, borderColor: theme}"
-              class="float-right"
-              v-loading="loading"
-              style="margin-left: 10px"
+              :loading="loading"
               type="primary"
+              class="editor-actions__submit"
               @click="handleSubmit(postFromRef)"
             >
               {{ props.mode === 'edit' ? 'Actualizar' : 'Crear' }} publicacion
             </el-button>
           </div>
-          <el-form-item label="Estado de la publicación" prop="status">
-            <el-radio-group v-model="postForm.status" :fill="theme">
-              <el-radio-button value="draft">Borrador</el-radio-button>
-              <el-radio-button value="published">Publicado</el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-          <el-row class="">
+          <!-- móvil y tablet: una columna; desde lg: contenido a la izquierda y datos del post a la derecha -->
+          <el-row :gutter="24">
             <el-col
-              :xs="4"
-              :sm="24"
-              :md="20"
-              :lg="13"
-              :xl="12"
+              :xs="24"
+              :lg="16"
               class="createPost-main-container"
             >
               <div>
@@ -65,7 +63,7 @@
                   >
                 </el-form-item>
                 <el-form-item
-                  label="Contenido/Cuerpo de la publiacion"
+                  label="Contenido/Cuerpo de la publicación"
                   prop="body"
                   style="margin-bottom: 30px"
                 >
@@ -87,29 +85,21 @@
               </div>
             </el-col>
             <el-col
-              :xs="4"
-              :sm="6"
-              :md="15"
-              :lg="11"
-              :xl="12"
-              class="createPost-main-container"
+              :xs="24"
+              :lg="8"
+              class="createPost-main-container createPost-side-container"
             >
-              <div>
-                <el-col :span="12">
-                  <el-form-item
-                    prop="published_at"
-                    label="Fecha de publicacion:"
-                    class="postInfo-container-item"
-                  >
-                    <el-date-picker
-                      v-model="postForm.published_at"
-                      type="datetime"
-                      placeholder="Fecha de publicacion"
-                      :shortcuts="shortcuts"
-                    />
-                  </el-form-item>
-                </el-col>
-              </div>
+              <el-form-item
+                prop="published_at"
+                label="Fecha de publicacion:"
+              >
+                <el-date-picker
+                  v-model="postForm.published_at"
+                  type="datetime"
+                  placeholder="Fecha de publicacion"
+                  :shortcuts="shortcuts"
+                />
+              </el-form-item>
               <el-form-item label="Categorías" prop="categories">
                 <el-select
                   v-model="postForm.category_id"
@@ -152,8 +142,10 @@
                 </el-select>
               </el-form-item>
               <div>
-                <h3 class="pb-3 mb-2">Galeria de imagenes</h3>
-                <el-button @click="submitPhotos">Subir fotos </el-button>
+                <div class="gallery-header">
+                  <h3>Galeria de imagenes</h3>
+                  <el-button @click="submitPhotos">Subir fotos</el-button>
+                </div>
                 <el-upload
                   class="upload-demo"
                   drag
@@ -214,8 +206,8 @@
     </el-tabs>
   
   
-  <el-dialog v-model="dialogVisible">
-    <img w-full :src="dialogImageUrl" alt="Preview Image" />
+  <el-dialog v-model="dialogVisible" :width="appStore.isMobile ? '95%' : '60%'" class="image-preview-dialog">
+    <img :src="dialogImageUrl" alt="Vista previa de la imagen" />
   </el-dialog>
   </div>
 </template>
@@ -225,6 +217,7 @@ import { ElImageViewer, ElMessage, ElNotification } from "element-plus";
 import type { FormInstance, FormRules, UploadFile, UploadFiles, UploadInstance } from "element-plus";
 import { useSettingsStore } from '~/stores/settings'
 import { usePostsStore } from '~/stores/posts'
+import { useAppStore } from '~/stores/app'
 import Cookies from "js-cookie";
 import draggable from 'vuedraggable'
 import router from "~/router";
@@ -242,6 +235,7 @@ const props = defineProps<{
 const settingsStore = useSettingsStore()
 
 const postsStore = usePostsStore()
+const appStore = useAppStore()
 const uploadRef = ref<UploadInstance>()
 const uploadUrl = import.meta.env.VITE_API_BASE_URL
 const uploadHeaders = ref({
@@ -481,7 +475,8 @@ onMounted(async () => {
     fileList.value = data.photos.map((p: { id: number; full_url: string }) => ({
           // uid negativo: no choca con los que genera el upload (positivos) y sigue siendo numérico
           uid: -p.id,
-          name: p.full_url,
+          // solo el nombre del archivo: la URL completa desbordaba las tarjetas
+          name: decodeURIComponent(p.full_url.split('/').pop() || `foto-${p.id}`),
           id: p.id,
           url: p.full_url,
           status: 'success'
@@ -498,19 +493,11 @@ onMounted(async () => {
   max-width: 100%;
   margin: 0 auto;
 
+  /* AppMain centra el texto de todo el admin; un formulario se lee mejor alineado a la izquierda */
+  text-align: left;
+
   .createPost-main-container {
-    padding: 40px 45px 20px 50px;
-
-    .postInfo-container {
-      position: relative;
-      @mixin clearfix {
-        margin-bottom: 10px;
-      }
-
-      .postInfo-container-item {
-        float: left;
-      }
-    }
+    padding-top: 8px;
   }
 
   .word-counter {
@@ -519,6 +506,51 @@ onMounted(async () => {
     right: 10px;
     top: 0px;
   }
+}
+
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+
+  .editor-actions__status {
+    margin-bottom: 0;
+  }
+}
+
+/* en pantallas anchas la columna lateral (fecha, categoría, etiquetas, fotos) se separa del contenido */
+@media (min-width: 1200px) {
+  .createPost-side-container {
+    border-left: 1px solid var(--ep-border-color-lighter);
+  }
+}
+
+@media (max-width: 575px) {
+  .editor-actions__submit {
+    width: 100%;
+  }
+}
+
+.gallery-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 8px 0 12px;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.image-preview-dialog img {
+  display: block;
+  max-width: 100%;
+  margin: 0 auto;
 }
 .ep-form-item {
   margin-bottom: 24px;
@@ -545,27 +577,61 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
+  min-width: 0;
+  cursor: grab;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .upload-thumb img {
+  flex: none;
   width: 60px;
   height: 60px;
   object-fit: cover;
   border-radius: 4px;
 }
 
+/* proporción fija: las fotos verticales ya no estiran la tarjeta */
 .upload-image {
+  display: block;
   width: 100%;
-  height: auto;
+  aspect-ratio: 4 / 3;
   border-radius: 4px;
   object-fit: cover;
 }
-:deep(.ep-upload-list--picture .ep-upload-list__item){
-  width: 27%;
+
+.upload-preview {
+  min-width: 0;
+  width: 100%;
 }
 
+.upload-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+/* miniaturas en cuadrícula: tantas columnas como quepan (antes 27% fijo, ilegible en móvil) */
 :deep(.ep-upload-list) {
-  display: flex !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+:deep(.ep-upload-list--picture .ep-upload-list__item) {
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+:deep(.ep-upload-dragger) {
+  padding: 24px 12px;
 }
 
 .delete:hover {
