@@ -30,13 +30,12 @@ gsap.registerPlugin(ScrollToPlugin,Draggable);
 import { pinia } from './stores';
 
 // Vuetify
-import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 // componentes y directivas: los importa vite-plugin-vuetify por archivo (vite.config.mts)
 
-// íconos de Material Design (la fuente de @mdi/font); los de Font Awesome cargaban 100 kB por 3 logos
-import { aliases, mdi } from 'vuetify/iconsets/mdi'
+// íconos de Material Design como SVG, solo los que se usan (src/plugins/icons.ts)
+import { aliases, mdi } from '~/plugins/icons'
 //themes array
 
 //end themes array
