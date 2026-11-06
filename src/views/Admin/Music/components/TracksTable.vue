@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, onBeforeUnmount, onDeactivated, onMounted, reactive, ref, watch } from 'vue'
 import { ElMessage, type UploadFile } from 'element-plus'
 import { Headset, UploadFilled } from '@element-plus/icons-vue'
 import { useAppStore } from '~/stores/app'
@@ -118,21 +118,24 @@ const load = async () => {
     }
 }
 
-// escuchar aquí no toca el reproductor del sitio (se pausa mientras tanto)
+// escuchar aquí no toca el reproductor del sitio (se pausa mientras tanto, y al revés)
 const preview = new Audio()
 const previewId = ref<number | null>(null)
 preview.addEventListener('ended', () => { previewId.value = null })
+const stopPreview = () => {
+    preview.pause()
+    previewId.value = null
+}
+watch(() => player.playing, playing => { if (playing) stopPreview() })
 const togglePreview = (track: Track) => {
-    if (previewId.value === track.id) {
-        preview.pause()
-        previewId.value = null
-        return
-    }
+    if (previewId.value === track.id) return stopPreview()
     player.pause()
     preview.src = track.audio_url
     preview.play().then(() => { previewId.value = track.id }).catch(() => ElMessage.error('No se pudo reproducir'))
 }
-onBeforeUnmount(() => preview.pause())
+// la vista se conserva al cambiar de pestaña del admin (KeepAlive): sin esto la vista previa seguiría sonando
+onDeactivated(stopPreview)
+onBeforeUnmount(stopPreview)
 
 // subir y editar comparten el diálogo; el audio no se cambia al editar
 const showForm = ref(false)

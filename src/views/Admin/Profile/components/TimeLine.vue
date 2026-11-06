@@ -38,7 +38,7 @@
 import { onMounted, markRaw } from 'vue'
 import { useRouter } from 'vue-router'
 import {
-    Document, ChatDotRound, StarFilled, PictureFilled, Pointer, User, More,
+    Document, ChatDotRound, StarFilled, PictureFilled, Pointer, User, Headset, More,
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '~/stores/auth'
 import { useInfiniteList } from '~/composables/useInfiniteList'
@@ -64,6 +64,7 @@ const kinds: Record<string, { icon: any, color: string }> = {
     status: { icon: markRaw(PictureFilled), color: '#6250d6' },
     like: { icon: markRaw(Pointer), color: '#e87ba4' },
     account: { icon: markRaw(User), color: '#52514e' },
+    music: { icon: markRaw(Headset), color: '#d6503c' },
     other: { icon: markRaw(More), color: '#898781' },
 }
 

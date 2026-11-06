@@ -11,6 +11,14 @@ const RESTART_AFTER = 3
 const audio = typeof Audio === 'undefined' ? null : new Audio()
 if (audio) audio.preload = 'metadata'
 
+// si el usuario quiere que suene: decide si un archivo que no carga se salta o solo se avisa
+let wantsToPlay = false
+// archivos seguidos que no cargaron: al dar la vuelta a la playlist se deja de intentar
+let failures = 0
+
+// con el sitio abierto en varias pestañas, solo suena la última que se puso a reproducir
+const channel = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('player')
+
 const readSaved = () => {
     try {
         return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
@@ -68,13 +76,19 @@ export const usePlayerStore = defineStore('player', {
         async refresh() {
             if (!this.loaded) return
             const trackId = this.track?.id
-            const { data } = await axiosClient.get('/music')
-            this.playlists = data
+            try {
+                const { data } = await axiosClient.get('/music')
+                this.playlists = data
+            } catch {
+                return // se queda la lista que había; el admin ya vio su cambio guardado
+            }
             const index = this.queue.findIndex(t => t.id === trackId)
             if (index >= 0) {
                 this.index = index
-            } else if (!this.playing) {
-                // la canción o su playlist ya no están (o se ocultaron)
+            } else {
+                // la canción o su playlist ya no están (o se ocultaron): el archivo puede ya no existir,
+                // así que se para y la tarjeta no queda mostrando otra canción con este audio
+                this.pause()
                 this.restore()
             }
         },
@@ -89,13 +103,21 @@ export const usePlayerStore = defineStore('player', {
 
         play() {
             if (!audio || !this.track) return
+            wantsToPlay = true
+            // después de un error el <audio> no se recupera solo: se vuelve a pedir el archivo
+            if (audio.error) {
+                failures = 0
+                this.setSource()
+            }
             this.error = ''
             audio.play().catch(() => {
-                // sin interacción previa o el archivo no carga
+                // sin interacción previa o el archivo no carga (de eso se encarga el evento error)
+                if (!audio.error) wantsToPlay = false
                 this.playing = false
             })
         },
         pause() {
+            wantsToPlay = false
             audio?.pause()
         },
         toggle() {
@@ -127,6 +149,8 @@ export const usePlayerStore = defineStore('player', {
         setSource(startAt = 0) {
             if (!audio || !this.track) return
             audio.src = this.track.audio_url
+            // cambiar el src descarta los eventos pendientes (un "pause" recién pedido no llega)
+            this.playing = !audio.paused
             this.currentTime = startAt
             this.duration = this.track.duration || 0
             if (startAt) audio.addEventListener('loadedmetadata', () => { audio.currentTime = startAt }, { once: true })
@@ -145,7 +169,11 @@ export const usePlayerStore = defineStore('player', {
                 }
             })
             audio.addEventListener('loadedmetadata', () => { this.duration = audio.duration || this.duration })
-            audio.addEventListener('play', () => { this.playing = true })
+            audio.addEventListener('play', () => {
+                this.playing = true
+                channel?.postMessage('play')
+            })
+            audio.addEventListener('playing', () => { failures = 0 })
             audio.addEventListener('pause', () => {
                 this.playing = false
                 this.save()
@@ -153,8 +181,13 @@ export const usePlayerStore = defineStore('player', {
             audio.addEventListener('ended', () => this.next())
             audio.addEventListener('error', () => {
                 this.playing = false
+                failures++
+                // sonando, se pasa a la siguiente; si ya fallaron todas, o estaba en pausa, solo se avisa
+                if (wantsToPlay && failures < this.queue.length) return this.next()
+                wantsToPlay = false
                 this.error = 'No se pudo cargar la canción.'
             })
+            channel?.addEventListener('message', () => this.pause())
             // al recargar o cerrar la pestaña, el minuto exacto (no el de hace 5 s)
             window.addEventListener('pagehide', () => this.save())
 
