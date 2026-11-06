@@ -5,7 +5,7 @@
             <v-icon icon="mdi mdi-account-lock-outline" size="48" class="mb-2" />
             <v-card-title class="text-h5">Tu espacio en el sitio</v-card-title>
             <v-card-text>
-                Inicia sesión o crea una cuenta para ver tus publicaciones y los comentarios que has dejado.
+                Inicia sesión o crea una cuenta para llevar tu lista de tareas y ver tus publicaciones y los comentarios que has dejado.
             </v-card-text>
             <v-card-actions class="justify-center flex-wrap ga-2">
                 <v-btn :to="{ name: 'Login', query: { redirect: '/my-posts' } }" color="primary" variant="flat" prepend-icon="mdi mdi-login">
@@ -20,8 +20,10 @@
         <template v-else>
             <header class="mb-6">
                 <h1 class="text-h4 font-weight-bold mb-1">Hola, {{ auth.user?.name || 'de nuevo' }}</h1>
-                <p class="text-medium-emphasis">Lo que has publicado y lo que has comentado en el sitio.</p>
+                <p class="text-medium-emphasis">Tus tareas, lo que has publicado y lo que has comentado en el sitio.</p>
             </header>
+
+            <TodoList class="mb-10" />
 
             <!-- publicaciones propias: solo Admin y Writer pueden escribir -->
             <section v-if="auth.canWrite" class="mb-10">
@@ -116,6 +118,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useAuthStore } from '~/stores/auth'
+import TodoList from './components/TodoList.vue'
 import { usePostsStore } from '~/stores/posts'
 
 const auth = useAuthStore()
