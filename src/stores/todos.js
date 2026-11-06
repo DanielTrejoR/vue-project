@@ -38,6 +38,20 @@ export const useTodosStore = defineStore('todos', {
         pendingCount: state => state.items.filter(t => !t.done).length,
         doneCount: state => state.items.filter(t => t.done).length,
         overdueCount: state => state.items.filter(isOverdue).length,
+        // para el calendario: las que tienen fecha, por día (YYYY-MM-DD), pendientes primero
+        /** @returns {Record<string, Todo[]>} */
+        byDay() {
+            /** @type {Record<string, Todo[]>} */
+            const days = {}
+            for (const todo of this.sorted) {
+                if (todo.due_on) (days[todo.due_on] ??= []).push(todo)
+            }
+            return days
+        },
+        /** @returns {Todo[]} pendientes sin fecha: las que faltan por acomodar en el calendario */
+        undated() {
+            return this.sorted.filter(t => !t.done && !t.due_on)
+        },
     },
     actions: {
         // una vez por sesión; force para el botón de recargar

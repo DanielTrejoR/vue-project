@@ -18,6 +18,12 @@ import "element-plus/theme-chalk/src/switch.scss";
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import App from "./App.vue";
 
+// fechas en español en toda la app; con esto la semana empieza en lunes
+// (el calendario y los selectores de fecha de Element Plus leen el idioma global de dayjs)
+import dayjs from 'dayjs'
+import 'dayjs/locale/es'
+dayjs.locale('es')
+
 import { pinia } from './stores';
 
 // Vuetify

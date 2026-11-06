@@ -9,7 +9,12 @@
             </p>
         </div>
         <div class="posts-header__actions">
-            <el-radio-group v-model="filter" size="small">
+            <!-- la vista vive en la URL (?view=calendar) para poder volver a ella -->
+            <el-radio-group v-model="view" size="small" aria-label="Vista">
+                <el-radio-button value="list">Lista</el-radio-button>
+                <el-radio-button value="calendar">Calendario</el-radio-button>
+            </el-radio-group>
+            <el-radio-group v-if="view === 'list'" v-model="filter" size="small">
                 <el-radio-button value="pending">Pendientes</el-radio-button>
                 <el-radio-button value="done">Hechas</el-radio-button>
                 <el-radio-button value="all">Todas</el-radio-button>
@@ -17,45 +22,49 @@
         </div>
     </div>
 
-    <!-- agregar: Enter en el campo y listo; la fecha es opcional -->
-    <form class="todos-add" @submit.prevent="add">
-        <el-input v-model="draft.title" maxlength="200" placeholder="Agregar una tarea…" clearable aria-label="Nueva tarea" />
-        <el-date-picker v-model="draft.due_on" type="date" value-format="YYYY-MM-DD" format="D MMM YYYY" placeholder="Para cuándo" class="todos-add__date" />
-        <el-button type="primary" icon="Plus" native-type="submit" :disabled="!draft.title.trim()">Agregar</el-button>
-    </form>
-    <p v-if="addError" class="todos-error">{{ addError }}</p>
-
     <el-alert v-if="store.error" :title="store.error" type="error" show-icon :closable="false" class="mb-4">
         <el-button size="small" @click="store.load(true)">Reintentar</el-button>
     </el-alert>
 
-    <div v-loading="store.loading && !store.loaded" class="todos-list">
-        <TransitionGroup name="todo" tag="ul">
-            <li v-for="todo in visible" :key="todo.id" class="todo-row" :class="{ 'is-done': todo.done }">
-                <el-checkbox :model-value="todo.done" :aria-label="todo.done ? 'Marcar como pendiente' : 'Marcar como hecha'" @change="toggle(todo)" />
-                <button type="button" class="todo-row__text" @click="openEdit(todo)">
-                    <span class="todo-row__title">{{ todo.title }}</span>
-                    <span v-if="todo.notes" class="todo-row__notes">{{ todo.notes }}</span>
-                </button>
-                <el-tag v-if="todo.due_on" size="small" :type="isOverdue(todo) ? 'danger' : 'info'" effect="plain" round>{{ dueLabel(todo.due_on) }}</el-tag>
-                <el-button text circle size="small" icon="EditPen" aria-label="Editar" @click="openEdit(todo)" />
-                <el-popconfirm title="¿Borrar esta tarea?" confirm-button-text="Borrar" cancel-button-text="Cancelar" confirm-button-type="danger" width="200" @confirm="remove(todo)">
-                    <template #reference>
-                        <el-button text circle size="small" type="danger" icon="Delete" aria-label="Borrar" />
-                    </template>
-                </el-popconfirm>
-            </li>
-        </TransitionGroup>
-        <div v-if="store.loaded && !visible.length" class="posts-empty">{{ emptyText }}</div>
-    </div>
+    <TodoCalendar v-if="view === 'calendar'" />
 
-    <div v-if="store.doneCount && filter !== 'pending'" class="todos-footer">
-        <el-popconfirm :title="`¿Borrar las ${store.doneCount} tareas hechas?`" confirm-button-text="Borrar" cancel-button-text="Cancelar" confirm-button-type="danger" width="230" @confirm="clearCompleted">
-            <template #reference>
-                <el-button text type="danger" :loading="clearing">Borrar hechas ({{ store.doneCount }})</el-button>
-            </template>
-        </el-popconfirm>
-    </div>
+    <template v-else>
+        <!-- agregar: Enter en el campo y listo; la fecha es opcional -->
+        <form class="todos-add" @submit.prevent="add">
+            <el-input v-model="draft.title" maxlength="200" placeholder="Agregar una tarea…" clearable aria-label="Nueva tarea" />
+            <el-date-picker v-model="draft.due_on" type="date" value-format="YYYY-MM-DD" format="D MMM YYYY" placeholder="Para cuándo" class="todos-add__date" />
+            <el-button type="primary" icon="Plus" native-type="submit" :disabled="!draft.title.trim()">Agregar</el-button>
+        </form>
+        <p v-if="addError" class="todos-error">{{ addError }}</p>
+
+        <div v-loading="store.loading && !store.loaded" class="todos-list">
+            <TransitionGroup name="todo" tag="ul">
+                <li v-for="todo in visible" :key="todo.id" class="todo-row" :class="{ 'is-done': todo.done }">
+                    <el-checkbox :model-value="todo.done" :aria-label="todo.done ? 'Marcar como pendiente' : 'Marcar como hecha'" @change="toggle(todo)" />
+                    <button type="button" class="todo-row__text" @click="openEdit(todo)">
+                        <span class="todo-row__title">{{ todo.title }}</span>
+                        <span v-if="todo.notes" class="todo-row__notes">{{ todo.notes }}</span>
+                    </button>
+                    <el-tag v-if="todo.due_on" size="small" :type="isOverdue(todo) ? 'danger' : 'info'" effect="plain" round>{{ dueLabel(todo.due_on) }}</el-tag>
+                    <el-button text circle size="small" icon="EditPen" aria-label="Editar" @click="openEdit(todo)" />
+                    <el-popconfirm title="¿Borrar esta tarea?" confirm-button-text="Borrar" cancel-button-text="Cancelar" confirm-button-type="danger" width="200" @confirm="remove(todo)">
+                        <template #reference>
+                            <el-button text circle size="small" type="danger" icon="Delete" aria-label="Borrar" />
+                        </template>
+                    </el-popconfirm>
+                </li>
+            </TransitionGroup>
+            <div v-if="store.loaded && !visible.length" class="posts-empty">{{ emptyText }}</div>
+        </div>
+
+        <div v-if="store.doneCount && filter !== 'pending'" class="todos-footer">
+            <el-popconfirm :title="`¿Borrar las ${store.doneCount} tareas hechas?`" confirm-button-text="Borrar" cancel-button-text="Cancelar" confirm-button-type="danger" width="230" @confirm="clearCompleted">
+                <template #reference>
+                    <el-button text type="danger" :loading="clearing">Borrar hechas ({{ store.doneCount }})</el-button>
+                </template>
+            </el-popconfirm>
+        </div>
+    </template>
 
     <el-dialog v-model="showEdit" title="Editar tarea" :width="isMobile ? '95%' : '460px'" destroy-on-close>
         <el-form label-position="top" @submit.prevent="saveEdit">
@@ -81,7 +90,9 @@
 // el nombre coincide con la ruta: KeepAlive lo usa para conservar la vista (pestañas del admin)
 defineOptions({ name: 'TodosIndex' })
 import { computed, onMounted, reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import TodoCalendar from './components/TodoCalendar.vue'
 import { useAppStore } from '~/stores/app'
 import { useTodosStore, isOverdue } from '~/stores/todos'
 import { dueLabel } from '~/utils/dates'
@@ -91,6 +102,13 @@ type Todo = ReturnType<typeof useTodosStore>['items'][number]
 const appStore = useAppStore()
 const store = useTodosStore()
 const isMobile = computed(() => appStore.isMobile)
+
+const route = useRoute()
+const router = useRouter()
+const view = computed({
+    get: () => (route.query.view === 'calendar' ? 'calendar' : 'list'),
+    set: value => router.replace({ query: { ...route.query, view: value === 'list' ? undefined : value } }),
+})
 
 const filter = ref<'pending' | 'done' | 'all'>('pending')
 const visible = computed(() => store.sorted.filter(todo => filter.value === 'all' || todo.done === (filter.value === 'done')))

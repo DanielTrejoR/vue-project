@@ -61,6 +61,21 @@ describe('todos store', () => {
         expect(store.items[0].completed_at).toBeNull()
     })
 
+    it('agrupa por día para el calendario y deja aparte las pendientes sin fecha', () => {
+        const store = useTodosStore()
+        store.items = [
+            todo(1, { due_on: '2026-11-12', done: true, completed_at: '2026-11-06T10:00:00Z' }),
+            todo(2, { due_on: '2026-11-12' }),
+            todo(3, { due_on: '2026-11-07' }),
+            todo(4),
+            todo(5, { done: true }),
+        ]
+
+        expect(Object.fromEntries(Object.entries(store.byDay).map(([day, list]) => [day, list.map(t => t.id)])))
+            .toEqual({ '2026-11-07': [3], '2026-11-12': [2, 1] })
+        expect(store.undated.map(t => t.id)).toEqual([4])
+    })
+
     it('limpiar hechas deja solo las pendientes', async () => {
         const store = useTodosStore()
         store.items = [todo(1, { done: true }), todo(2), todo(3, { done: true })]
