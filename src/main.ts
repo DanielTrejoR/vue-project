@@ -29,6 +29,8 @@ import { pinia } from './stores';
 // Vuetify
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
+// textos de Vuetify en español para los componentes que lo piden con <v-locale-provider locale="es"> (el calendario)
+import { en, es } from 'vuetify/locale'
 // componentes y directivas: los importa vite-plugin-vuetify por archivo (vite.config.mts)
 
 // íconos de Material Design como SVG, solo los que se usan (src/plugins/icons.ts)
@@ -37,6 +39,10 @@ import { aliases, mdi } from '~/plugins/icons'
 
 //end themes array
 const vuetify = createVuetify({
+    locale: {
+        locale: 'en',
+        messages: { en, es },
+    },
     icons: {
         defaultSet: 'mdi',
         aliases,

@@ -8,12 +8,18 @@
                 <span v-if="store.overdueCount" class="text-error">· {{ store.overdueCount }} vencida{{ store.overdueCount === 1 ? '' : 's' }}</span>
             </p>
         </div>
-        <v-btn-toggle v-model="filter" mandatory density="compact" variant="outlined" divided rounded="lg">
-            <v-btn value="pending" size="small">Pendientes</v-btn>
-            <v-btn value="done" size="small">Hechas</v-btn>
-            <v-btn value="all" size="small">Todas</v-btn>
-        </v-btn-toggle>
+        <div class="d-flex align-center flex-wrap ga-2">
+            <v-btn-toggle v-model="filter" mandatory density="compact" variant="outlined" divided rounded="lg">
+                <v-btn value="pending" size="small">Pendientes</v-btn>
+                <v-btn value="done" size="small">Hechas</v-btn>
+                <v-btn value="all" size="small">Todas</v-btn>
+            </v-btn-toggle>
+            <v-btn variant="tonal" size="small" prepend-icon="mdi mdi-calendar-month-outline" @click="showCalendar = true">Calendario</v-btn>
+        </div>
     </div>
+
+    <!-- se monta al abrirlo: el calendario (vuetify/labs) no pesa en Mi espacio hasta que se usa -->
+    <TodoCalendar v-if="calendarUsed" v-model="showCalendar" />
 
     <!-- agregar: Enter en el campo y listo; la fecha es opcional -->
     <v-form class="todos-add mb-2" @submit.prevent="add">
@@ -118,13 +124,18 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, defineAsyncComponent, onMounted, reactive, ref, watch } from 'vue'
 import { useTodosStore, isOverdue } from '~/stores/todos'
 import { dueLabel } from '~/utils/dates'
 
 type Todo = ReturnType<typeof useTodosStore>['items'][number]
 
 const store = useTodosStore()
+
+const TodoCalendar = defineAsyncComponent(() => import('./TodoCalendar.vue'))
+const showCalendar = ref(false)
+const calendarUsed = ref(false)
+watch(showCalendar, value => { if (value) calendarUsed.value = true })
 
 const filter = ref<'pending' | 'done' | 'all'>('pending')
 const visible = computed(() => store.sorted.filter(todo => filter.value === 'all' || todo.done === (filter.value === 'done')))

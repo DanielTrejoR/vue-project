@@ -38,7 +38,8 @@ export function useTodoCalendar(onError: (message: string) => void) {
 
   // --- panel del día ---
   const openDay = ref<string | null>(null)
-  const openDayTodos = computed(() => (openDay.value ? store.byDay[openDay.value] ?? [] : []))
+  // en el orden en que se crearon: al marcar una como hecha no se mueven las filas bajo el cursor
+  const openDayTodos = computed(() => [...(openDay.value ? store.byDay[openDay.value] ?? [] : [])].sort((a, b) => a.id - b.id))
   const openDayTitle = computed(() => (openDay.value ? dayTitle(openDay.value) : ''))
 
   const addOnDay = async (title: string, day: string) => {
