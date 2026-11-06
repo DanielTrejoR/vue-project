@@ -198,6 +198,29 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/admin/todos',
+    hidden: false,
+    component: AdminLayout,
+    redirect: "/admin/todos/index",
+    name: 'AdminTodos',
+    meta: {
+      requiresAuth: true,
+      icon: 'Finished',
+      roles: ['Admin', 'Writer'],
+      title: 'Tareas',
+      // la única página se llama igual: sin esto la ruta dice "Tareas / Tareas"
+      breadcrumb: false
+    },
+    children: [
+      {
+        path: "index",
+        name: "TodosIndex",
+        component: () => import('~/views/Admin/Todos/index.vue'),
+        meta: { title: 'Tareas' }
+      }
+    ]
+  },
+  {
     path: "/admin/control-center",
     hidden: false,
     component: AdminLayout,
