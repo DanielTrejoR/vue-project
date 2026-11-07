@@ -144,6 +144,31 @@ describe('drive store', () => {
         expect(store.folders.map(f => f.id)).toEqual([8])
     })
 
+    it('createFolder no añade la carpeta si ya se navegó a otra', async () => {
+        const store = useDriveStore()
+        store.folder = folder(2)
+        api.post.mockImplementation(async () => {
+            store.folder = folder(5)
+            return { data: folder(8, { parent_id: 2 }) }
+        })
+        await store.createFolder('Nueva')
+        expect(store.folders).toEqual([])
+    })
+
+    it('createFolder no añade la carpeta durante una búsqueda', async () => {
+        const store = useDriveStore()
+        store.query = 'foto'
+        api.post.mockResolvedValue({ data: folder(8) })
+        await store.createFolder('Nueva')
+        expect(store.folders).toEqual([])
+    })
+
+    it('folderSummary pide el resumen de la carpeta', async () => {
+        api.get.mockResolvedValue({ data: { files_total: 3, files_in_posts: 1 } })
+        expect(await useDriveStore().folderSummary(4)).toEqual({ files_total: 3, files_in_posts: 1 })
+        expect(api.get).toHaveBeenCalledWith('/admin/drive/folders/4')
+    })
+
     it('createFolder en la raíz no manda parent_id', async () => {
         const store = useDriveStore()
         api.post.mockResolvedValue({ data: folder(8) })

@@ -11,7 +11,7 @@
                 </template>
                 <template #append>
                     <v-btn
-                        :href="file.url"
+                        :href="`${file.url}?download=1`"
                         target="_blank"
                         rel="noopener"
                         variant="tonal"

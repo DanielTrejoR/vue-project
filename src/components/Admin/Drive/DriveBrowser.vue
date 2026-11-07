@@ -68,7 +68,7 @@
             <template #default="{ row }">{{ row.folder ? 'Carpeta' : row.file!.extension.toUpperCase() }}</template>
         </el-table-column>
         <el-table-column label="Tamaño" width="100">
-            <template #default="{ row }">{{ row.file ? formatBytes(row.file.size) : `${row.folder!.files_count} archivos` }}</template>
+            <template #default="{ row }">{{ row.file ? formatBytes(row.file.size) : countFiles(row.folder!.files_count) }}</template>
         </el-table-column>
         <el-table-column v-if="!isMobile" label="Fecha" width="150">
             <template #default="{ row }">
@@ -94,7 +94,9 @@
                         </el-dropdown-menu>
                     </template>
                 </el-dropdown>
-                <el-popconfirm :title="deleteTitle(row)" confirm-button-text="Borrar" cancel-button-text="Cancelar" confirm-button-type="danger" width="240" @confirm="remove(row)">
+                <!-- la carpeta pide primero cuánto arrastra (todo su árbol); el archivo confirma en el momento -->
+                <el-button v-if="row.folder" text circle size="small" type="danger" icon="Delete" aria-label="Borrar" @click="confirmDeleteFolder(row)" />
+                <el-popconfirm v-else :title="deleteTitle(row)" confirm-button-text="Borrar" cancel-button-text="Cancelar" confirm-button-type="danger" width="240" @confirm="remove(row)">
                     <template #reference>
                         <el-button text circle size="small" type="danger" icon="Delete" aria-label="Borrar" />
                     </template>
@@ -249,10 +251,37 @@ const openRow = (row: AnyRow) => {
     else if (row.file?.kind === 'image') viewer.value = row.file.url
 }
 
+const countFiles = (n: number) => `${n} archivo${n === 1 ? '' : 's'}`
+
 const deleteTitle = (row: AnyRow) => {
-    if (row.folder) return `¿Borrar la carpeta «${row.folder.name}» con ${row.folder.files_count} archivos?`
     const n = row.file!.posts_count ?? 0
     return n > 0 ? `¿Borrar «${row.file!.original_name}»? Está en ${n} post${n === 1 ? '' : 's'}.` : `¿Borrar «${row.file!.original_name}»?`
+}
+
+// avisa de todo lo que se borra con la carpeta: archivos de todo el árbol y cuántos están en posts
+const confirmDeleteFolder = async (row: AnyRow) => {
+    const folder = row.folder!
+    let summary
+    try {
+        summary = await store.folderSummary(folder.id)
+    } catch (e) {
+        return fail(e, 'No se pudo calcular el contenido de la carpeta.')
+    }
+    const inPosts = summary.files_in_posts
+    const detail = summary.files_total === 0
+        ? 'La carpeta no tiene archivos.'
+        : `Se borrarán ${countFiles(summary.files_total)}${inPosts ? ` (${inPosts === 1 ? 'está' : 'están'} ${inPosts} en posts)` : ''}.`
+    try {
+        await ElMessageBox.confirm(`${detail} No se puede deshacer.`, `¿Borrar la carpeta «${folder.name}»?`, {
+            confirmButtonText: 'Borrar',
+            cancelButtonText: 'Cancelar',
+            type: 'warning',
+            confirmButtonClass: 'el-button--danger',
+        })
+    } catch {
+        return // cancelado
+    }
+    await remove(row)
 }
 
 const fail = (e: unknown, fallback: string) => ElMessage.error(apiMessage(e, fallback))
@@ -303,7 +332,8 @@ const onCommand = (cmd: string, row: AnyRow) => {
         showMove.value = true
     } else if (cmd === 'download' && row.file) {
         const a = document.createElement('a')
-        a.href = row.file.url
+        // ?download=1: el API fuerza la descarga (si no, imágenes y PDF se abrirían en esta pestaña)
+        a.href = `${row.file.url}?download=1`
         a.download = row.file.original_name
         a.click()
     }

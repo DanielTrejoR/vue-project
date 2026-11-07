@@ -79,7 +79,15 @@ export const useDriveStore = defineStore('drive', {
         async createFolder(name) {
             const body = this.folder ? { name, parent_id: this.folder.id } : { name }
             const { data } = await axiosClient.post(`${BASE}/folders`, body)
-            this.folders.push(data)
+            // solo si se sigue viendo esa carpeta (y no una búsqueda): si el usuario navegó mientras tanto, no pertenece a esta lista
+            if (!this.query && (data.parent_id ?? null) === (this.folder?.id ?? null)) this.folders.push(data)
+            return data
+        },
+
+        // lo que se borraría con la carpeta: archivos de todo su árbol y cuántos están en posts
+        /** @param {number} id @returns {Promise<{ files_total: number, files_in_posts: number }>} */
+        async folderSummary(id) {
+            const { data } = await axiosClient.get(`${BASE}/folders/${id}`)
             return data
         },
 
