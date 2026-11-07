@@ -270,7 +270,7 @@ const confirmDeleteFolder = async (row: AnyRow) => {
     const inPosts = summary.files_in_posts
     const detail = summary.files_total === 0
         ? 'La carpeta no tiene archivos.'
-        : `Se borrarán ${countFiles(summary.files_total)}${inPosts ? ` (${inPosts === 1 ? 'está' : 'están'} ${inPosts} en posts)` : ''}.`
+        : `Se ${summary.files_total === 1 ? 'borrará' : 'borrarán'} ${countFiles(summary.files_total)}${inPosts ? ` (${inPosts === 1 ? 'está' : 'están'} ${inPosts} en posts)` : ''}.`
     try {
         await ElMessageBox.confirm(`${detail} No se puede deshacer.`, `¿Borrar la carpeta «${folder.name}»?`, {
             confirmButtonText: 'Borrar',
