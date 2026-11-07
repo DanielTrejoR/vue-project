@@ -14,9 +14,9 @@
             <p v-if="post.excerpt" class="text-h6 font-weight-regular text-medium-emphasis mt-3">{{ post.excerpt }}</p>
         </header>
 
-        <div v-if="post.photos?.length" class="mb-6 rounded-lg overflow-hidden">
-            <v-img v-if="post.photos.length === 1" :src="post.photos[0].full_url" max-height="520" cover />
-            <CarouselComponent v-else :photos="post.photos" />
+        <div v-if="gallery.length" class="mb-6 rounded-lg overflow-hidden">
+            <v-img v-if="gallery.length === 1" :src="gallery[0].full_url" max-height="520" cover />
+            <CarouselComponent v-else :photos="gallery" />
         </div>
 
         <!-- el cuerpo llega purificado por el backend (Purifier) -->
@@ -26,6 +26,8 @@
             Contenido relacionado:
             <a :href="post.iframe" target="_blank" rel="noopener noreferrer">{{ post.iframe }}</a>
         </p>
+
+        <PostAttachments :files="attachments" />
 
         <v-divider class="my-6" />
 
@@ -164,6 +166,7 @@ import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
 import { usePostsStore } from '~/stores/posts'
 import SocialLinks from './components/social-links.vue'
+import PostAttachments from './components/PostAttachments.vue'
 import { setPageMeta, sharePostUrl } from '~/utils/seo'
 import { openAuthDialog } from '@/composables/Front/useAuthDialog'
 const auth = useAuthStore()
@@ -171,6 +174,13 @@ const postsStore = usePostsStore()
 
 const route = useRoute()
 const post = ref({})
+// fotos del post + imágenes del drive adjuntas; el resto de adjuntos va en la lista de descargas
+const postFiles = computed(() => post.value.files ?? [])
+const gallery = computed(() => [
+    ...(post.value.photos ?? []),
+    ...postFiles.value.filter((f) => f.kind === 'image').map((f) => ({ id: f.id, full_url: f.url })),
+])
+const attachments = computed(() => postFiles.value.filter((f) => f.kind !== 'image'))
 // computed para que se actualicen cuando fetchUser termina o cambia la sesión
 const user = computed(() => auth.user)
 const isAuthenticated = computed(() => auth.isAuthenticated)
@@ -289,7 +299,7 @@ onMounted(async () => {
   setPageMeta({
     title: data.title,
     description: data.excerpt || undefined,
-    image: data.photos?.[0]?.full_url,
+    image: gallery.value[0]?.full_url,
     type: 'article',
   })
 })

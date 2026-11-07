@@ -8,10 +8,12 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AttachedFiles: typeof import('./components/Admin/Drive/AttachedFiles.vue')['default']
     Breadcrumb: typeof import('./components/Breadcrumb/index.vue')['default']
     CarouselComponent: typeof import('./components/CarouselComponent.vue')['default']
     CategoryLink: typeof import('./components/Posts/components/CategoryLink.vue')['default']
     ConfigMenu: typeof import('./components/Config/ConfigMenu.vue')['default']
+    DriveBrowser: typeof import('./components/Admin/Drive/DriveBrowser.vue')['default']
     EChart: typeof import('./components/Charts/EChart.vue')['default']
     EditorImage: typeof import('./components/Tinymce/components/EditorImage.vue')['default']
     ElAlert: typeof import('element-plus/es')['ElAlert']
@@ -42,6 +44,7 @@ declare module 'vue' {
     ElHeader: typeof import('element-plus/es')['ElHeader']
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElImage: typeof import('element-plus/es')['ElImage']
+    ElImageViewer: typeof import('element-plus/es')['ElImageViewer']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
     ElMenu: typeof import('element-plus/es')['ElMenu']
@@ -68,6 +71,7 @@ declare module 'vue' {
     ElTimeline: typeof import('element-plus/es')['ElTimeline']
     ElTimelineItem: typeof import('element-plus/es')['ElTimelineItem']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    ElTree: typeof import('element-plus/es')['ElTree']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     FrontUserAvatar: typeof import('./components/UserAvatar/FrontUserAvatar.vue')['default']
     Hamburger: typeof import('./components/Hamburger/index.vue')['default']
@@ -76,6 +80,7 @@ declare module 'vue' {
     IconSunny: typeof import('./components/icons/IconSunny.vue')['default']
     Item: typeof import('./components/Sidebar/Item.vue')['default']
     Link: typeof import('./components/Sidebar/Link.vue')['default']
+    MoveDialog: typeof import('./components/Admin/Drive/MoveDialog.vue')['default']
     MusicPlayerCard: typeof import('./components/MusicPlayer/MusicPlayerCard.vue')['default']
     Paginator: typeof import('./components/Posts/components/Paginator.vue')['default']
     PlayerBars: typeof import('./components/MusicPlayer/PlayerBars.vue')['default']

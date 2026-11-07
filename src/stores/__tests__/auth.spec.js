@@ -8,6 +8,7 @@ vi.mock('@/router', () => routerMock)
 const { useAuthStore } = await import('../auth')
 const { usePermissionStore } = await import('../permission')
 const { useSettingsStore } = await import('../settings')
+const { useDriveStore } = await import('../drive')
 
 const writer = { id: 2, name: 'Luis', roles: ['Writer'], permissions: ['View posts'], preferences: { theme: '#13c2c2' } }
 
@@ -54,6 +55,14 @@ describe('auth store', () => {
         expect(auth.isAuthenticated).toBe(false)
         expect(usePermissionStore().routesReady).toBe(false)
         expect(routerMock.resetRouter).toHaveBeenCalled()
+    })
+
+    it('logout vacía el drive de la sesión anterior', async () => {
+        api.post.mockResolvedValue({ data: {} })
+        const drive = useDriveStore()
+        drive.files = [{ id: 1 }]
+        await useAuthStore().logout()
+        expect(drive.files).toEqual([])
     })
 
     it('expire (401) olvida al usuario sin tocar las rutas', async () => {
