@@ -1,0 +1,41 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5173",
+        "--strictPort"
+      ],
+      "port": 5173
+    },
+    {
+      "name": "backend",
+      "runtimeExecutable": "php",
+      "runtimeArgs": [
+        "/home/daniel/www/awesomeApp/artisan",
+        "serve",
+        "--host=localhost",
+        "--port=8000"
+      ],
+      "port": 8000
+    },
+    {
+      "name": "reverb",
+      "runtimeExecutable": "php",
+      "runtimeArgs": [
+        "/home/daniel/www/awesomeApp/artisan",
+        "reverb:start",
+        "--host=127.0.0.1",
+        "--port=8080",
+        "--debug"
+      ],
+      "port": 8080
+    }
+  ]
+}
