@@ -19,11 +19,12 @@ let seq = 0
 // cambia al cerrar sesión: lo que siga en vuelo ya no toca el estado
 let generation = 0
 
-/** @param {any} e */
-const messageOf = e => {
+// mensaje legible de un error del API: primer error de validación (422), luego `message`, luego el de respaldo
+/** @param {any} e @param {string} fallback */
+export const apiMessage = (e, fallback) => {
     const errors = e?.response?.data?.errors
     const first = errors && Object.values(errors).flat()[0]
-    return first || e?.response?.data?.message || 'No se pudo subir el archivo.'
+    return first || e?.response?.data?.message || fallback
 }
 
 export const useDriveStore = defineStore('drive', {
@@ -120,6 +121,15 @@ export const useDriveStore = defineStore('drive', {
             return this.send(uid)
         },
 
+        // quita del listado una subida fallida (y su archivo pendiente)
+        /** @param {number} uid */
+        dismissUpload(uid) {
+            const i = this.uploads.findIndex(u => u.uid === uid)
+            if (i < 0 || this.uploads[i].status === 'uploading') return
+            this.uploads.splice(i, 1)
+            pending.delete(uid)
+        },
+
         // se opera por uid sobre el estado reactivo (no sobre el objeto original)
         /** @param {number} uid */
         async send(uid) {
@@ -150,7 +160,7 @@ export const useDriveStore = defineStore('drive', {
             } catch (e) {
                 if (session !== generation) return
                 entry.status = 'error'
-                entry.error = messageOf(e)
+                entry.error = apiMessage(e, 'No se pudo subir el archivo.')
             }
         },
 

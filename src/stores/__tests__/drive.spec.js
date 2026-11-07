@@ -4,7 +4,7 @@ import { api } from './mocks'
 
 vi.mock('~/plugins/axios', () => ({ default: api }))
 
-const { useDriveStore } = await import('../drive')
+const { useDriveStore, apiMessage } = await import('../drive')
 const { formatBytes, kindIcon } = await import('~/utils/files')
 
 const file = (id, extra = {}) => ({ id, original_name: `f${id}.png`, kind: 'image', folder_id: null, ...extra })
@@ -252,6 +252,32 @@ describe('drive store', () => {
 
         await store.retryUpload(uid)
         expect(api.post).toHaveBeenCalledTimes(2)
+    })
+
+    it('dismissUpload quita una subida fallida y su archivo pendiente, pero no una en curso', async () => {
+        const store = useDriveStore()
+        api.post.mockRejectedValueOnce({ response: { data: { message: 'no' } } })
+        await store.upload(blob())
+        const uid = store.uploads[0].uid
+
+        store.dismissUpload(uid)
+        expect(store.uploads).toEqual([])
+        await store.retryUpload(uid)
+        expect(api.post).toHaveBeenCalledTimes(1)
+
+        let finish
+        api.post.mockReturnValueOnce(new Promise(r => { finish = r }))
+        const pendingUpload = store.upload(blob('b.png'))
+        store.dismissUpload(store.uploads[0].uid)
+        expect(store.uploads).toHaveLength(1)
+        finish({ data: file(8) })
+        await pendingUpload
+    })
+
+    it('apiMessage prefiere el primer error de validación, luego message y luego el respaldo', () => {
+        expect(apiMessage({ response: { data: { message: 'x', errors: { name: ['Ya existe.'] } } } }, 'fb')).toBe('Ya existe.')
+        expect(apiMessage({ response: { data: { message: 'x' } } }, 'fb')).toBe('x')
+        expect(apiMessage(new Error('red'), 'fb')).toBe('fb')
     })
 
     it('$reset limpia todo', async () => {

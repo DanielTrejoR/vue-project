@@ -221,6 +221,28 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/admin/drive',
+    hidden: false,
+    component: AdminLayout,
+    redirect: "/admin/drive/index",
+    name: 'AdminDrive',
+    meta: {
+      requiresAuth: true,
+      icon: 'FolderOpened',
+      roles: ['Admin', 'Writer'],
+      title: 'Drive',
+      breadcrumb: false
+    },
+    children: [
+      {
+        path: "index",
+        name: "DriveIndex",
+        component: () => import('~/views/Admin/Drive/index.vue'),
+        meta: { title: 'Drive' }
+      }
+    ]
+  },
+  {
     path: "/admin/control-center",
     hidden: false,
     component: AdminLayout,
