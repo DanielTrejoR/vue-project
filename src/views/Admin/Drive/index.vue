@@ -16,3 +16,8 @@ import DriveBrowser from '~/components/Admin/Drive/DriveBrowser.vue'
 </script>
 
 <style src="../list-page.css"></style>
+<style scoped>
+.drive-page .posts-header {
+    text-align: left;
+}
+</style>

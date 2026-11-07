@@ -58,7 +58,9 @@
                         <img v-if="row.file?.kind === 'image'" :src="row.file.url" :alt="row.file.original_name" loading="lazy">
                         <el-icon v-else :size="22"><component :is="row.folder ? 'Folder' : kindIcon(row.file!.kind)" /></el-icon>
                     </div>
-                    <span class="drive-name__text">{{ row.folder ? row.folder.name : row.file!.original_name }}</span>
+                    <!-- la carpeta es un botón: se abre con teclado, lector de pantalla y toque; el doble clic queda como atajo -->
+                    <button v-if="row.folder" type="button" class="drive-name__text drive-name__link" @click.stop="go(row.folder.id)">{{ row.folder.name }}</button>
+                    <span v-else class="drive-name__text">{{ row.file!.original_name }}</span>
                 </div>
             </template>
         </el-table-column>
@@ -80,6 +82,8 @@
         </el-table-column>
         <el-table-column v-if="mode === 'manage'" label="" width="96" align="right">
             <template #default="{ row }">
+                <!-- el doble clic rápido sobre los botones no debe abrir la carpeta -->
+                <div class="drive-actions" @dblclick.stop>
                 <el-dropdown trigger="click" @command="(cmd: string) => onCommand(cmd, row)">
                     <el-button text circle size="small" icon="MoreFilled" aria-label="Acciones" />
                     <template #dropdown>
@@ -95,6 +99,7 @@
                         <el-button text circle size="small" type="danger" icon="Delete" aria-label="Borrar" />
                     </template>
                 </el-popconfirm>
+                </div>
             </template>
         </el-table-column>
         <template #empty>{{ store.query ? 'Sin resultados.' : 'Esta carpeta está vacía.' }}</template>
@@ -113,7 +118,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onActivated, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { UploadRequestOptions } from 'element-plus'
@@ -178,9 +183,25 @@ const reload = () => (store.query ? store.search(store.query) : store.open(curre
 
 // KeepAlive: el componente sigue vivo en otras rutas; solo reacciona en la suya
 watch(() => route.query.folder, () => {
-    if (props.mode === 'manage' && route.name === 'DriveIndex') store.open(folderParam())
+    if (props.mode === 'manage' && route.name === 'DriveIndex') {
+        search.value = ''
+        store.open(folderParam())
+    }
 })
 onMounted(() => store.open(currentFolder()))
+// KeepAlive: al volver a la página la URL manda (puede no traer ?folder=) y el store pudo cambiar mientras tanto.
+// La primera activación coincide con onMounted: se salta para no pedir dos veces.
+let activatedOnce = false
+onActivated(() => {
+    if (!activatedOnce) {
+        activatedOnce = true
+        return
+    }
+    if (props.mode === 'manage') {
+        search.value = ''
+        store.open(folderParam())
+    }
+})
 
 // --- buscador con debounce ---
 let timer: ReturnType<typeof setTimeout> | undefined
@@ -194,7 +215,18 @@ watch(search, value => {
 })
 onBeforeUnmount(() => clearTimeout(timer))
 
-// --- subidas ---
+// --- subidas: las terminadas se quitan solas a los 3 s; las fallidas esperan Reintentar o Quitar ---
+const dismissTimers = new Map<number, ReturnType<typeof setTimeout>>()
+watch(() => store.uploads.map(u => `${u.uid}:${u.status}`), () => {
+    for (const up of store.uploads) {
+        if (up.status !== 'done' || dismissTimers.has(up.uid)) continue
+        dismissTimers.set(up.uid, setTimeout(() => {
+            dismissTimers.delete(up.uid)
+            store.dismissUpload(up.uid)
+        }, 3000))
+    }
+})
+onBeforeUnmount(() => dismissTimers.forEach(clearTimeout))
 const send = async (options: UploadRequestOptions) => {
     const result = await store.upload(options.file)
     if (!result) throw new Error('upload failed')
@@ -294,6 +326,29 @@ const doMove = async (target: number | null) => {
 </script>
 
 <style scoped>
+.drive {
+    text-align: left;
+}
+
+.drive-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.drive-name__link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.drive-name__link:hover {
+    text-decoration: underline;
+}
+
 .drive-bar {
     display: flex;
     flex-wrap: wrap;
