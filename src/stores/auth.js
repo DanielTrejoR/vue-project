@@ -92,7 +92,7 @@ export const useAuthStore = defineStore('auth', {
             useTagsViewStore().reset()
             // las tareas son de la cuenta: con otra sesión se vuelven a pedir
             useTodosStore().$reset()
-            useDriveStore().$reset()
+            useDriveStore().clear()
             resetRouter()
         },
         // aunque falle la petición, la sesión local se limpia

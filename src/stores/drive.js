@@ -10,10 +10,14 @@ import axiosClient from '~/plugins/axios'
 
 const BASE = '/admin/drive'
 
-// el File no es serializable: se guarda aparte para poder reintentar
-/** @type {Map<number, File>} */
+// el File no es serializable: se guarda aparte (con su carpeta de origen) para poder reintentar
+/** @type {Map<number, { file: File, folderId: number | null }>} */
 const pending = new Map()
 let nextUid = 1
+// solo la última carga de la lista manda; las respuestas viejas se ignoran
+let seq = 0
+// cambia al cerrar sesión: lo que siga en vuelo ya no toca el estado
+let generation = 0
 
 /** @param {any} e */
 const messageOf = e => {
@@ -41,18 +45,20 @@ export const useDriveStore = defineStore('drive', {
     actions: {
         /** @param {Record<string, any>} params */
         async fetch(params) {
+            const id = ++seq
             this.loading = true
             this.error = ''
             try {
                 const { data } = await axiosClient.get(BASE, { params })
+                if (id !== seq) return
                 this.folder = data.folder
                 this.breadcrumbs = data.breadcrumbs
                 this.folders = data.folders
                 this.files = data.files
             } catch {
-                this.error = 'No se pudo cargar el drive.'
+                if (id === seq) this.error = 'No se pudo cargar el drive.'
             } finally {
-                this.loading = false
+                if (id === seq) this.loading = false
             }
         },
 
@@ -104,34 +110,37 @@ export const useDriveStore = defineStore('drive', {
             /** @type {Upload} */
             const entry = { uid: nextUid++, name: file.name, progress: 0, status: 'uploading', error: '' }
             this.uploads.push(entry)
-            pending.set(entry.uid, file)
+            pending.set(entry.uid, { file, folderId: this.folder?.id ?? null })
             return this.send(entry.uid)
         },
 
         /** @param {number} uid */
         retryUpload(uid) {
+            if (this.uploads.find(u => u.uid === uid)?.status !== 'error') return
             return this.send(uid)
         },
 
         // se opera por uid sobre el estado reactivo (no sobre el objeto original)
         /** @param {number} uid */
         async send(uid) {
-            const file = pending.get(uid)
+            const job = pending.get(uid)
             const entry = this.uploads.find(u => u.uid === uid)
-            if (!file || !entry) return
+            if (!job || !entry) return
+            const { file, folderId } = job
+            const session = generation
             entry.status = 'uploading'
             entry.progress = 0
             entry.error = ''
-            const folderId = this.folder?.id ?? null
             const form = new FormData()
             form.append('file', file)
             if (folderId) form.append('folder_id', String(folderId))
             try {
                 const { data } = await axiosClient.post(`${BASE}/files`, form, {
                     onUploadProgress: (/** @type {{ loaded: number, total?: number }} */ e) => {
-                        if (e.total) entry.progress = Math.round((e.loaded / e.total) * 100)
+                        if (session === generation && e.total) entry.progress = Math.round((e.loaded / e.total) * 100)
                     },
                 })
+                if (session !== generation) return
                 entry.progress = 100
                 entry.status = 'done'
                 pending.delete(uid)
@@ -139,9 +148,18 @@ export const useDriveStore = defineStore('drive', {
                 if ((this.folder?.id ?? null) === folderId && !this.query) this.files.unshift(data)
                 return data
             } catch (e) {
+                if (session !== generation) return
                 entry.status = 'error'
                 entry.error = messageOf(e)
             }
+        },
+
+        // al cerrar sesión: vacía el estado, descarta lo pendiente e ignora lo que siga en vuelo
+        clear() {
+            generation++
+            seq++
+            pending.clear()
+            this.$reset()
         },
 
         /** @param {number} id @param {string} name */

@@ -176,6 +176,84 @@ describe('drive store', () => {
         expect(api.get).toHaveBeenCalledWith('/admin/drive/tree')
     })
 
+    it('una respuesta vieja no pisa a la más reciente y loading dura hasta la última', async () => {
+        const store = useDriveStore()
+        /** @type {Function[]} */
+        const resolvers = []
+        api.get.mockImplementation(() => new Promise(r => resolvers.push(r)))
+
+        const a = store.open(1)
+        const b = store.open(2)
+        resolvers[1](browser({ folder: folder(2) }))
+        await b
+        expect(store.folder.id).toBe(2)
+        expect(store.loading).toBe(false)
+
+        resolvers[0](browser({ folder: folder(1) }))
+        await a
+        expect(store.folder.id).toBe(2)
+    })
+
+    it('loading sigue activo si la respuesta vieja llega antes que la nueva', async () => {
+        const store = useDriveStore()
+        const resolvers = []
+        api.get.mockImplementation(() => new Promise(r => resolvers.push(r)))
+
+        const a = store.open(1)
+        const b = store.open(2)
+        resolvers[0](browser({ folder: folder(1) }))
+        await a
+        expect(store.loading).toBe(true)
+        expect(store.folder).toBeNull()
+
+        resolvers[1](browser({ folder: folder(2) }))
+        await b
+        expect(store.loading).toBe(false)
+        expect(store.folder.id).toBe(2)
+    })
+
+    it('un upload que termina después de clear no toca el estado', async () => {
+        const store = useDriveStore()
+        let resolve
+        api.post.mockReturnValue(new Promise(r => { resolve = r }))
+        const pending = store.upload(blob())
+
+        store.clear()
+        resolve({ data: file(5) })
+        await pending
+
+        expect(store.files).toEqual([])
+        expect(store.uploads).toEqual([])
+    })
+
+    it('clear descarta los archivos pendientes de reintento', async () => {
+        const store = useDriveStore()
+        api.post.mockRejectedValue({ response: { data: { message: 'no' } } })
+        await store.upload(blob())
+        const uid = store.uploads[0].uid
+        store.clear()
+        store.uploads = [{ uid, name: 'a.png', progress: 0, status: 'error', error: '' }]
+        await store.retryUpload(uid)
+        expect(api.post).toHaveBeenCalledTimes(1)
+    })
+
+    it('retryUpload solo reintenta los que fallaron y vuelve a la carpeta original', async () => {
+        const store = useDriveStore()
+        store.folder = folder(2)
+        api.post.mockRejectedValueOnce({ response: { data: { message: 'no' } } })
+        await store.upload(blob())
+        const uid = store.uploads[0].uid
+
+        store.folder = folder(3)
+        api.post.mockResolvedValueOnce({ data: file(7, { folder_id: 2 }) })
+        await store.retryUpload(uid)
+        expect(api.post.mock.calls[1][1].get('folder_id')).toBe('2')
+        expect(store.files).toEqual([])
+
+        await store.retryUpload(uid)
+        expect(api.post).toHaveBeenCalledTimes(2)
+    })
+
     it('$reset limpia todo', async () => {
         const store = useDriveStore()
         store.files = [file(1)]
