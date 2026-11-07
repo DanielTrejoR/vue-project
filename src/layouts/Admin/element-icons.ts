@@ -1,5 +1,7 @@
 import type { App, Component } from 'vue'
 import {
+  ArrowDown,
+  ArrowUp,
   Box,
   ChatDotRound,
   Close,
@@ -37,6 +39,8 @@ import {
 // Íconos que el panel usa por nombre: icon="Plus" en los botones y meta.icon en el menú.
 // Importarlos uno a uno (y no con import *) deja fuera del bundle los ~300 que no se usan.
 export const elementIcons: Record<string, Component> = {
+  ArrowDown,
+  ArrowUp,
   Box,
   ChatDotRound,
   Close,

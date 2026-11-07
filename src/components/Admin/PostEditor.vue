@@ -196,6 +196,7 @@
                   </template>
                 </draggable>
               </div>
+              <AttachedFiles v-model="attached" class="mt-4" />
             </el-col>
           </el-row>
         </el-form>
@@ -223,6 +224,8 @@ import draggable from 'vuedraggable'
 import router from "~/router";
 import { useRoute, useRouter } from 'vue-router'
 import emitter from '~/utils/emitter'
+import AttachedFiles from './Drive/AttachedFiles.vue'
+import type { AttachedFile } from './Drive/AttachedFiles.vue'
 
 const r = useRoute()
 defineEmits(["update:modelValue"]);
@@ -254,6 +257,7 @@ interface PostForm {
   category_id: string;
   tags: number[];
   status: string;
+  file_ids: number[];
 }
 
 const shortcuts = [
@@ -293,8 +297,12 @@ const postForm = reactive<PostForm>({
   published_at: "",
   category_id: "",
   tags: [],
-  status: 'draft'
+  status: 'draft',
+  file_ids: []
 });
+
+// Archivos del drive adjuntos (en orden); file_ids se deriva de aquí al enviar
+const attached = ref<AttachedFile[]>([]);
 
 const rules = reactive<FormRules<PostForm>>({
   title: [
@@ -334,6 +342,7 @@ const handleSubmit = async (formEl: FormInstance | undefined) => {
   loading.value = true;
   await formEl.validate((valid, fields) => {
     if (valid) {
+        postForm.file_ids = attached.value.map((f) => f.id);
         if(props.mode === 'edit' && props.postId) {
           
           postsStore.updatePost({postData: postForm, postId: props.postId})
@@ -470,6 +479,7 @@ onMounted(async () => {
     const {data} = await postsStore.editPost(props.postId)
     Object.assign(postForm, data);
     postForm.tags = data.tags.map((tag: Option) => tag.id)
+    attached.value = data.files ?? []
     emitter.emit('updateBreadcrumbTitle', `Editando: "${data.title}"`)
     r.meta.title = `Editando: "${postForm.title}"`;
     fileList.value = data.photos.map((p: { id: number; full_url: string }) => ({

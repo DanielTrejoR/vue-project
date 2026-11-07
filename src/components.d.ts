@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AttachedFiles: typeof import('./components/Admin/Drive/AttachedFiles.vue')['default']
     Breadcrumb: typeof import('./components/Breadcrumb/index.vue')['default']
     CarouselComponent: typeof import('./components/CarouselComponent.vue')['default']
     CategoryLink: typeof import('./components/Posts/components/CategoryLink.vue')['default']
