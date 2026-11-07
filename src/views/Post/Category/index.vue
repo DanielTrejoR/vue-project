@@ -1,6 +1,5 @@
 <template>
     <v-container class="py-8">
-        <v-btn :to="{ name: 'Posts' }" variant="text" prepend-icon="mdi mdi-arrow-left" class="mb-2 px-0">Blog</v-btn>
         <header class="mb-6">
             <div class="text-overline text-medium-emphasis">Categoría</div>
             <h1 class="text-h4 font-weight-bold">{{ category?.name || route.params.category }}</h1>

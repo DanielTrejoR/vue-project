@@ -1,7 +1,5 @@
 <template>
 <v-container class="py-8 post-page">
-    <v-btn :to="{ name: 'Posts' }" variant="text" prepend-icon="mdi mdi-arrow-left" class="mb-4 px-0">Blog</v-btn>
-
     <v-skeleton-loader v-if="!post.id" type="heading, paragraph, image, paragraph" />
 
     <article v-else>

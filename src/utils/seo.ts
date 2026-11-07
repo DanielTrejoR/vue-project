@@ -1,8 +1,12 @@
 // Metadatos de cada página del blog (descripción, URL canónica y etiquetas og/twitter).
 // Google ejecuta JavaScript y los lee; las redes sociales no, por eso compartir usa /share/posts del backend.
+import { ref } from 'vue'
 import defaultSettings from '@/settings'
 
 const SITE_NAME = defaultSettings.title
+
+// título de la página actual para las migas del front; guarda la ruta para no mostrar el de la página anterior
+export const pageTitle = ref<{ path: string; title: string } | null>(null)
 export const DEFAULT_DESCRIPTION = 'Ideas, experimentos y cosas que siempre quise hacer, publicadas a medida que salen.'
 
 interface PageMeta {
@@ -43,6 +47,7 @@ export function setPageMeta({ title, description = DEFAULT_DESCRIPTION, image = 
   const url = window.location.origin + window.location.pathname
 
   document.title = fullTitle
+  pageTitle.value = title ? { path: window.location.pathname, title } : null
   meta('name', 'description', description)
   setTag('link[rel="canonical"]', () => {
     const link = document.createElement('link')

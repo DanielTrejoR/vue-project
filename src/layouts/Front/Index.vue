@@ -3,6 +3,7 @@
         <v-app>
             <Navbar />
             <v-main>
+                <Breadcrumbs />
                 <AppMain />
             </v-main>
             <ShowAuthDialog v-model="showAuthDialog" />
@@ -23,6 +24,7 @@
 </template>
 <script setup>
 import { AppMain, Navbar } from "./components"
+import Breadcrumbs from "./components/Breadcrumbs.vue"
 import ShowAuthDialog from "./components/ShowAuthDialog.vue"
 import LiveNotifications from "./components/LiveNotifications.vue"
 import { showAuthDialog } from '@/composables/Front/useAuthDialog'
