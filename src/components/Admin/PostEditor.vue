@@ -398,7 +398,7 @@ const getCategoriesAndTags = async () => {
 };
 
 const contentShortLength = computed(() => {
-  return postForm.excerpt.length;
+  return (postForm.excerpt ?? '').length;
 });
 
 //El upload 
