@@ -1,5 +1,6 @@
 import type { App, Component } from 'vue'
 import {
+  Box,
   ChatDotRound,
   Close,
   CollectionTag,
@@ -8,7 +9,9 @@ import {
   Document,
   Edit,
   EditPen,
+  Files,
   Finished,
+  Folder,
   Headset,
   House,
   Link,
@@ -20,6 +23,7 @@ import {
   Upload,
   UploadFilled,
   User,
+  VideoCamera,
   VideoPause,
   VideoPlay,
   View,
@@ -28,6 +32,7 @@ import {
 // Íconos que el panel usa por nombre: icon="Plus" en los botones y meta.icon en el menú.
 // Importarlos uno a uno (y no con import *) deja fuera del bundle los ~300 que no se usan.
 export const elementIcons: Record<string, Component> = {
+  Box,
   ChatDotRound,
   Close,
   CollectionTag,
@@ -36,7 +41,9 @@ export const elementIcons: Record<string, Component> = {
   Document,
   Edit,
   EditPen,
+  Files,
   Finished,
+  Folder,
   Headset,
   House,
   Link,
@@ -48,6 +55,7 @@ export const elementIcons: Record<string, Component> = {
   Upload,
   UploadFilled,
   User,
+  VideoCamera,
   VideoPause,
   VideoPlay,
   View,

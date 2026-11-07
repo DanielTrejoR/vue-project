@@ -5,6 +5,7 @@ import { useSettingsStore } from './settings'
 import { usePermissionStore } from './permission'
 import { useTagsViewStore } from './tagsView'
 import { useTodosStore } from './todos'
+import { useDriveStore } from './drive'
 
 // sessionStorage solo recuerda que esta pestaña tenía sesión, para revalidarla con /api/user al recargar
 const SESSION_KEY = 'isAuthenticated'
@@ -91,6 +92,7 @@ export const useAuthStore = defineStore('auth', {
             useTagsViewStore().reset()
             // las tareas son de la cuenta: con otra sesión se vuelven a pedir
             useTodosStore().$reset()
+            useDriveStore().$reset()
             resetRouter()
         },
         // aunque falle la petición, la sesión local se limpia
